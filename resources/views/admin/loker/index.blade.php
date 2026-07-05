@@ -1,0 +1,53 @@
+<x-app-layout>
+    <x-slot name="header">
+        <div class="flex items-center justify-between">
+            <h2 class="font-semibold text-lg tracking-tight">Manajemen Loker</h2>
+            <x-ui.button :href="route('admin.loker.create')">+ Loker Baru</x-ui.button>
+        </div>
+    </x-slot>
+
+    <div class="py-8">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+            <x-ui.card :padded="false" class="overflow-hidden">
+                <table class="min-w-full divide-y text-sm">
+                    <thead class="bg-muted/50">
+                        <tr class="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                            <th class="px-4 py-3">Judul</th>
+                            <th class="px-4 py-3">Lokasi</th>
+                            <th class="px-4 py-3">Status</th>
+                            <th class="px-4 py-3">Pelamar</th>
+                            <th class="px-4 py-3">Berlaku Sampai</th>
+                            <th class="px-4 py-3"></th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y">
+                        @forelse ($lokerList as $loker)
+                            <tr class="hover:bg-muted/30">
+                                <td class="px-4 py-3 font-medium">{{ $loker->judul_loker }}</td>
+                                <td class="px-4 py-3 text-muted-foreground">{{ $loker->lokasi ?: '-' }}</td>
+                                <td class="px-4 py-3">
+                                    <x-ui.badge :variant="$loker->status_loker === 'dibuka' ? 'success' : 'muted'">
+                                        {{ ucfirst($loker->status_loker) }}
+                                    </x-ui.badge>
+                                </td>
+                                <td class="px-4 py-3 text-muted-foreground">{{ $loker->pelamar_count }}</td>
+                                <td class="px-4 py-3 text-muted-foreground text-xs">
+                                    {{ $loker->end_time ? $loker->end_time->format('d/m') : '-' }}
+                                </td>
+                                <td class="px-4 py-3 text-right space-x-1">
+                                    <x-ui.button :href="route('admin.loker.edit', $loker)" variant="ghost" size="sm">Kelola</x-ui.button>
+                                    <form method="POST" action="{{ route('admin.loker.destroy', $loker) }}" class="inline" onsubmit="return confirm('Hapus loker ini?')">
+                                        @csrf @method('DELETE')
+                                        <x-ui.button type="submit" variant="ghost" size="sm" class="text-destructive hover:text-destructive">Hapus</x-ui.button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr><td colspan="6" class="px-4 py-8 text-center text-muted-foreground">Belum ada loker.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </x-ui.card>
+        </div>
+    </div>
+</x-app-layout>
