@@ -36,34 +36,91 @@
                 </x-ui.alert>
             @endif
 
-            <div class="grid lg:grid-cols-3 gap-6">
-                <div class="lg:col-span-2 space-y-6">
+            <div class="space-y-6">
 
+                <div class="grid md:grid-cols-2 gap-6">
                     <x-ui.card title="Data Pelamar">
-                        <dl class="grid sm:grid-cols-2 gap-4 text-sm">
-                            <div class="sm:col-span-2"><dt class="text-muted-foreground">Nama</dt><dd class="font-medium">{{ $pelamar->namaLengkap() }}</dd></div>
+                        <dl class="space-y-4 text-sm">
+                            <div><dt class="text-muted-foreground">Nama</dt><dd class="font-medium">{{ $pelamar->namaLengkap() }}</dd></div>
+                            <div><dt class="text-muted-foreground">Tanggal Apply</dt><dd class="font-medium">{{ $pelamar->tanggal_apply->translatedFormat('d M Y') }}</dd></div>
                             <div><dt class="text-muted-foreground">Tanggal Lahir</dt><dd class="font-medium">{{ $pelamar->tanggal_lahir->translatedFormat('d M Y') }}</dd></div>
                             <div><dt class="text-muted-foreground">Jenis Kelamin</dt><dd class="font-medium">{{ $pelamar->jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan' }}</dd></div>
-                            <div><dt class="text-muted-foreground">No. WhatsApp</dt><dd class="font-medium">{{ $pelamar->no_hp ?: '-' }}</dd></div>
                             <div><dt class="text-muted-foreground">Email</dt><dd class="font-medium">{{ $pelamar->email ?: '-' }}</dd></div>
-                            <div class="sm:col-span-2"><dt class="text-muted-foreground">Alamat</dt><dd class="font-medium">{{ $pelamar->alamat }}</dd></div>
-                            <div><dt class="text-muted-foreground">Tanggal Apply</dt><dd class="font-medium">{{ $pelamar->tanggal_apply->translatedFormat('d M Y') }}</dd></div>
+                            <div><dt class="text-muted-foreground">No. WhatsApp</dt><dd class="font-medium">{{ $pelamar->no_hp ?: '-' }}</dd></div>
+
+                            <div><dt class="text-muted-foreground">Alamat</dt><dd class="font-medium">{{ $pelamar->alamat }}</dd></div>
                         </dl>
                     </x-ui.card>
 
-                    <x-ui.card title="Pendidikan">
-                        <dl class="grid sm:grid-cols-2 gap-4 text-sm">
-                            <div><dt class="text-muted-foreground">Pendidikan Terakhir</dt><dd class="font-medium">{{ $pelamar->pendidikanTerakhir->pendidikan_terakhir }}</dd></div>
-                            <div><dt class="text-muted-foreground">Institusi</dt><dd class="font-medium">{{ $pelamar->institusi }}</dd></div>
-                            <div><dt class="text-muted-foreground">Program Studi</dt><dd class="font-medium">{{ $pelamar->program_studi }}</dd></div>
-                            <div><dt class="text-muted-foreground">Akreditasi</dt><dd class="font-medium">{{ $pelamar->akreditasi }}</dd></div>
-                            <div><dt class="text-muted-foreground">Tahun Lulus</dt><dd class="font-medium">{{ $pelamar->tahun_lulus }}</dd></div>
-                            <div><dt class="text-muted-foreground">IPK</dt><dd class="font-medium">{{ number_format((float) $pelamar->ipk, 2) }}</dd></div>
-                        </dl>
-                    </x-ui.card>
+                    <x-ui.card title="Ubah Status">
+                        <form method="POST" action="{{ route('admin.pelamar.status', $pelamar) }}" class="space-y-2">
+                            @csrf
+                            @method('PATCH')
 
-                    <x-ui.card title="Berkas">
-                        @php
+                            @foreach ($statusOptions as $s)
+                                @continue(in_array($s->id_status_pelamar, [\App\Models\StatusPelamar::SCREENING, \App\Models\StatusPelamar::ONGOING, \App\Models\StatusPelamar::LOLOS, \App\Models\StatusPelamar::DITOLAK], true))
+                                @continue($s->id_status_pelamar === \App\Models\StatusPelamar::DICADANGKAN && $pelamar->id_tahap_rekrutmen < \App\Models\TahapRekrutmen::WAWANCARA)
+                                @continue($s->id_status_pelamar === \App\Models\StatusPelamar::DITERIMA && $pelamar->id_tahap_rekrutmen !== \App\Models\TahapRekrutmen::TERIMA_SK)
+                                @continue($s->id_status_pelamar === \App\Models\StatusPelamar::MIGRATED && $pelamar->id_tahap_rekrutmen !== \App\Models\TahapRekrutmen::MIGRASI_DATA)
+
+                                @php
+                                    $btnClass = match ($s->id_status_pelamar) {
+                                        \App\Models\StatusPelamar::TIDAK_LOLOS => 'bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80',
+                                        \App\Models\StatusPelamar::DICADANGKAN => 'bg-amber-500 text-white shadow-sm hover:bg-amber-400',
+                                        \App\Models\StatusPelamar::MUNDUR => 'bg-slate-600 text-white shadow-sm hover:bg-slate-500',
+                                        \App\Models\StatusPelamar::DITERIMA, \App\Models\StatusPelamar::MIGRATED => 'bg-emerald-600 text-white shadow-sm hover:bg-emerald-500',
+                                        default => 'bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80',
+                                    };
+                                @endphp
+                                <x-ui.button type="submit" name="id_status_pelamar" value="{{ $s->id_status_pelamar }}" class="w-full {{ $btnClass }}">
+                                    Tandai {{ ucfirst($s->status_pelamar) }}
+                                </x-ui.button>
+                            @endforeach
+                        </form>
+
+                        <div class="grid grid-cols-2 gap-2 mt-3">
+                            @if ($pelamar->id_tahap_rekrutmen > \App\Models\TahapRekrutmen::SELEKSI_BERKAS)
+                                <form method="POST" action="{{ route('admin.pelamar.mundur', $pelamar) }}">
+                                    @csrf
+                                    @method('PATCH')
+                                    <x-ui.button type="submit" variant="outline" class="w-full">
+                                        &larr; Mundurkan
+                                    </x-ui.button>
+                                </form>
+                            @endif
+
+                            @if (! in_array($pelamar->id_status_pelamar, [\App\Models\StatusPelamar::MUNDUR, \App\Models\StatusPelamar::DICADANGKAN], true) && $pelamar->id_tahap_rekrutmen < \App\Models\TahapRekrutmen::MIGRASI_DATA)
+                                <form method="POST" action="{{ route('admin.pelamar.lanjut', $pelamar) }}" class="{{ $pelamar->id_tahap_rekrutmen > \App\Models\TahapRekrutmen::SELEKSI_BERKAS ? '' : 'col-span-2' }}">
+                                    @csrf
+                                    @method('PATCH')
+                                    <x-ui.button type="submit" class="w-full">
+                                        Lanjutkan &rarr;
+                                    </x-ui.button>
+                                </form>
+                            @endif
+                        </div>
+
+                        <form method="POST" action="{{ route('admin.pelamar.catatan', $pelamar) }}" class="mt-4 pt-4 border-t space-y-2">
+                            @csrf
+                            @method('PATCH')
+                            <x-ui.label for="catatan">Catatan</x-ui.label>
+                            <x-ui.textarea id="catatan" name="catatan" rows="2" placeholder="Tulis catatan...">{{ $pelamar->catatan }}</x-ui.textarea>
+                            <x-ui.button type="submit" variant="secondary" class="w-full">Simpan Catatan</x-ui.button>
+                        </form>
+                    </x-ui.card>
+                </div>
+
+                <x-ui.card title="Pendidikan & Berkas">
+                    <dl class="grid sm:grid-cols-2 gap-4 text-sm pb-4 mb-4 border-b">
+                        <div><dt class="text-muted-foreground">Pendidikan Terakhir</dt><dd class="font-medium">{{ $pelamar->pendidikanTerakhir->pendidikan_terakhir }}</dd></div>
+                        <div><dt class="text-muted-foreground">Institusi</dt><dd class="font-medium">{{ $pelamar->institusi }}</dd></div>
+                        <div><dt class="text-muted-foreground">Program Studi</dt><dd class="font-medium">{{ $pelamar->program_studi }}</dd></div>
+                        <div><dt class="text-muted-foreground">Akreditasi</dt><dd class="font-medium">{{ $pelamar->akreditasi }}</dd></div>
+                        <div><dt class="text-muted-foreground">Tahun Lulus</dt><dd class="font-medium">{{ $pelamar->tahun_lulus }}</dd></div>
+                        <div><dt class="text-muted-foreground">IPK</dt><dd class="font-medium">{{ number_format((float) $pelamar->ipk, 2) }}</dd></div>
+                    </dl>
+
+                    @php
                             $berkasList = collect([
                                 ['icon' => '📄', 'label' => 'CV', 'url' => $pelamar->cvUrl(), 'path' => $pelamar->cv_upload],
                                 ['icon' => '📄', 'label' => 'Ijazah', 'url' => $pelamar->ijazahUrl(), 'path' => $pelamar->ijazah_upload],
@@ -71,7 +128,7 @@
                                 ['icon' => '📄', 'label' => 'Transkrip Nilai', 'url' => $pelamar->transkripUrl(), 'path' => $pelamar->transkrip_nilai_upload],
                             ])->filter(fn ($b) => $b['url']);
                         @endphp
-
+    
                         <div
                             x-data="{
                                 open: false,
@@ -108,16 +165,16 @@
                             class="flex flex-wrap gap-3 text-sm"
                         >
                             <img x-ref="viewerImg" class="hidden" alt="">
-
+    
                             @foreach ($berkasList as $berkas)
                                 <x-ui.button
                                     type="button"
                                     variant="outline"
                                     size="sm"
-                                    @click="showBerkas(@js($berkas['url']), @js($berkas['label']), @js(strtolower(pathinfo($berkas['path'], PATHINFO_EXTENSION))))"
+                                    @click="showBerkas({{ json_encode($berkas['url']) }}, {{ json_encode($berkas['label']) }}, {{ json_encode(strtolower(pathinfo($berkas['path'], PATHINFO_EXTENSION))) }})"
                                 >{{ $berkas['icon'] }} {{ $berkas['label'] }}</x-ui.button>
                             @endforeach
-
+    
                             <div x-show="open" x-cloak class="fixed inset-0 z-[90] flex items-center justify-center p-4">
                                 <div class="absolute inset-0 bg-black/50" @click="open = false"></div>
                                 <div
@@ -138,7 +195,7 @@
                                             </button>
                                         </div>
                                     </div>
-
+    
                                     <div class="flex-1 overflow-auto">
                                         <template x-if="ext === 'pdf'">
                                             <iframe :src="url" class="w-full h-[75vh] rounded border"></iframe>
@@ -155,112 +212,41 @@
                         </div>
                     </x-ui.card>
 
-                    <x-ui.card title="Riwayat Tahap">
-                        <ol class="space-y-3">
-                            @forelse ($pelamar->riwayat as $r)
-                                <li class="text-sm border-l-2 border-border pl-3">
-                                    <div class="flex items-center gap-2 flex-wrap">
-                                        <span class="font-medium">{{ $r->tahapRekrutmen->tahap_rekrutmen }}</span>
-                                        <x-status-badge :status="$r->statusPelamar" />
-                                        <span class="text-muted-foreground text-xs">{{ $r->created_at->translatedFormat('d M Y, H:i') }}</span>
-                                        @if ($r->created_by)
-                                            <span class="text-muted-foreground text-xs">oleh {{ $r->created_by }}</span>
-                                        @endif
-                                    </div>
-                                    @if ($r->catatan)
-                                        <p class="text-muted-foreground mt-0.5">{{ $r->catatan }}</p>
+                <x-ui.card title="Riwayat Tahap">
+                    <ol class="space-y-3 max-h-96 overflow-y-auto pr-1">
+                        @forelse ($pelamar->riwayat as $r)
+                            <li class="text-sm border-l-2 border-border pl-3">
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <span class="font-medium">{{ $r->tahapRekrutmen->tahap_rekrutmen }}</span>
+                                    <x-status-badge :status="$r->statusPelamar" />
+                                    <span class="text-muted-foreground text-xs">{{ $r->created_at->translatedFormat('d M Y, H:i') }}</span>
+                                    @if ($r->created_by)
+                                        <span class="text-muted-foreground text-xs">oleh {{ $r->created_by }}</span>
                                     @endif
+                                </div>
+                                @if ($r->catatan)
+                                    <p class="text-muted-foreground mt-0.5">{{ $r->catatan }}</p>
+                                @endif
+                            </li>
+                        @empty
+                            <li class="text-sm text-muted-foreground">Belum ada riwayat.</li>
+                        @endforelse
+                    </ol>
+                </x-ui.card>
+
+                @if ($pelamar->logNotifikasi->isNotEmpty())
+                    <x-ui.card title="Riwayat Notifikasi">
+                        <ol class="space-y-2">
+                            @foreach ($pelamar->logNotifikasi as $log)
+                                <li class="text-sm border-l-2 border-border pl-3">
+                                    <span class="font-medium">{{ $log->channel === 'whatsapp' ? 'WhatsApp' : 'Email' }}</span>
+                                    <span class="text-muted-foreground text-xs">{{ $log->created_at->translatedFormat('d M Y, H:i') }} oleh {{ $log->created_by }}</span>
+                                    <p class="text-muted-foreground mt-0.5 line-clamp-2">{{ $log->pesan ?: '(pesan kosong)' }}</p>
                                 </li>
-                            @empty
-                                <li class="text-sm text-muted-foreground">Belum ada riwayat.</li>
-                            @endforelse
+                            @endforeach
                         </ol>
                     </x-ui.card>
-
-                    @if ($pelamar->logNotifikasi->isNotEmpty())
-                        <x-ui.card title="Riwayat Notifikasi">
-                            <ol class="space-y-2">
-                                @foreach ($pelamar->logNotifikasi as $log)
-                                    <li class="text-sm border-l-2 border-border pl-3">
-                                        <span class="font-medium">{{ $log->channel === 'whatsapp' ? 'WhatsApp' : 'Email' }}</span>
-                                        <span class="text-muted-foreground text-xs">{{ $log->created_at->translatedFormat('d M Y, H:i') }} oleh {{ $log->created_by }}</span>
-                                        <p class="text-muted-foreground mt-0.5 line-clamp-2">{{ $log->pesan ?: '(pesan kosong)' }}</p>
-                                    </li>
-                                @endforeach
-                            </ol>
-                        </x-ui.card>
-                    @endif
-                </div>
-
-                <div class="space-y-6">
-                    <x-ui.card title="Ubah Status">
-                        <form method="POST" action="{{ route('admin.pelamar.status', $pelamar) }}" class="space-y-2">
-                            @csrf
-                            @method('PATCH')
-
-                            @foreach ($statusOptions as $s)
-                                @if ($s->id_status_pelamar === \App\Models\StatusPelamar::DICADANGKAN)
-                                    <div class="border rounded-md p-2 space-y-2 bg-amber-50 border-amber-200">
-                                        <x-ui.select name="id_pelamar_cadangan_dari" class="!text-xs">
-                                            <option value="">Cadangan untuk kandidat mana? (opsional)</option>
-                                            @foreach ($calonPrimerUntukCadangan as $calon)
-                                                <option value="{{ $calon->id_pelamar }}">{{ $calon->namaLengkap() }}</option>
-                                            @endforeach
-                                        </x-ui.select>
-                                        <x-ui.button type="submit" name="id_status_pelamar" value="{{ $s->id_status_pelamar }}"
-                                            class="w-full bg-amber-500 text-white shadow-sm hover:bg-amber-400">
-                                            Tandai Dicadangkan
-                                        </x-ui.button>
-                                    </div>
-                                @else
-                                    @php
-                                        $btnClass = match ($s->id_status_pelamar) {
-                                            \App\Models\StatusPelamar::LOLOS => 'bg-emerald-600 text-white shadow-sm hover:bg-emerald-500',
-                                            \App\Models\StatusPelamar::TIDAK_LOLOS => 'bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80',
-                                            \App\Models\StatusPelamar::DITOLAK => 'bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90',
-                                            \App\Models\StatusPelamar::MUNDUR => 'bg-slate-600 text-white shadow-sm hover:bg-slate-500',
-                                            \App\Models\StatusPelamar::SCREENING => 'bg-blue-600 text-white shadow-sm hover:bg-blue-500',
-                                            default => 'bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80',
-                                        };
-                                    @endphp
-                                    <x-ui.button type="submit" name="id_status_pelamar" value="{{ $s->id_status_pelamar }}" class="w-full {{ $btnClass }}">
-                                        Tandai {{ ucfirst($s->status_pelamar) }}
-                                    </x-ui.button>
-                                @endif
-                            @endforeach
-                        </form>
-
-                        <div class="grid grid-cols-2 gap-2 mt-3">
-                            @if ($pelamar->id_tahap_rekrutmen > \App\Models\TahapRekrutmen::SELEKSI_BERKAS)
-                                <form method="POST" action="{{ route('admin.pelamar.mundur', $pelamar) }}">
-                                    @csrf
-                                    @method('PATCH')
-                                    <x-ui.button type="submit" variant="outline" class="w-full">
-                                        &larr; Mundurkan
-                                    </x-ui.button>
-                                </form>
-                            @endif
-
-                            @if ($pelamar->id_status_pelamar === \App\Models\StatusPelamar::LOLOS && $pelamar->id_tahap_rekrutmen < \App\Models\TahapRekrutmen::MIGRASI_DATA)
-                                <form method="POST" action="{{ route('admin.pelamar.lanjut', $pelamar) }}" class="{{ $pelamar->id_tahap_rekrutmen > \App\Models\TahapRekrutmen::SELEKSI_BERKAS ? '' : 'col-span-2' }}">
-                                    @csrf
-                                    @method('PATCH')
-                                    <x-ui.button type="submit" class="w-full">
-                                        Lanjutkan &rarr;
-                                    </x-ui.button>
-                                </form>
-                            @endif
-                        </div>
-
-                        <form method="POST" action="{{ route('admin.pelamar.catatan', $pelamar) }}" class="mt-4 pt-4 border-t space-y-2">
-                            @csrf
-                            @method('PATCH')
-                            <x-ui.label for="catatan">Catatan</x-ui.label>
-                            <x-ui.textarea id="catatan" name="catatan" rows="2" placeholder="Tulis catatan...">{{ $pelamar->catatan }}</x-ui.textarea>
-                            <x-ui.button type="submit" variant="secondary" class="w-full">Simpan Catatan</x-ui.button>
-                        </form>
-                    </x-ui.card>
-                </div>
+                @endif
             </div>
 
             <x-ui.card title="Kirim Notifikasi">

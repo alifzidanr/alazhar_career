@@ -1,7 +1,7 @@
 <x-layouts.public :title="'Status Lamaran - Rekrutmen YPI Al Azhar'">
     <div
         x-data="{ open: {{ session('lamaran_sukses') ? 'true' : 'false' }} }"
-        class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-16"
+        class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16"
     >
         @if (session('lamaran_sukses'))
             <div x-show="open" x-cloak class="fixed inset-0 z-[90] flex items-center justify-center p-4">
@@ -53,20 +53,31 @@
                 <h2 class="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
                     {{ $hasilList->count() }} Lamaran Ditemukan
                 </h2>
-                @foreach ($hasilList as $p)
-                    <x-ui.card>
-                        <div class="flex items-start justify-between gap-3 flex-wrap">
-                            <div>
-                                <h3 class="font-semibold">{{ $p->loker->judul_loker }}</h3>
-                                <p class="text-sm text-muted-foreground mt-0.5">Diajukan pada {{ $p->tanggal_apply->translatedFormat('d M Y') }}</p>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <x-tahap-badge :tahap="$p->tahapRekrutmen" />
-                                <x-status-badge :status="$p->statusPelamar" />
-                            </div>
-                        </div>
-                    </x-ui.card>
-                @endforeach
+
+                <x-ui.card :padded="false" class="overflow-x-auto">
+                    <table class="min-w-full divide-y text-sm">
+                        <thead class="bg-muted/50">
+                            <tr class="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                                <th class="px-4 py-3">Nama</th>
+                                <th class="px-4 py-3">Loker</th>
+                                <th class="px-4 py-3">Tgl Apply</th>
+                                <th class="px-4 py-3">Tahap</th>
+                                <th class="px-4 py-3">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y">
+                            @foreach ($hasilList as $p)
+                                <tr>
+                                    <td class="px-4 py-3 font-medium">{{ $p->namaLengkap() }}</td>
+                                    <td class="px-4 py-3 text-muted-foreground">{{ $p->loker->judul_loker }}</td>
+                                    <td class="px-4 py-3 text-muted-foreground whitespace-nowrap">{{ $p->tanggal_apply->translatedFormat('d M Y') }}</td>
+                                    <td class="px-4 py-3 whitespace-nowrap"><x-tahap-badge :tahap="$p->tahapRekrutmen" /></td>
+                                    <td class="px-4 py-3 whitespace-nowrap"><x-status-badge :status="$p->statusPelamar" /></td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </x-ui.card>
             </div>
         @endisset
     </div>

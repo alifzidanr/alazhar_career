@@ -7,7 +7,28 @@
     </x-slot>
 
     <div class="py-8">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6" x-data="tableFilter(15, { lokasi: '', status: '' })" x-init="init()">
+            <x-ui.card>
+                <div class="grid gap-3 sm:grid-cols-5">
+                    <x-ui.input type="text" x-model="search" placeholder="Cari judul atau lokasi..." class="sm:col-span-2" />
+
+                    <x-ui.select x-model="filters.lokasi">
+                        <option value="">Semua Lokasi</option>
+                        @foreach ($lokasiOptions as $l)
+                            <option value="{{ $l->nama_lokasi }}">{{ $l->nama_lokasi }}</option>
+                        @endforeach
+                    </x-ui.select>
+
+                    <x-ui.select x-model="filters.status">
+                        <option value="">Semua Status</option>
+                        <option value="dibuka">Dibuka</option>
+                        <option value="ditutup">Ditutup</option>
+                    </x-ui.select>
+
+                    <x-ui.button type="button" @click="reset()" variant="outline">Reset</x-ui.button>
+                </div>
+            </x-ui.card>
+
             <x-ui.card :padded="false" class="overflow-hidden">
                 <table class="min-w-full divide-y text-sm">
                     <thead class="bg-muted/50">
@@ -20,9 +41,13 @@
                             <th class="px-4 py-3"></th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y">
+                    <tbody class="divide-y" x-ref="tbody">
                         @forelse ($lokerList as $loker)
-                            <tr class="hover:bg-muted/30">
+                            <tr class="hover:bg-muted/30" data-row
+                                data-search="{{ Str::lower($loker->judul_loker.' '.$loker->lokasi) }}"
+                                data-lokasi="{{ $loker->lokasi }}"
+                                data-status="{{ $loker->status_loker }}"
+                                x-show="isVisible($el)">
                                 <td class="px-4 py-3 font-medium">{{ $loker->judul_loker }}</td>
                                 <td class="px-4 py-3 text-muted-foreground">{{ $loker->lokasi ?: '-' }}</td>
                                 <td class="px-4 py-3">
@@ -36,7 +61,7 @@
                                 </td>
                                 <td class="px-4 py-3 text-right space-x-1">
                                     <x-ui.button :href="route('admin.loker.edit', $loker)" variant="ghost" size="sm">Kelola</x-ui.button>
-                                    <form method="POST" action="{{ route('admin.loker.destroy', $loker) }}" class="inline" onsubmit="return confirm('Hapus loker ini?')">
+                                    <form method="POST" action="{{ route('admin.loker.destroy', $loker) }}" class="inline" x-data @submit.prevent="$dispatch('confirm-dialog', { title: 'Hapus loker ini?', destructive: true, confirmText: 'Hapus', form: $el })">
                                         @csrf @method('DELETE')
                                         <x-ui.button type="submit" variant="ghost" size="sm" class="text-destructive hover:text-destructive">Hapus</x-ui.button>
                                     </form>
@@ -45,9 +70,14 @@
                         @empty
                             <tr><td colspan="6" class="px-4 py-8 text-center text-muted-foreground">Belum ada loker.</td></tr>
                         @endforelse
+                        @if ($lokerList->isNotEmpty())
+                            <tr x-show="total === 0"><td colspan="6" class="px-4 py-8 text-center text-muted-foreground">Tidak ada loker yang cocok dengan filter.</td></tr>
+                        @endif
                     </tbody>
                 </table>
             </x-ui.card>
+
+            <x-ui.table-filter-footer />
         </div>
     </div>
 </x-app-layout>

@@ -13,7 +13,17 @@
 
     <div>
         <x-ui.label for="lokasi">Lokasi</x-ui.label>
-        <x-ui.input type="text" id="lokasi" name="lokasi" value="{{ old('lokasi', $loker->lokasi ?? '') }}" />
+        @php($lokasiTerpilih = old('lokasi', $loker->lokasi ?? ''))
+        <x-ui.select id="lokasi" name="lokasi">
+            <option value="">-- Pilih Lokasi --</option>
+            @foreach ($lokasiList as $l)
+                <option value="{{ $l->nama_lokasi }}" @selected($lokasiTerpilih === $l->nama_lokasi)>{{ $l->nama_lokasi }}</option>
+            @endforeach
+            @if ($lokasiTerpilih !== '' && ! $lokasiList->contains('nama_lokasi', $lokasiTerpilih))
+                <option value="{{ $lokasiTerpilih }}" selected>{{ $lokasiTerpilih }}</option>
+            @endif
+        </x-ui.select>
+        <p class="text-xs text-muted-foreground mt-1">Belum ada pilihan yang cocok? Tambahkan lewat menu <a href="{{ route('admin.lokasi.index') }}" class="underline">Lokasi</a>.</p>
     </div>
 
     <div>

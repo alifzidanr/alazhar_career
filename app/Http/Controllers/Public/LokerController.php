@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Loker;
 use App\Models\PendidikanTerakhir;
 use App\Models\TahapRekrutmen;
+use App\Models\UnitKerja;
 use Illuminate\View\View;
 
 class LokerController extends Controller
@@ -22,9 +23,12 @@ class LokerController extends Controller
 
     public function list(): View
     {
-        $lokerList = Loker::dibuka()->orderByDesc('start_time')->get();
+        $lokerList = Loker::dibuka()->with('kriteria')->orderByDesc('start_time')->get();
 
-        return view('public.lowongan', compact('lokerList'));
+        $lokasiOptions = Loker::dibuka()->whereNotNull('lokasi')->distinct()->orderBy('lokasi')->pluck('lokasi');
+        $unitOptions = UnitKerja::orderBy('nama_unit')->get();
+
+        return view('public.lowongan', compact('lokerList', 'lokasiOptions', 'unitOptions'));
     }
 
     public function show(Loker $loker): View

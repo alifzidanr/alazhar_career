@@ -16,12 +16,15 @@ class PelamarController extends Controller
 {
     public function index(Request $request): View
     {
-        $tahapAktif = $request->integer('tahap', TahapRekrutmen::SELEKSI_BERKAS);
+        $tahapAktif = $request->integer('tahap', 0);
 
-        $pelamarList = Pelamar::with(['loker', 'statusPelamar', 'tahapRekrutmen'])
-            ->where('id_tahap_rekrutmen', $tahapAktif)
-            ->orderByDesc('tanggal_apply')
-            ->get();
+        $query = Pelamar::with(['loker', 'statusPelamar', 'tahapRekrutmen']);
+
+        if ($tahapAktif !== 0) {
+            $query->where('id_tahap_rekrutmen', $tahapAktif);
+        }
+
+        $pelamarList = $query->orderByDesc('tanggal_apply')->get();
 
         $tahapOptions = TahapRekrutmen::orderBy('id_tahap_rekrutmen')->get();
 
@@ -29,7 +32,9 @@ class PelamarController extends Controller
             ->groupBy('id_tahap_rekrutmen')
             ->pluck('total', 'id_tahap_rekrutmen');
 
-        return view('admin.pelamar.index', compact('pelamarList', 'tahapOptions', 'tahapAktif', 'counts'));
+        $totalSemua = $counts->sum();
+
+        return view('admin.pelamar.index', compact('pelamarList', 'tahapOptions', 'tahapAktif', 'counts', 'totalSemua'));
     }
 
     public function show(Pelamar $pelamar): View
@@ -48,14 +53,7 @@ class PelamarController extends Controller
 
         $statusOptions = StatusPelamar::orderBy('id_status_pelamar')->get();
 
-        // Candidates eligible to be marked as this one's "cadangan" source pool:
-        // other applicants for the same loker who are not this pelamar.
-        $calonPrimerUntukCadangan = Pelamar::where('id_loker', $pelamar->id_loker)
-            ->where('id_pelamar', '!=', $pelamar->id_pelamar)
-            ->orderBy('nama')
-            ->get();
-
-        return view('admin.pelamar.show', compact('pelamar', 'statusOptions', 'calonPrimerUntukCadangan'));
+        return view('admin.pelamar.show', compact('pelamar', 'statusOptions'));
     }
 
     public function updateStatus(Request $request, Pelamar $pelamar): RedirectResponse
@@ -93,8 +91,8 @@ class PelamarController extends Controller
 
     public function advanceTahap(Pelamar $pelamar): RedirectResponse
     {
-        if ($pelamar->id_status_pelamar !== StatusPelamar::LOLOS) {
-            return back()->withErrors(['tahap' => 'Pelamar harus berstatus "lolos" pada tahap ini sebelum dapat dilanjutkan.']);
+        if (in_array($pelamar->id_status_pelamar, [StatusPelamar::MUNDUR, StatusPelamar::DICADANGKAN], true)) {
+            return back()->withErrors(['tahap' => 'Pelamar berstatus "mundur" atau "dicadangkan" tidak dapat dilanjutkan ke tahap berikutnya.']);
         }
 
         if ($pelamar->id_tahap_rekrutmen >= TahapRekrutmen::MIGRASI_DATA) {
@@ -103,7 +101,7 @@ class PelamarController extends Controller
 
         DB::transaction(function () use ($pelamar) {
             $pelamar->id_tahap_rekrutmen += 1;
-            $pelamar->id_status_pelamar = StatusPelamar::LOLOS;
+            $pelamar->id_status_pelamar = TahapRekrutmen::statusAwalUntuk($pelamar->id_tahap_rekrutmen);
             $pelamar->save();
 
             RiwayatTahapPelamar::create([
@@ -126,9 +124,7 @@ class PelamarController extends Controller
 
         DB::transaction(function () use ($pelamar) {
             $pelamar->id_tahap_rekrutmen -= 1;
-            $pelamar->id_status_pelamar = $pelamar->id_tahap_rekrutmen === TahapRekrutmen::SELEKSI_BERKAS
-                ? StatusPelamar::SCREENING
-                : StatusPelamar::LOLOS;
+            $pelamar->id_status_pelamar = TahapRekrutmen::statusAwalUntuk($pelamar->id_tahap_rekrutmen);
             $pelamar->save();
 
             RiwayatTahapPelamar::create([

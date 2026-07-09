@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\KriteriaController as AdminKriteriaController;
 use App\Http\Controllers\Admin\KriteriaLokerController;
 use App\Http\Controllers\Admin\LamaranController as AdminLamaranController;
+use App\Http\Controllers\Admin\LokasiController as AdminLokasiController;
 use App\Http\Controllers\Admin\LokerController as AdminLokerController;
 use App\Http\Controllers\Admin\NotifikasiController;
 use App\Http\Controllers\Admin\PelamarController as AdminPelamarController;
@@ -46,6 +47,11 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::post('/kriteria', [AdminKriteriaController::class, 'store'])->name('kriteria.store');
     Route::patch('/kriteria/{kriteria}', [AdminKriteriaController::class, 'update'])->name('kriteria.update');
     Route::delete('/kriteria/{kriteria}', [AdminKriteriaController::class, 'destroy'])->name('kriteria.destroy');
+
+    Route::get('/lokasi', [AdminLokasiController::class, 'index'])->name('lokasi.index');
+    Route::post('/lokasi', [AdminLokasiController::class, 'store'])->name('lokasi.store');
+    Route::patch('/lokasi/{lokasi}', [AdminLokasiController::class, 'update'])->name('lokasi.update');
+    Route::delete('/lokasi/{lokasi}', [AdminLokasiController::class, 'destroy'])->name('lokasi.destroy');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

@@ -30,7 +30,7 @@
                                 <x-ui.badge :variant="$bobotVariant[$k->bobot]">{{ $bobotLabel[$k->bobot] }}</x-ui.badge>
                                 <span>{{ $k->teksKriteria() ?? '(tanpa kriteria)' }}</span>
                             </span>
-                            <form method="POST" action="{{ route('admin.loker.kriteria.destroy', [$loker, $k]) }}" onsubmit="return confirm('Hapus kriteria ini?')">
+                            <form method="POST" action="{{ route('admin.loker.kriteria.destroy', [$loker, $k]) }}" x-data @submit.prevent="$dispatch('confirm-dialog', { title: 'Hapus kriteria ini?', destructive: true, confirmText: 'Hapus', form: $el })">
                                 @csrf @method('DELETE')
                                 <x-ui.button type="submit" variant="ghost" size="sm" class="text-destructive hover:text-destructive">Hapus</x-ui.button>
                             </form>

@@ -101,15 +101,19 @@ class NotifikasiTemplates
             return null;
         }
 
-        // status = lolos, keyed by the stage they just cleared
+        if ($status === StatusPelamar::DITERIMA) {
+            return 'terima_sk';
+        }
+
+        // status = ongoing/migrated, keyed by the stage they just entered (i.e. the stage they just cleared)
         return match ($tahap) {
-            TahapRekrutmen::SELEKSI_BERKAS => 'lolos_seleksi_berkas',
-            TahapRekrutmen::TES_TULIS => 'lolos_tes_tulis',
-            TahapRekrutmen::WAWANCARA => 'lolos_wawancara',
-            TahapRekrutmen::ORIENTASI => 'lolos_orientasi',
-            TahapRekrutmen::TUGAS_SEMENTARA => 'lolos_tugas_sementara',
-            TahapRekrutmen::TES_KESEHATAN => 'lolos_tes_kesehatan',
-            TahapRekrutmen::TERIMA_SK, TahapRekrutmen::MIGRASI_DATA => 'terima_sk',
+            TahapRekrutmen::TES_TULIS => 'lolos_seleksi_berkas',
+            TahapRekrutmen::WAWANCARA => 'lolos_tes_tulis',
+            TahapRekrutmen::ORIENTASI => 'lolos_wawancara',
+            TahapRekrutmen::TUGAS_SEMENTARA => 'lolos_orientasi',
+            TahapRekrutmen::TES_KESEHATAN => 'lolos_tugas_sementara',
+            TahapRekrutmen::TERIMA_SK => 'lolos_tes_kesehatan',
+            TahapRekrutmen::MIGRASI_DATA => 'terima_sk',
             default => null,
         };
     }

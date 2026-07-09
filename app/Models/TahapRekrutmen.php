@@ -35,4 +35,15 @@ class TahapRekrutmen extends Model
     {
         return $this->hasMany(Pelamar::class, 'id_tahap_rekrutmen');
     }
+
+    /**
+     * The status a pelamar is given by default upon entering a tahap.
+     */
+    public static function statusAwalUntuk(int $idTahap): int
+    {
+        return match ($idTahap) {
+            self::SELEKSI_BERKAS => StatusPelamar::SCREENING,
+            default => StatusPelamar::ONGOING,
+        };
+    }
 }

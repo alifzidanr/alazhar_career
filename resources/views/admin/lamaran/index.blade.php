@@ -1,41 +1,38 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-lg tracking-tight">Daftar Lamaran (Keseluruhan)</h2>
+        <h2 class="font-semibold text-lg tracking-tight">Daftar Lamaran</h2>
     </x-slot>
 
     <div class="py-8">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6" x-data="tableFilter(20, { loker: '', tahap: '', status: '' })" x-init="init()">
 
             <x-ui.card>
-                <form method="GET" class="grid sm:grid-cols-5 gap-3">
-                    <x-ui.input type="text" name="q" value="{{ request('q') }}" placeholder="Cari nama..." />
+                <div class="grid gap-3 sm:grid-cols-5">
+                    <x-ui.input type="text" x-model="search" placeholder="Cari nama..." />
 
-                    <x-ui.select name="loker">
+                    <x-ui.select x-model="filters.loker">
                         <option value="">Semua Loker</option>
                         @foreach ($lokerOptions as $l)
-                            <option value="{{ $l->id_loker }}" @selected(request('loker') == $l->id_loker)>{{ $l->judul_loker }}</option>
+                            <option value="{{ $l->id_loker }}">{{ $l->judul_loker }}</option>
                         @endforeach
                     </x-ui.select>
 
-                    <x-ui.select name="tahap">
+                    <x-ui.select x-model="filters.tahap">
                         <option value="">Semua Tahap</option>
                         @foreach ($tahapOptions as $t)
-                            <option value="{{ $t->id_tahap_rekrutmen }}" @selected(request('tahap') == $t->id_tahap_rekrutmen)>{{ $t->id_tahap_rekrutmen }}. {{ $t->tahap_rekrutmen }}</option>
+                            <option value="{{ $t->id_tahap_rekrutmen }}">{{ $t->id_tahap_rekrutmen }}. {{ $t->tahap_rekrutmen }}</option>
                         @endforeach
                     </x-ui.select>
 
-                    <x-ui.select name="status">
+                    <x-ui.select x-model="filters.status">
                         <option value="">Semua Status</option>
                         @foreach ($statusOptions as $s)
-                            <option value="{{ $s->id_status_pelamar }}" @selected(request('status') == $s->id_status_pelamar)>{{ ucfirst($s->status_pelamar) }}</option>
+                            <option value="{{ $s->id_status_pelamar }}">{{ ucfirst($s->status_pelamar) }}</option>
                         @endforeach
                     </x-ui.select>
 
-                    <div class="flex gap-2">
-                        <x-ui.button type="submit" class="flex-1">Filter</x-ui.button>
-                        <x-ui.button :href="route('admin.lamaran.index')" variant="outline">Reset</x-ui.button>
-                    </div>
-                </form>
+                    <x-ui.button type="button" @click="reset()" variant="outline">Reset</x-ui.button>
+                </div>
             </x-ui.card>
 
             <x-ui.card :padded="false" class="overflow-hidden">
@@ -51,9 +48,14 @@
                             <th class="px-4 py-3"></th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y">
+                    <tbody class="divide-y" x-ref="tbody">
                         @forelse ($pelamarList as $p)
-                            <tr class="hover:bg-muted/30">
+                            <tr class="hover:bg-muted/30" data-row
+                                data-search="{{ Str::lower($p->namaLengkap()) }}"
+                                data-loker="{{ $p->id_loker }}"
+                                data-tahap="{{ $p->id_tahap_rekrutmen }}"
+                                data-status="{{ $p->id_status_pelamar }}"
+                                x-show="isVisible($el)">
                                 <td class="px-4 py-3 font-medium">{{ $p->namaLengkap() }}</td>
                                 <td class="px-4 py-3 text-muted-foreground">{{ $p->loker->judul_loker }}</td>
                                 <td class="px-4 py-3 text-muted-foreground">{{ $p->pendidikanTerakhir->pendidikan_terakhir }}</td>
@@ -67,11 +69,14 @@
                         @empty
                             <tr><td colspan="7" class="px-4 py-8 text-center text-muted-foreground">Belum ada data lamaran.</td></tr>
                         @endforelse
+                        @if ($pelamarList->isNotEmpty())
+                            <tr x-show="total === 0"><td colspan="7" class="px-4 py-8 text-center text-muted-foreground">Tidak ada lamaran yang cocok dengan filter.</td></tr>
+                        @endif
                     </tbody>
                 </table>
             </x-ui.card>
 
-            {{ $pelamarList->links() }}
+            <x-ui.table-filter-footer />
         </div>
     </div>
 </x-app-layout>

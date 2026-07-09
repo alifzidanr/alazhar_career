@@ -1,16 +1,58 @@
 <x-layouts.public :title="'Lowongan Kerja - Rekrutmen YPI Al Azhar'">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10"
+         x-data="tableFilter(9, { unit: '', lokasi: '' }, { terbaru: { field: 'start', dir: 'desc' }, terlama: { field: 'start', dir: 'asc' }, batas_terdekat: { field: 'end', dir: 'asc' } })"
+         x-init="init()">
         <h1 class="text-2xl font-semibold tracking-tight mb-1">Seluruh Lowongan</h1>
         <p class="text-muted-foreground mb-8">Bergabunglah bersama YPI Al Azhar. Berikut lowongan yang sedang dibuka.</p>
+
+        <x-ui.card class="mb-8">
+            <div class="grid gap-3 sm:grid-cols-6">
+                <x-ui.input type="text" x-model="search" placeholder="Cari judul atau kata kunci..." class="sm:col-span-2" />
+
+                <x-ui.select x-model="filters.unit">
+                    <option value="">Semua Unit Kerja</option>
+                    @foreach ($unitOptions as $u)
+                        <option value="{{ $u->id_unit_kerja }}">{{ $u->nama_unit }}</option>
+                    @endforeach
+                </x-ui.select>
+
+                <x-ui.select x-model="filters.lokasi">
+                    <option value="">Semua Lokasi</option>
+                    @foreach ($lokasiOptions as $l)
+                        <option value="{{ $l }}">{{ $l }}</option>
+                    @endforeach
+                </x-ui.select>
+
+                <x-ui.select x-model="sort">
+                    <option value="terbaru">Terbaru</option>
+                    <option value="terlama">Terlama</option>
+                    <option value="batas_terdekat">Batas Lamaran Terdekat</option>
+                </x-ui.select>
+
+                <x-ui.button type="button" @click="reset()" variant="outline">Reset</x-ui.button>
+            </div>
+        </x-ui.card>
 
         @if ($lokerList->isEmpty())
             <x-ui.card class="text-center text-muted-foreground">
                 Belum ada lowongan yang dibuka saat ini. Silakan cek kembali nanti.
             </x-ui.card>
         @else
-            <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <div x-show="total === 0">
+                <x-ui.card class="text-center text-muted-foreground">
+                    Tidak ada lowongan yang cocok dengan filter Anda. Coba ubah atau reset filter.
+                </x-ui.card>
+            </div>
+
+            <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3" x-ref="tbody">
                 @foreach ($lokerList as $loker)
-                    <a href="{{ route('loker.show', $loker) }}" class="block">
+                    <a href="{{ route('loker.show', $loker) }}" class="block" data-row
+                       data-search="{{ Str::lower($loker->judul_loker.' '.$loker->deskripsi_loker) }}"
+                       data-unit="{{ $loker->kriteria->pluck('id_unit_kerja')->filter()->unique()->implode(' ') }}"
+                       data-lokasi="{{ $loker->lokasi }}"
+                       data-start="{{ optional($loker->start_time)->timestamp ?? 0 }}"
+                       data-end="{{ optional($loker->end_time)->timestamp ?? PHP_INT_MAX }}"
+                       x-show="isVisible($el)">
                         <x-ui.card class="hover:border-foreground/30 hover:shadow-md transition-all h-full">
                             <div class="flex items-start justify-between gap-2">
                                 <h2 class="font-semibold text-base">{{ $loker->judul_loker }}</h2>
@@ -29,6 +71,8 @@
                     </a>
                 @endforeach
             </div>
+
+            <x-ui.table-filter-footer />
         @endif
     </div>
 </x-layouts.public>

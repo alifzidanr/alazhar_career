@@ -8,6 +8,9 @@
         4 => 'destructive', // ditolak
         5 => 'outline', // mundur
         6 => 'info', // screening
+        7 => 'info', // ongoing
+        8 => 'success', // diterima
+        9 => 'success', // migrated
     ];
     $variant = $variants[$status->id_status_pelamar] ?? 'secondary';
 @endphp

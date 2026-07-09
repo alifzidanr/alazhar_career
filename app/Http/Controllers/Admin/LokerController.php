@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreLokerRequest;
 use App\Models\Kriteria;
 use App\Models\Loker;
+use App\Models\Lokasi;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
@@ -14,13 +15,16 @@ class LokerController extends Controller
     public function index(): View
     {
         $lokerList = Loker::withCount('pelamar')->orderByDesc('created_at')->get();
+        $lokasiOptions = Lokasi::orderBy('nama_lokasi')->get();
 
-        return view('admin.loker.index', compact('lokerList'));
+        return view('admin.loker.index', compact('lokerList', 'lokasiOptions'));
     }
 
     public function create(): View
     {
-        return view('admin.loker.create');
+        $lokasiList = Lokasi::orderBy('nama_lokasi')->get();
+
+        return view('admin.loker.create', compact('lokasiList'));
     }
 
     public function store(StoreLokerRequest $request): RedirectResponse
@@ -34,8 +38,9 @@ class LokerController extends Controller
     {
         $loker->load(['kriteria.kriteria']);
         $kriteriaList = Kriteria::orderBy('teks_kriteria')->get();
+        $lokasiList = Lokasi::orderBy('nama_lokasi')->get();
 
-        return view('admin.loker.edit', compact('loker', 'kriteriaList'));
+        return view('admin.loker.edit', compact('loker', 'kriteriaList', 'lokasiList'));
     }
 
     public function update(StoreLokerRequest $request, Loker $loker): RedirectResponse

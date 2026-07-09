@@ -4,16 +4,30 @@
     </x-slot>
 
     <div class="py-8">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6" x-data="tableFilter(15)" x-init="init()">
 
             <div class="flex flex-wrap gap-2">
+                <a href="{{ route('admin.pelamar.index', ['tahap' => 0]) }}"
+                   class="relative inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium border transition-colors {{ $tahapAktif === 0 ? 'bg-primary text-primary-foreground border-primary' : 'bg-background text-muted-foreground border-input hover:bg-accent hover:text-accent-foreground' }}">
+                    Semua
+                    @if ($totalSemua > 0)
+                        <span class="absolute -top-1.5 -right-1.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-semibold leading-none text-white ring-2 ring-background">{{ $totalSemua }}</span>
+                    @endif
+                </a>
                 @foreach ($tahapOptions as $t)
                     <a href="{{ route('admin.pelamar.index', ['tahap' => $t->id_tahap_rekrutmen]) }}"
-                       class="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium border transition-colors {{ $tahapAktif === $t->id_tahap_rekrutmen ? 'bg-primary text-primary-foreground border-primary' : 'bg-background text-muted-foreground border-input hover:bg-accent hover:text-accent-foreground' }}">
-                        {{ $t->id_tahap_rekrutmen }}. {{ $t->tahap_rekrutmen }}
-                        <span class="text-xs opacity-75">({{ $counts[$t->id_tahap_rekrutmen] ?? 0 }})</span>
+                       class="relative inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium border transition-colors {{ $tahapAktif === $t->id_tahap_rekrutmen ? 'bg-primary text-primary-foreground border-primary' : 'bg-background text-muted-foreground border-input hover:bg-accent hover:text-accent-foreground' }}">
+                        {{ $t->tahap_rekrutmen }}
+                        @if (($counts[$t->id_tahap_rekrutmen] ?? 0) > 0)
+                            <span class="absolute -top-1.5 -right-1.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-semibold leading-none text-white ring-2 ring-background">{{ $counts[$t->id_tahap_rekrutmen] }}</span>
+                        @endif
                     </a>
                 @endforeach
+            </div>
+
+            <div class="flex justify-end gap-2">
+                <x-ui.input type="text" x-model="search" placeholder="Cari nama pelamar..." class="w-56" />
+                <x-ui.button type="button" @click="reset()" variant="outline">Reset</x-ui.button>
             </div>
 
             <x-ui.card :padded="false" class="overflow-x-auto">
@@ -22,6 +36,7 @@
                         <tr class="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                             <th class="px-4 py-3">Nama</th>
                             <th class="px-4 py-3">Loker</th>
+                            <th class="px-4 py-3">Tahap</th>
                             <th class="px-4 py-3">Status</th>
                             <th class="px-4 py-3">Tgl Apply</th>
                             <th class="px-4 py-3">Catatan</th>
@@ -29,11 +44,12 @@
                             <th class="px-4 py-3"></th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y">
+                    <tbody class="divide-y" x-ref="tbody">
                         @forelse ($pelamarList as $p)
-                            <tr class="hover:bg-muted/30">
+                            <tr class="hover:bg-muted/30" data-row data-search="{{ Str::lower($p->namaLengkap()) }}" x-show="isVisible($el)">
                                 <td class="px-4 py-3 font-medium whitespace-nowrap">{{ $p->namaLengkap() }}</td>
                                 <td class="px-4 py-3 text-muted-foreground whitespace-nowrap">{{ $p->loker->judul_loker }}</td>
+                                <td class="px-4 py-3 whitespace-nowrap"><x-tahap-badge :tahap="$p->tahapRekrutmen" /></td>
                                 <td class="px-4 py-3 whitespace-nowrap"><x-status-badge :status="$p->statusPelamar" /></td>
                                 <td class="px-4 py-3 text-muted-foreground whitespace-nowrap">{{ $p->tanggal_apply->translatedFormat('d M Y') }}</td>
                                 <td class="px-4 py-3">
@@ -45,41 +61,34 @@
                                 </td>
                                 <td class="px-4 py-3">
                                     <div class="flex items-center gap-1.5">
-                                        <form method="POST" action="{{ route('admin.pelamar.status', $p) }}" onsubmit="return confirm('Tandai lolos?')">
-                                            @csrf @method('PATCH')
-                                            <x-ui.button type="submit" name="id_status_pelamar" value="{{ \App\Models\StatusPelamar::LOLOS }}" size="sm" variant="outline" title="Tandai Lolos" class="!h-7 !px-2 text-emerald-700 border-emerald-200 bg-emerald-50 hover:bg-emerald-100">L</x-ui.button>
-                                        </form>
-                                        <form method="POST" action="{{ route('admin.pelamar.status', $p) }}" onsubmit="return confirm('Tandai tidak lolos?')">
+                                        <form method="POST" action="{{ route('admin.pelamar.status', $p) }}" x-data @submit.prevent="$dispatch('confirm-dialog', { title: 'Tandai tidak lolos?', form: $el })">
                                             @csrf @method('PATCH')
                                             <x-ui.button type="submit" name="id_status_pelamar" value="{{ \App\Models\StatusPelamar::TIDAK_LOLOS }}" size="sm" variant="outline" title="Tandai Tidak Lolos" class="!h-7 !px-2">TL</x-ui.button>
                                         </form>
-                                        <form method="POST" action="{{ route('admin.pelamar.status', $p) }}" onsubmit="return confirm('Tolak pelamar ini?')">
-                                            @csrf @method('PATCH')
-                                            <x-ui.button type="submit" name="id_status_pelamar" value="{{ \App\Models\StatusPelamar::DITOLAK }}" size="sm" variant="outline" title="Tandai Ditolak" class="!h-7 !px-2 text-destructive border-destructive/30 bg-destructive/5 hover:bg-destructive/10">DT</x-ui.button>
-                                        </form>
+                                        @if ($p->id_tahap_rekrutmen === \App\Models\TahapRekrutmen::TERIMA_SK)
+                                            <form method="POST" action="{{ route('admin.pelamar.status', $p) }}" x-data @submit.prevent="$dispatch('confirm-dialog', { title: 'Tandai diterima?', form: $el })">
+                                                @csrf @method('PATCH')
+                                                <x-ui.button type="submit" name="id_status_pelamar" value="{{ \App\Models\StatusPelamar::DITERIMA }}" size="sm" variant="outline" title="Tandai Diterima" class="!h-7 !px-2 text-emerald-700 border-emerald-200 bg-emerald-50 hover:bg-emerald-100">TR</x-ui.button>
+                                            </form>
+                                        @endif
+                                        @if ($p->id_tahap_rekrutmen === \App\Models\TahapRekrutmen::MIGRASI_DATA)
+                                            <form method="POST" action="{{ route('admin.pelamar.status', $p) }}" x-data @submit.prevent="$dispatch('confirm-dialog', { title: 'Tandai migrated?', form: $el })">
+                                                @csrf @method('PATCH')
+                                                <x-ui.button type="submit" name="id_status_pelamar" value="{{ \App\Models\StatusPelamar::MIGRATED }}" size="sm" variant="outline" title="Tandai Migrated" class="!h-7 !px-2 text-emerald-700 border-emerald-200 bg-emerald-50 hover:bg-emerald-100">MG</x-ui.button>
+                                            </form>
+                                        @endif
                                         @if ($p->id_tahap_rekrutmen > \App\Models\TahapRekrutmen::SELEKSI_BERKAS)
-                                            <form method="POST" action="{{ route('admin.pelamar.mundur', $p) }}" onsubmit="return confirm('Mundurkan ke tahap sebelumnya?')">
+                                            <form method="POST" action="{{ route('admin.pelamar.mundur', $p) }}" x-data @submit.prevent="$dispatch('confirm-dialog', { title: 'Mundurkan ke tahap sebelumnya?', form: $el })">
                                                 @csrf @method('PATCH')
                                                 <x-ui.button type="submit" size="sm" variant="outline" title="Mundurkan ke Tahap Sebelumnya" class="!h-7 !px-2">&larr;</x-ui.button>
                                             </form>
                                         @endif
-                                        @if ($p->id_status_pelamar === \App\Models\StatusPelamar::LOLOS && $p->id_tahap_rekrutmen < \App\Models\TahapRekrutmen::MIGRASI_DATA)
-                                            <form method="POST" action="{{ route('admin.pelamar.lanjut', $p) }}" onsubmit="return confirm('Lanjutkan ke tahap berikutnya?')">
+                                        @if (! in_array($p->id_status_pelamar, [\App\Models\StatusPelamar::MUNDUR, \App\Models\StatusPelamar::DICADANGKAN], true) && $p->id_tahap_rekrutmen < \App\Models\TahapRekrutmen::MIGRASI_DATA)
+                                            <form method="POST" action="{{ route('admin.pelamar.lanjut', $p) }}" x-data @submit.prevent="$dispatch('confirm-dialog', { title: 'Lanjutkan ke tahap berikutnya?', form: $el })">
                                                 @csrf @method('PATCH')
                                                 <x-ui.button type="submit" size="sm" variant="outline" title="Lanjutkan ke Tahap Berikutnya" class="!h-7 !px-2">&rarr;</x-ui.button>
                                             </form>
                                         @endif
-                                        <form method="POST" action="{{ route('admin.pelamar.notify', $p) }}" onsubmit="return confirm('Buka WhatsApp untuk hubungi {{ $p->namaLengkap() }}?')">
-                                            @csrf
-                                            <input type="hidden" name="body" value="">
-                                            <x-ui.button type="submit" name="channel" value="whatsapp" size="sm" title="Hubungi via WhatsApp" class="!h-7 !px-2 bg-emerald-600 hover:bg-emerald-500" :disabled="! $p->no_hp">WA</x-ui.button>
-                                        </form>
-                                        <form method="POST" action="{{ route('admin.pelamar.notify', $p) }}" onsubmit="return confirm('Buka Email untuk hubungi {{ $p->namaLengkap() }}?')">
-                                            @csrf
-                                            <input type="hidden" name="body" value="">
-                                            <input type="hidden" name="subject" value="">
-                                            <x-ui.button type="submit" name="channel" value="email" size="sm" title="Hubungi via Email" class="!h-7 !px-2 bg-blue-600 hover:bg-blue-500" :disabled="! $p->email">✉</x-ui.button>
-                                        </form>
                                     </div>
                                 </td>
                                 <td class="px-4 py-3 text-right whitespace-nowrap">
@@ -87,11 +96,16 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="7" class="px-4 py-8 text-center text-muted-foreground">Belum ada pelamar pada tahap ini.</td></tr>
+                            <tr><td colspan="8" class="px-4 py-8 text-center text-muted-foreground">Belum ada pelamar pada tahap ini.</td></tr>
                         @endforelse
+                        @if ($pelamarList->isNotEmpty())
+                            <tr x-show="total === 0"><td colspan="8" class="px-4 py-8 text-center text-muted-foreground">Tidak ada pelamar yang cocok dengan pencarian.</td></tr>
+                        @endif
                     </tbody>
                 </table>
             </x-ui.card>
+
+            <x-ui.table-filter-footer />
         </div>
     </div>
 </x-app-layout>
