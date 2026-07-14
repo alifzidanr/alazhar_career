@@ -48,7 +48,11 @@
                                 data-lokasi="{{ $loker->lokasi }}"
                                 data-status="{{ $loker->status_loker }}"
                                 x-show="isVisible($el)">
-                                <td class="px-4 py-3 font-medium">{{ $loker->judul_loker }}</td>
+                                <td class="px-4 py-3 font-medium">
+                                    <a href="{{ route('admin.pelamar.index', ['loker' => $loker->id_loker]) }}" class="hover:underline hover:text-primary">
+                                        {{ $loker->judul_loker }}
+                                    </a>
+                                </td>
                                 <td class="px-4 py-3 text-muted-foreground">{{ $loker->lokasi ?: '-' }}</td>
                                 <td class="px-4 py-3">
                                     <x-ui.badge :variant="$loker->status_loker === 'dibuka' ? 'success' : 'muted'">

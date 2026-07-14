@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Loker;
 use App\Models\Pelamar;
 use App\Models\RiwayatTahapPelamar;
 use App\Models\StatusPelamar;
@@ -17,6 +18,7 @@ class PelamarController extends Controller
     public function index(Request $request): View
     {
         $tahapAktif = $request->integer('tahap', 0);
+        $lokerAktif = $request->integer('loker', 0);
 
         $query = Pelamar::with(['loker', 'statusPelamar', 'tahapRekrutmen']);
 
@@ -24,17 +26,27 @@ class PelamarController extends Controller
             $query->where('id_tahap_rekrutmen', $tahapAktif);
         }
 
+        if ($lokerAktif !== 0) {
+            $query->where('id_loker', $lokerAktif);
+        }
+
         $pelamarList = $query->orderByDesc('tanggal_apply')->get();
 
         $tahapOptions = TahapRekrutmen::orderBy('id_tahap_rekrutmen')->get();
 
-        $counts = Pelamar::selectRaw('id_tahap_rekrutmen, count(*) as total')
-            ->groupBy('id_tahap_rekrutmen')
-            ->pluck('total', 'id_tahap_rekrutmen');
+        $countsQuery = Pelamar::selectRaw('id_tahap_rekrutmen, count(*) as total')->groupBy('id_tahap_rekrutmen');
+
+        if ($lokerAktif !== 0) {
+            $countsQuery->where('id_loker', $lokerAktif);
+        }
+
+        $counts = $countsQuery->pluck('total', 'id_tahap_rekrutmen');
 
         $totalSemua = $counts->sum();
 
-        return view('admin.pelamar.index', compact('pelamarList', 'tahapOptions', 'tahapAktif', 'counts', 'totalSemua'));
+        $lokerAktifModel = $lokerAktif !== 0 ? Loker::find($lokerAktif) : null;
+
+        return view('admin.pelamar.index', compact('pelamarList', 'tahapOptions', 'tahapAktif', 'lokerAktif', 'lokerAktifModel', 'counts', 'totalSemua'));
     }
 
     public function show(Pelamar $pelamar): View

@@ -27,7 +27,7 @@
                 </nav>
 
                 <div class="flex items-center gap-2">
-                    <x-ui.button :href="auth()->check() ? route('admin.lamaran.index') : route('login')" size="sm" class="hidden sm:inline-flex">{{ auth()->check() ? 'Panel Admin' : 'Masuk' }}</x-ui.button>
+                    <x-ui.button :href="auth()->check() ? route('admin.pelamar.index') : route('login')" size="sm" class="hidden sm:inline-flex">{{ auth()->check() ? 'Panel Admin' : 'Masuk' }}</x-ui.button>
                     <button @click="mobileNavOpen = !mobileNavOpen" class="md:hidden inline-flex items-center justify-center p-2 rounded-md text-muted-foreground hover:bg-accent">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-5 w-5">
                             <path x-show="!mobileNavOpen" stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
@@ -42,7 +42,7 @@
                 <a href="{{ route('loker.list') }}" class="px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('loker.list', 'loker.show') ? 'bg-accent text-foreground' : 'text-muted-foreground' }}">Lowongan</a>
                 <a href="{{ route('status.index') }}" class="px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('status.*') ? 'bg-accent text-foreground' : 'text-muted-foreground' }}">Status Lamaran</a>
                 <a href="{{ route('tentang.index') }}" class="px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('tentang.index') ? 'bg-accent text-foreground' : 'text-muted-foreground' }}">Tentang Kami</a>
-                <x-ui.button :href="auth()->check() ? route('admin.lamaran.index') : route('login')" size="sm" class="mt-2">{{ auth()->check() ? 'Panel Admin' : 'Masuk' }}</x-ui.button>
+                <x-ui.button :href="auth()->check() ? route('admin.pelamar.index') : route('login')" size="sm" class="mt-2">{{ auth()->check() ? 'Panel Admin' : 'Masuk' }}</x-ui.button>
             </nav>
         </div>
     </header>

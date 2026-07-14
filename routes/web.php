@@ -2,11 +2,11 @@
 
 use App\Http\Controllers\Admin\KriteriaController as AdminKriteriaController;
 use App\Http\Controllers\Admin\KriteriaLokerController;
-use App\Http\Controllers\Admin\LamaranController as AdminLamaranController;
 use App\Http\Controllers\Admin\LokasiController as AdminLokasiController;
 use App\Http\Controllers\Admin\LokerController as AdminLokerController;
 use App\Http\Controllers\Admin\NotifikasiController;
 use App\Http\Controllers\Admin\PelamarController as AdminPelamarController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Public\LamaranController;
 use App\Http\Controllers\Public\LokerController;
@@ -26,9 +26,7 @@ Route::view('/tentang-kami', 'public.tentang')->name('tentang.index');
 
 // Admin
 Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
-    Route::redirect('/', '/admin/lamaran');
-
-    Route::get('/lamaran', [AdminLamaranController::class, 'index'])->name('lamaran.index');
+    Route::redirect('/', '/admin/pelamar');
 
     Route::get('/pelamar', [AdminPelamarController::class, 'index'])->name('pelamar.index');
     Route::get('/pelamar/{pelamar}', [AdminPelamarController::class, 'show'])->name('pelamar.show');
@@ -52,6 +50,12 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::post('/lokasi', [AdminLokasiController::class, 'store'])->name('lokasi.store');
     Route::patch('/lokasi/{lokasi}', [AdminLokasiController::class, 'update'])->name('lokasi.update');
     Route::delete('/lokasi/{lokasi}', [AdminLokasiController::class, 'destroy'])->name('lokasi.destroy');
+
+    Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
+    Route::post('/users', [AdminUserController::class, 'store'])->name('users.store');
+    Route::patch('/users/{user}', [AdminUserController::class, 'update'])->name('users.update');
+    Route::patch('/users/{user}/password', [AdminUserController::class, 'updatePassword'])->name('users.password');
+    Route::delete('/users/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

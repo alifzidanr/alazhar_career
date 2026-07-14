@@ -80,7 +80,27 @@
       "Bash(php -S 127.0.0.1:8799 -t public public/index.php)",
       "Bash(kill %1)",
       "Read(//private/tmp/**)",
-      "Bash(xargs -I{} sh -c 'echo \"--- {} ---\"; grep -A5 \"x-slot name=\\\\\"header\\\\\"\" {}')"
+      "Bash(xargs -I{} sh -c 'echo \"--- {} ---\"; grep -A5 \"x-slot name=\\\\\"header\\\\\"\" {}')",
+      "Bash(php -l app/Http/Controllers/Admin/UserController.php)",
+      "Bash(npx vite *)",
+      "Bash(command -v chromium-cli)",
+      "Read(//usr/local/bin/**)",
+      "Bash(node -e \"console.log\\(require\\('alpinejs/package.json'\\).version\\)\")",
+      "Bash(mkdir -p /private/tmp/claude-501/-Users-transformasidigital-Documents-projects-vibecode-Claude-alazhar-career/33a9113d-adcc-4b8d-bcf3-00992a1de6bd/scratchpad/pw)",
+      "Bash(npm init *)",
+      "Bash(echo \"install started pid $!\")",
+      "Read(//Applications/Google Chrome.app/Contents/MacOS/**)",
+      "Read(//Applications/**)",
+      "Bash(mdfind \"kMDItemFSName == 'Google Chrome.app'\")",
+      "Bash(npx playwright *)",
+      "Bash(mysql *)",
+      "Read(//Users/transformasidigital/Library/Caches/ms-playwright/**)",
+      "Bash(find / -maxdepth 6 -iname \"*ms-playwright*\" -type d)",
+      "Bash(mkdir -p screenshots)",
+      "Bash(node test.js)",
+      "Bash(node test-delete.js)",
+      "Bash(node test-loker-link.js)",
+      "Bash(node test-remove-lamaran.js)"
     ]
   }
 }
