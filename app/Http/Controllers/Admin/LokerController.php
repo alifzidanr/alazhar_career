@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreLokerRequest;
+use App\Models\Jenjang;
 use App\Models\Kriteria;
 use App\Models\Loker;
 use App\Models\Lokasi;
+use App\Models\PendidikanTerakhir;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
@@ -23,8 +25,10 @@ class LokerController extends Controller
     public function create(): View
     {
         $lokasiList = Lokasi::orderBy('nama_lokasi')->get();
+        $pendidikanList = PendidikanTerakhir::orderBy('id_pendidikan_terakhir')->get();
+        $jenjangList = Jenjang::orderBy('nama_jenjang')->get();
 
-        return view('admin.loker.create', compact('lokasiList'));
+        return view('admin.loker.create', compact('lokasiList', 'pendidikanList', 'jenjangList'));
     }
 
     public function store(StoreLokerRequest $request): RedirectResponse
@@ -39,8 +43,10 @@ class LokerController extends Controller
         $loker->load(['kriteria.kriteria']);
         $kriteriaList = Kriteria::orderBy('teks_kriteria')->get();
         $lokasiList = Lokasi::orderBy('nama_lokasi')->get();
+        $pendidikanList = PendidikanTerakhir::orderBy('id_pendidikan_terakhir')->get();
+        $jenjangList = Jenjang::orderBy('nama_jenjang')->get();
 
-        return view('admin.loker.edit', compact('loker', 'kriteriaList', 'lokasiList'));
+        return view('admin.loker.edit', compact('loker', 'kriteriaList', 'lokasiList', 'pendidikanList', 'jenjangList'));
     }
 
     public function update(StoreLokerRequest $request, Loker $loker): RedirectResponse

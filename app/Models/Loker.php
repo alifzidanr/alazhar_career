@@ -14,6 +14,8 @@ class Loker extends Model
         'judul_loker',
         'deskripsi_loker',
         'lokasi',
+        'id_pendidikan_terakhir',
+        'id_jenjang',
         'status_loker',
         'start_time',
         'end_time',
@@ -35,6 +37,16 @@ class Loker extends Model
     public function pelamar()
     {
         return $this->hasMany(Pelamar::class, 'id_loker');
+    }
+
+    public function pendidikanTerakhir()
+    {
+        return $this->belongsTo(PendidikanTerakhir::class, 'id_pendidikan_terakhir');
+    }
+
+    public function jenjang()
+    {
+        return $this->belongsTo(Jenjang::class, 'id_jenjang');
     }
 
     public function scopeDibuka($query)

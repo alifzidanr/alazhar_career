@@ -47,10 +47,9 @@
                         2 => 'Pelamar yang lolos seleksi berkas mengikuti tes tulis untuk mengukur kompetensi dasar dan bidang keahlian.',
                         3 => 'Wawancara untuk menggali lebih dalam kompetensi, kepribadian, dan kesesuaian nilai dengan visi Al-Azhar.',
                         4 => 'Masa pengenalan lingkungan kerja, budaya, dan sistem pendidikan di lingkungan YPI Al Azhar.',
-                        5 => 'Penugasan sementara untuk menilai kinerja langsung sebelum keputusan akhir diambil.',
-                        6 => 'Pemeriksaan kesehatan untuk memastikan pelamar memenuhi syarat jasmani dan rohani.',
-                        7 => 'Pelamar yang dinyatakan lulus menerima Surat Keputusan (SK) resmi dari HR.',
-                        8 => 'Data pelamar terpilih dimigrasikan ke sistem HRIS sebagai pegawai resmi.',
+                        5 => 'Penugasan sementara untuk menilai kinerja langsung, termasuk pemeriksaan kesehatan, sebelum keputusan akhir diambil.',
+                        6 => 'Pelamar yang dinyatakan lulus menerima Surat Keputusan (SK) resmi dari HR.',
+                        7 => 'Data pelamar terpilih dimigrasikan ke sistem HRIS sebagai pegawai resmi.',
                     ];
                 @endphp
 

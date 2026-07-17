@@ -14,25 +14,40 @@ class Pelamar extends Model
     protected $fillable = [
         'id_loker',
         'nama',
+        'nik',
         'tanggal_lahir',
         'jenis_kelamin',
         'gelar',
         'no_hp',
         'email',
         'alamat',
+        'pernah_rekrutmen_sebelumnya',
+        'bulan_rekrutmen_sebelumnya',
+        'tahun_rekrutmen_sebelumnya',
+        'id_tahap_rekrutmen_sebelumnya',
+        'pernah_bekerja_di_al_azhar',
+        'lokasi_kerja_al_azhar_sebelumnya',
         'id_pendidikan_terakhir',
         'institusi',
         'program_studi',
+        'kategori_perguruan_tinggi',
         'akreditasi',
         'tahun_lulus',
-        'ipk',
+        'ipk_s1',
+        'ipk_s2',
+        'ipk_d3',
         'cv_upload',
+        'pas_foto_upload',
+        'surat_lamaran_upload',
         'id_status_pelamar',
         'id_tahap_rekrutmen',
         'tanggal_apply',
         'ijazah_upload',
         'ktp_upload',
+        'sim_upload',
         'transkrip_nilai_upload',
+        'sertifikat_gada_pratama_upload',
+        'sertifikat_tambahan_upload',
         'id_pelamar_cadangan_dari',
         'catatan',
     ];
@@ -42,7 +57,9 @@ class Pelamar extends Model
         return [
             'tanggal_apply' => 'date',
             'tanggal_lahir' => 'date',
-            'ipk' => 'decimal:2',
+            'ipk_s1' => 'decimal:2',
+            'ipk_s2' => 'decimal:2',
+            'ipk_d3' => 'decimal:2',
         ];
     }
 
@@ -66,6 +83,11 @@ class Pelamar extends Model
         return $this->belongsTo(TahapRekrutmen::class, 'id_tahap_rekrutmen');
     }
 
+    public function tahapRekrutmenSebelumnya()
+    {
+        return $this->belongsTo(TahapRekrutmen::class, 'id_tahap_rekrutmen_sebelumnya');
+    }
+
     public function riwayat()
     {
         return $this->hasMany(RiwayatTahapPelamar::class, 'id_pelamar')->latest('created_at');
@@ -74,6 +96,26 @@ class Pelamar extends Model
     public function logNotifikasi()
     {
         return $this->hasMany(LogNotifikasi::class, 'id_pelamar')->latest('created_at');
+    }
+
+    public function tesTulis()
+    {
+        return $this->hasOne(TesTulis::class, 'id_pelamar');
+    }
+
+    public function wawancara()
+    {
+        return $this->hasOne(Wawancara::class, 'id_pelamar');
+    }
+
+    public function orientasi()
+    {
+        return $this->hasOne(Orientasi::class, 'id_pelamar');
+    }
+
+    public function tugasSementara()
+    {
+        return $this->hasOne(TugasSementara::class, 'id_pelamar');
     }
 
     /** The primary candidate this pelamar is a backup for, if any. */
@@ -91,6 +133,20 @@ class Pelamar extends Model
     public function namaLengkap(): string
     {
         return trim($this->nama.($this->gelar ? ', '.$this->gelar : ''));
+    }
+
+    public function usia(): ?int
+    {
+        return $this->tanggal_lahir?->age;
+    }
+
+    public function bulanRekrutmenSebelumnyaLabel(): ?string
+    {
+        if (! $this->bulan_rekrutmen_sebelumnya) {
+            return null;
+        }
+
+        return \Carbon\Carbon::create(null, (int) $this->bulan_rekrutmen_sebelumnya, 1)->translatedFormat('F');
     }
 
     public function ijazahUrl(): ?string
@@ -111,6 +167,31 @@ class Pelamar extends Model
     public function cvUrl(): ?string
     {
         return $this->cv_upload ? Storage::disk('public')->url($this->cv_upload) : null;
+    }
+
+    public function pasFotoUrl(): ?string
+    {
+        return $this->pas_foto_upload ? Storage::disk('public')->url($this->pas_foto_upload) : null;
+    }
+
+    public function suratLamaranUrl(): ?string
+    {
+        return $this->surat_lamaran_upload ? Storage::disk('public')->url($this->surat_lamaran_upload) : null;
+    }
+
+    public function simUrl(): ?string
+    {
+        return $this->sim_upload ? Storage::disk('public')->url($this->sim_upload) : null;
+    }
+
+    public function sertifikatGadaPratamaUrl(): ?string
+    {
+        return $this->sertifikat_gada_pratama_upload ? Storage::disk('public')->url($this->sertifikat_gada_pratama_upload) : null;
+    }
+
+    public function sertifikatTambahanUrl(): ?string
+    {
+        return $this->sertifikat_tambahan_upload ? Storage::disk('public')->url($this->sertifikat_tambahan_upload) : null;
     }
 
     /** No. HP normalized to a wa.me-compatible international format (62xxx, no symbols). */

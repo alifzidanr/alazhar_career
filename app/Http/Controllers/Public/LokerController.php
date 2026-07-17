@@ -33,12 +33,21 @@ class LokerController extends Controller
 
     public function show(Loker $loker): View
     {
-        $loker->load(['kriteria.kriteria']);
+        $loker->load(['kriteria.kriteria', 'jenjang']);
 
         $kriteriaByBobot = $loker->kriteria->groupBy('bobot');
 
         $pendidikanList = PendidikanTerakhir::orderBy('id_pendidikan_terakhir')->get();
 
-        return view('public.show', compact('loker', 'kriteriaByBobot', 'pendidikanList'));
+        // "Sampai tahap apa" only offers the first 4 stages (Tugas Sementara, Terima SK,
+        // and Migrasi Data are excluded since a past applicant wouldn't self-report those).
+        $tahapList = TahapRekrutmen::whereIn('id_tahap_rekrutmen', [
+            TahapRekrutmen::SELEKSI_BERKAS,
+            TahapRekrutmen::TES_TULIS,
+            TahapRekrutmen::WAWANCARA,
+            TahapRekrutmen::ORIENTASI,
+        ])->orderBy('id_tahap_rekrutmen')->get();
+
+        return view('public.show', compact('loker', 'kriteriaByBobot', 'pendidikanList', 'tahapList'));
     }
 }

@@ -26,18 +26,28 @@ class LamaranController extends Controller
             $pelamar = Pelamar::create([
                 'id_loker' => $loker->id_loker,
                 'nama' => $data['nama'],
+                'nik' => $data['nik'],
                 'tanggal_lahir' => $data['tanggal_lahir'],
                 'jenis_kelamin' => $data['jenis_kelamin'],
                 'gelar' => $data['gelar'] ?? null,
                 'no_hp' => $data['no_hp'],
                 'email' => $data['email'],
                 'alamat' => $data['alamat'],
+                'pernah_rekrutmen_sebelumnya' => $data['pernah_rekrutmen_sebelumnya'],
+                'bulan_rekrutmen_sebelumnya' => $data['bulan_rekrutmen_sebelumnya'] ?? null,
+                'tahun_rekrutmen_sebelumnya' => $data['tahun_rekrutmen_sebelumnya'] ?? null,
+                'id_tahap_rekrutmen_sebelumnya' => $data['id_tahap_rekrutmen_sebelumnya'] ?? null,
+                'pernah_bekerja_di_al_azhar' => $data['pernah_bekerja_di_al_azhar'],
+                'lokasi_kerja_al_azhar_sebelumnya' => $data['lokasi_kerja_al_azhar_sebelumnya'] ?? null,
                 'id_pendidikan_terakhir' => $data['id_pendidikan_terakhir'],
                 'institusi' => $data['institusi'],
                 'program_studi' => $data['program_studi'],
+                'kategori_perguruan_tinggi' => $data['kategori_perguruan_tinggi'],
                 'akreditasi' => $data['akreditasi'],
                 'tahun_lulus' => $data['tahun_lulus'],
-                'ipk' => $data['ipk'],
+                'ipk_s1' => $data['ipk_s1'] ?? null,
+                'ipk_s2' => $data['ipk_s2'] ?? null,
+                'ipk_d3' => $data['ipk_d3'] ?? null,
                 'id_status_pelamar' => StatusPelamar::SCREENING,
                 'id_tahap_rekrutmen' => TahapRekrutmen::SELEKSI_BERKAS,
                 'tanggal_apply' => now()->toDateString(),
@@ -45,6 +55,17 @@ class LamaranController extends Controller
                 'ijazah_upload' => $request->file('ijazah_upload')->store('pelamar/ijazah', 'public'),
                 'ktp_upload' => $request->file('ktp_upload')->store('pelamar/ktp', 'public'),
                 'transkrip_nilai_upload' => $request->file('transkrip_nilai_upload')->store('pelamar/transkrip', 'public'),
+                'pas_foto_upload' => $request->file('pas_foto_upload')->store('pelamar/pas_foto', 'public'),
+                'surat_lamaran_upload' => $request->file('surat_lamaran_upload')->store('pelamar/surat_lamaran', 'public'),
+                'sim_upload' => $request->hasFile('sim_upload')
+                    ? $request->file('sim_upload')->store('pelamar/sim', 'public')
+                    : null,
+                'sertifikat_gada_pratama_upload' => $request->hasFile('sertifikat_gada_pratama_upload')
+                    ? $request->file('sertifikat_gada_pratama_upload')->store('pelamar/sertifikat_gada_pratama', 'public')
+                    : null,
+                'sertifikat_tambahan_upload' => $request->hasFile('sertifikat_tambahan_upload')
+                    ? $request->file('sertifikat_tambahan_upload')->store('pelamar/sertifikat_tambahan', 'public')
+                    : null,
             ]);
 
             RiwayatTahapPelamar::create([

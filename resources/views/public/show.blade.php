@@ -47,8 +47,8 @@
     </x-ui.card>
 
     @php
-        $step2Fields = ['id_pendidikan_terakhir', 'gelar', 'institusi', 'program_studi', 'akreditasi', 'tahun_lulus', 'ipk'];
-        $step3Fields = ['cv_upload', 'ktp_upload', 'ijazah_upload', 'transkrip_nilai_upload', 'loker'];
+        $step2Fields = ['id_pendidikan_terakhir', 'gelar', 'institusi', 'program_studi', 'kategori_perguruan_tinggi', 'akreditasi', 'tahun_lulus', 'ipk_s1', 'ipk_s2', 'ipk_d3'];
+        $step3Fields = ['cv_upload', 'ktp_upload', 'ijazah_upload', 'transkrip_nilai_upload', 'pas_foto_upload', 'surat_lamaran_upload', 'sim_upload', 'sertifikat_gada_pratama_upload', 'sertifikat_tambahan_upload', 'loker'];
         $errorStep = null;
         if ($errors->any()) {
             $errorFields = array_keys($errors->toArray());
@@ -58,7 +58,7 @@
     @endphp
 
     <x-ui.card title="Formulir Lamaran" class="mt-6">
-      <div x-data="applyWizard({{ $loker->id_loker }}, @js(old()), @js($errorStep))" x-init="init()">
+      <div x-data="applyWizard({{ $loker->id_loker }}, @js(old()), @js($errorStep), @js($pendidikanList->pluck('pendidikan_terakhir', 'id_pendidikan_terakhir')))" x-init="init()">
 
         <!-- Stepper -->
         <div class="flex items-center mb-8">
@@ -98,6 +98,11 @@
                         <x-input-error :messages="$errors->get('nama')" class="mt-2" />
                     </div>
                     <div>
+                        <x-ui.label for="nik">NIK <span class="text-destructive">*</span></x-ui.label>
+                        <x-ui.input type="text" id="nik" name="nik" x-model="fields.nik" value="{{ old('nik') }}" required maxlength="16" inputmode="numeric" placeholder="16 digit sesuai KTP" />
+                        <x-input-error :messages="$errors->get('nik')" class="mt-2" />
+                    </div>
+                    <div>
                         <x-ui.label for="tanggal_lahir">Tanggal Lahir <span class="text-destructive">*</span></x-ui.label>
                         <x-ui.input type="date" id="tanggal_lahir" name="tanggal_lahir" x-model="fields.tanggal_lahir" value="{{ old('tanggal_lahir') }}" required />
                         <x-input-error :messages="$errors->get('tanggal_lahir')" class="mt-2" />
@@ -125,6 +130,61 @@
                         <x-ui.label for="alamat">Alamat <span class="text-destructive">*</span></x-ui.label>
                         <x-ui.textarea id="alamat" name="alamat" x-model="fields.alamat" rows="3" required>{{ old('alamat') }}</x-ui.textarea>
                         <x-input-error :messages="$errors->get('alamat')" class="mt-2" />
+                    </div>
+                    <div class="sm:col-span-2">
+                        <x-ui.label for="pernah_rekrutmen_sebelumnya">Apakah pernah mengikuti rekrutmen di YPI Al Azhar? <span class="text-destructive">*</span></x-ui.label>
+                        <x-ui.select id="pernah_rekrutmen_sebelumnya" name="pernah_rekrutmen_sebelumnya" x-model="fields.pernah_rekrutmen_sebelumnya" required>
+                            <option value="">-- Pilih --</option>
+                            <option value="Ya" @selected(old('pernah_rekrutmen_sebelumnya') === 'Ya')>Ya</option>
+                            <option value="Tidak" @selected(old('pernah_rekrutmen_sebelumnya') === 'Tidak')>Tidak</option>
+                        </x-ui.select>
+                        <x-input-error :messages="$errors->get('pernah_rekrutmen_sebelumnya')" class="mt-2" />
+                    </div>
+                    <div class="sm:col-span-2 grid sm:grid-cols-3 gap-5" x-show="fields.pernah_rekrutmen_sebelumnya === 'Ya'" x-cloak>
+                        <div class="sm:col-span-3">
+                            <x-ui.label>Jika pernah, kapan dan sampai tahap apa?</x-ui.label>
+                        </div>
+                        <div>
+                            <x-ui.select id="bulan_rekrutmen_sebelumnya" name="bulan_rekrutmen_sebelumnya" x-model="fields.bulan_rekrutmen_sebelumnya" x-bind:required="fields.pernah_rekrutmen_sebelumnya === 'Ya'">
+                                <option value="">-- Bulan --</option>
+                                @foreach (['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'] as $i => $bulanNama)
+                                    <option value="{{ $i + 1 }}" @selected((string) old('bulan_rekrutmen_sebelumnya') === (string) ($i + 1))>{{ $bulanNama }}</option>
+                                @endforeach
+                            </x-ui.select>
+                            <x-input-error :messages="$errors->get('bulan_rekrutmen_sebelumnya')" class="mt-2" />
+                        </div>
+                        <div>
+                            <x-ui.select id="tahun_rekrutmen_sebelumnya" name="tahun_rekrutmen_sebelumnya" x-model="fields.tahun_rekrutmen_sebelumnya" x-bind:required="fields.pernah_rekrutmen_sebelumnya === 'Ya'">
+                                <option value="">-- Tahun --</option>
+                                @for ($tahun = 2020; $tahun <= 2030; $tahun++)
+                                    <option value="{{ $tahun }}" @selected((string) old('tahun_rekrutmen_sebelumnya') === (string) $tahun)>{{ $tahun }}</option>
+                                @endfor
+                            </x-ui.select>
+                            <x-input-error :messages="$errors->get('tahun_rekrutmen_sebelumnya')" class="mt-2" />
+                        </div>
+                        <div>
+                            <x-ui.select id="id_tahap_rekrutmen_sebelumnya" name="id_tahap_rekrutmen_sebelumnya" x-model="fields.id_tahap_rekrutmen_sebelumnya" x-bind:required="fields.pernah_rekrutmen_sebelumnya === 'Ya'">
+                                <option value="">-- Sampai Tahap --</option>
+                                @foreach ($tahapList as $t)
+                                    <option value="{{ $t->id_tahap_rekrutmen }}" @selected((string) old('id_tahap_rekrutmen_sebelumnya') === (string) $t->id_tahap_rekrutmen)>{{ $t->tahap_rekrutmen }}</option>
+                                @endforeach
+                            </x-ui.select>
+                            <x-input-error :messages="$errors->get('id_tahap_rekrutmen_sebelumnya')" class="mt-2" />
+                        </div>
+                    </div>
+                    <div class="sm:col-span-2">
+                        <x-ui.label for="pernah_bekerja_di_al_azhar">Apakah pernah bekerja di Al Azhar? <span class="text-destructive">*</span></x-ui.label>
+                        <x-ui.select id="pernah_bekerja_di_al_azhar" name="pernah_bekerja_di_al_azhar" x-model="fields.pernah_bekerja_di_al_azhar" required>
+                            <option value="">-- Pilih --</option>
+                            <option value="Ya" @selected(old('pernah_bekerja_di_al_azhar') === 'Ya')>Ya</option>
+                            <option value="Tidak" @selected(old('pernah_bekerja_di_al_azhar') === 'Tidak')>Tidak</option>
+                        </x-ui.select>
+                        <x-input-error :messages="$errors->get('pernah_bekerja_di_al_azhar')" class="mt-2" />
+                    </div>
+                    <div class="sm:col-span-2" x-show="fields.pernah_bekerja_di_al_azhar === 'Ya'" x-cloak>
+                        <x-ui.label for="lokasi_kerja_al_azhar_sebelumnya">Jika pernah, dimana? <span class="text-destructive">*</span></x-ui.label>
+                        <x-ui.input type="text" id="lokasi_kerja_al_azhar_sebelumnya" name="lokasi_kerja_al_azhar_sebelumnya" x-model="fields.lokasi_kerja_al_azhar_sebelumnya" value="{{ old('lokasi_kerja_al_azhar_sebelumnya') }}" x-bind:required="fields.pernah_bekerja_di_al_azhar === 'Ya'" />
+                        <x-input-error :messages="$errors->get('lokasi_kerja_al_azhar_sebelumnya')" class="mt-2" />
                     </div>
                 </div>
             </div>
@@ -158,10 +218,20 @@
                         <x-input-error :messages="$errors->get('program_studi')" class="mt-2" />
                     </div>
                     <div>
-                        <x-ui.label for="akreditasi">Akreditasi <span class="text-destructive">*</span></x-ui.label>
+                        <x-ui.label for="kategori_perguruan_tinggi">Kategori Perguruan Tinggi <span class="text-destructive">*</span></x-ui.label>
+                        <x-ui.select id="kategori_perguruan_tinggi" name="kategori_perguruan_tinggi" x-model="fields.kategori_perguruan_tinggi" required>
+                            <option value="">-- Pilih --</option>
+                            @foreach (['Perguruan Tinggi Negeri', 'Perguruan Tinggi Swasta', 'Lain-lain'] as $kat)
+                                <option value="{{ $kat }}" @selected(old('kategori_perguruan_tinggi') === $kat)>{{ $kat }}</option>
+                            @endforeach
+                        </x-ui.select>
+                        <x-input-error :messages="$errors->get('kategori_perguruan_tinggi')" class="mt-2" />
+                    </div>
+                    <div>
+                        <x-ui.label for="akreditasi">Akreditasi Program Studi Saat Lulus <span class="text-destructive">*</span></x-ui.label>
                         <x-ui.select id="akreditasi" name="akreditasi" x-model="fields.akreditasi" required>
                             <option value="">-- Pilih --</option>
-                            @foreach (['Unggul', 'A', 'Baik Sekali', 'B', 'Baik', 'C', 'Belum Terakreditasi'] as $akr)
+                            @foreach (['A', 'B', 'C'] as $akr)
                                 <option value="{{ $akr }}" @selected(old('akreditasi') === $akr)>{{ $akr }}</option>
                             @endforeach
                         </x-ui.select>
@@ -169,13 +239,28 @@
                     </div>
                     <div>
                         <x-ui.label for="tahun_lulus">Tahun Lulus <span class="text-destructive">*</span></x-ui.label>
-                        <x-ui.input type="number" id="tahun_lulus" name="tahun_lulus" x-model="fields.tahun_lulus" value="{{ old('tahun_lulus') }}" min="1950" max="{{ date('Y') + 1 }}" required />
+                        <x-ui.select id="tahun_lulus" name="tahun_lulus" x-model="fields.tahun_lulus" required>
+                            <option value="">-- Pilih --</option>
+                            @for ($tahun = 2012; $tahun <= 2026; $tahun++)
+                                <option value="{{ $tahun }}" @selected((string) old('tahun_lulus') === (string) $tahun)>{{ $tahun }}</option>
+                            @endfor
+                        </x-ui.select>
                         <x-input-error :messages="$errors->get('tahun_lulus')" class="mt-2" />
                     </div>
-                    <div>
-                        <x-ui.label for="ipk">IPK <span class="text-destructive">*</span></x-ui.label>
-                        <x-ui.input type="number" id="ipk" name="ipk" x-model="fields.ipk" value="{{ old('ipk') }}" min="0" max="4" step="0.01" placeholder="cth. 3.50" required />
-                        <x-input-error :messages="$errors->get('ipk')" class="mt-2" />
+                    <div x-show="isD3" x-cloak>
+                        <x-ui.label for="ipk_d3">IPK D3 <span class="text-destructive">*</span></x-ui.label>
+                        <x-ui.input type="number" id="ipk_d3" name="ipk_d3" x-model="fields.ipk_d3" value="{{ old('ipk_d3') }}" min="0" max="4" step="0.01" placeholder="cth. 3.50" x-bind:required="isD3" />
+                        <x-input-error :messages="$errors->get('ipk_d3')" class="mt-2" />
+                    </div>
+                    <div x-show="isS1 || isS2" x-cloak>
+                        <x-ui.label for="ipk_s1">IPK S1 <span class="text-destructive">*</span></x-ui.label>
+                        <x-ui.input type="number" id="ipk_s1" name="ipk_s1" x-model="fields.ipk_s1" value="{{ old('ipk_s1') }}" min="0" max="4" step="0.01" placeholder="cth. 3.50" x-bind:required="isS1 || isS2" />
+                        <x-input-error :messages="$errors->get('ipk_s1')" class="mt-2" />
+                    </div>
+                    <div x-show="isS2" x-cloak>
+                        <x-ui.label for="ipk_s2">IPK S2 <span class="text-destructive">*</span></x-ui.label>
+                        <x-ui.input type="number" id="ipk_s2" name="ipk_s2" x-model="fields.ipk_s2" value="{{ old('ipk_s2') }}" min="0" max="4" step="0.01" placeholder="cth. 3.50" x-bind:required="isS2" />
+                        <x-input-error :messages="$errors->get('ipk_s2')" class="mt-2" />
                     </div>
                 </div>
             </div>
@@ -185,27 +270,61 @@
                 <div class="grid sm:grid-cols-2 gap-5">
                     <div>
                         <x-ui.label for="cv_upload">Curriculum Vitae <span class="text-destructive">*</span></x-ui.label>
-                        <input type="file" id="cv_upload" name="cv_upload" required accept=".pdf,.doc,.docx" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
-                        <p class="text-xs text-muted-foreground mt-1">Format PDF/DOC/DOCX, maksimal 5MB.</p>
+                        <input type="file" id="cv_upload" name="cv_upload" required accept=".pdf" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
+                        <p class="text-xs text-muted-foreground mt-1">Format PDF, maksimal 5MB.</p>
                         <x-input-error :messages="$errors->get('cv_upload')" class="mt-2" />
                     </div>
                     <div>
-                        <x-ui.label for="ktp_upload">KTP <span class="text-destructive">*</span></x-ui.label>
-                        <input type="file" id="ktp_upload" name="ktp_upload" required accept=".pdf,.jpg,.jpeg,.png" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
-                        <p class="text-xs text-muted-foreground mt-1">Format PDF/JPG/PNG, maksimal 5MB.</p>
-                        <x-input-error :messages="$errors->get('ktp_upload')" class="mt-2" />
+                        <x-ui.label for="pas_foto_upload">Pas Foto 3x4 <span class="text-destructive">*</span></x-ui.label>
+                        <input type="file" id="pas_foto_upload" name="pas_foto_upload" required accept=".jpg,.jpeg,.png" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
+                        <p class="text-xs text-muted-foreground mt-1">Format JPG/PNG, maksimal 5MB.</p>
+                        <x-input-error :messages="$errors->get('pas_foto_upload')" class="mt-2" />
                     </div>
                     <div>
+                        <x-ui.label for="ktp_upload">KTP <span class="text-destructive">*</span></x-ui.label>
+                        <input type="file" id="ktp_upload" name="ktp_upload" required accept=".jpg,.jpeg,.png" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
+                        <p class="text-xs text-muted-foreground mt-1">Format JPG/PNG, maksimal 5MB.</p>
+                        <x-input-error :messages="$errors->get('ktp_upload')" class="mt-2" />
+                    </div>
+                    @if ($loker->jenjang?->nama_jenjang === 'Driver')
+                        <div>
+                            <x-ui.label for="sim_upload">SIM <span class="text-destructive">*</span></x-ui.label>
+                            <input type="file" id="sim_upload" name="sim_upload" required accept=".jpg,.jpeg,.png" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
+                            <p class="text-xs text-muted-foreground mt-1">Format JPG/PNG, maksimal 5MB.</p>
+                            <x-input-error :messages="$errors->get('sim_upload')" class="mt-2" />
+                        </div>
+                    @endif
+                    <div>
                         <x-ui.label for="ijazah_upload">Ijazah <span class="text-destructive">*</span></x-ui.label>
-                        <input type="file" id="ijazah_upload" name="ijazah_upload" required accept=".pdf,.jpg,.jpeg,.png" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
-                        <p class="text-xs text-muted-foreground mt-1">Format PDF/JPG/PNG, maksimal 5MB.</p>
+                        <input type="file" id="ijazah_upload" name="ijazah_upload" required accept=".pdf" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
+                        <p class="text-xs text-muted-foreground mt-1">Format PDF, maksimal 5MB.</p>
                         <x-input-error :messages="$errors->get('ijazah_upload')" class="mt-2" />
                     </div>
                     <div>
                         <x-ui.label for="transkrip_nilai_upload">Transkrip Nilai <span class="text-destructive">*</span></x-ui.label>
-                        <input type="file" id="transkrip_nilai_upload" name="transkrip_nilai_upload" required accept=".pdf,.jpg,.jpeg,.png" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
-                        <p class="text-xs text-muted-foreground mt-1">Format PDF/JPG/PNG, maksimal 5MB.</p>
+                        <input type="file" id="transkrip_nilai_upload" name="transkrip_nilai_upload" required accept=".pdf" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
+                        <p class="text-xs text-muted-foreground mt-1">Format PDF, maksimal 5MB.</p>
                         <x-input-error :messages="$errors->get('transkrip_nilai_upload')" class="mt-2" />
+                    </div>
+                    <div>
+                        <x-ui.label for="surat_lamaran_upload">Surat Lamaran <span class="text-destructive">*</span></x-ui.label>
+                        <input type="file" id="surat_lamaran_upload" name="surat_lamaran_upload" required accept=".pdf" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
+                        <p class="text-xs text-muted-foreground mt-1">Format PDF, maksimal 5MB.</p>
+                        <x-input-error :messages="$errors->get('surat_lamaran_upload')" class="mt-2" />
+                    </div>
+                    @if ($loker->jenjang?->nama_jenjang === 'Satpam')
+                        <div>
+                            <x-ui.label for="sertifikat_gada_pratama_upload">Sertifikat Gada Pratama <span class="text-destructive">*</span></x-ui.label>
+                            <input type="file" id="sertifikat_gada_pratama_upload" name="sertifikat_gada_pratama_upload" required accept=".pdf" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
+                            <p class="text-xs text-muted-foreground mt-1">Format PDF, maksimal 5MB.</p>
+                            <x-input-error :messages="$errors->get('sertifikat_gada_pratama_upload')" class="mt-2" />
+                        </div>
+                    @endif
+                    <div>
+                        <x-ui.label for="sertifikat_tambahan_upload">Sertifikat Tambahan (opsional)</x-ui.label>
+                        <input type="file" id="sertifikat_tambahan_upload" name="sertifikat_tambahan_upload" accept=".pdf" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
+                        <p class="text-xs text-muted-foreground mt-1">Format PDF, maksimal 5MB.</p>
+                        <x-input-error :messages="$errors->get('sertifikat_tambahan_upload')" class="mt-2" />
                     </div>
                 </div>
             </div>
@@ -252,6 +371,25 @@
                 </div>
             </div>
         </div>
+
+        <!-- Age limit alert -->
+        <div x-show="ageAlertOpen" x-cloak class="fixed inset-0 z-[90] flex items-center justify-center p-4">
+            <div class="absolute inset-0 bg-black/50" @click="ageAlertOpen = false"></div>
+            <div
+                x-show="ageAlertOpen"
+                x-transition:enter="transition ease-out duration-200"
+                x-transition:enter-start="opacity-0 scale-95"
+                x-transition:enter-end="opacity-100 scale-100"
+                class="relative w-full max-w-md rounded-lg border bg-background p-6 shadow-lg"
+            >
+                <h3 class="text-base font-semibold">Batas Usia Pelamar</h3>
+                <p class="mt-1.5 text-sm text-muted-foreground" x-text="'Maaf, usia Anda saat ini adalah ' + usia + ' tahun. Pelamar dengan usia lebih dari 35 tahun tidak dapat melanjutkan proses pendaftaran ini.'"></p>
+
+                <div class="mt-5 flex justify-end gap-2">
+                    <x-ui.button type="button" @click="ageAlertOpen = false">Mengerti</x-ui.button>
+                </div>
+            </div>
+        </div>
       </div>
     </x-ui.card>
   </div>
@@ -260,24 +398,48 @@
         @push('scripts')
             <script>
                 document.addEventListener('alpine:init', () => {
-                    Alpine.data('applyWizard', (lokerId, oldInput, errorStep) => ({
+                    Alpine.data('applyWizard', (lokerId, oldInput, errorStep, pendidikanLabels) => ({
                         step: 1,
                         confirmOpen: false,
+                        ageAlertOpen: false,
                         draftKey: 'lamaran_draft_' + lokerId,
+                        pendidikanLabels: pendidikanLabels ?? {},
                         fields: {
                             nama: oldInput.nama ?? '',
+                            nik: oldInput.nik ?? '',
                             tanggal_lahir: oldInput.tanggal_lahir ?? '',
                             jenis_kelamin: oldInput.jenis_kelamin ?? '',
                             email: oldInput.email ?? '',
                             no_hp: oldInput.no_hp ?? '',
                             alamat: oldInput.alamat ?? '',
+                            pernah_rekrutmen_sebelumnya: oldInput.pernah_rekrutmen_sebelumnya ?? '',
+                            bulan_rekrutmen_sebelumnya: oldInput.bulan_rekrutmen_sebelumnya ?? '',
+                            tahun_rekrutmen_sebelumnya: oldInput.tahun_rekrutmen_sebelumnya ?? '',
+                            id_tahap_rekrutmen_sebelumnya: oldInput.id_tahap_rekrutmen_sebelumnya ?? '',
+                            pernah_bekerja_di_al_azhar: oldInput.pernah_bekerja_di_al_azhar ?? '',
+                            lokasi_kerja_al_azhar_sebelumnya: oldInput.lokasi_kerja_al_azhar_sebelumnya ?? '',
                             id_pendidikan_terakhir: oldInput.id_pendidikan_terakhir ?? '',
                             gelar: oldInput.gelar ?? '',
                             institusi: oldInput.institusi ?? '',
                             program_studi: oldInput.program_studi ?? '',
+                            kategori_perguruan_tinggi: oldInput.kategori_perguruan_tinggi ?? '',
                             akreditasi: oldInput.akreditasi ?? '',
                             tahun_lulus: oldInput.tahun_lulus ?? '',
-                            ipk: oldInput.ipk ?? '',
+                            ipk_s1: oldInput.ipk_s1 ?? '',
+                            ipk_s2: oldInput.ipk_s2 ?? '',
+                            ipk_d3: oldInput.ipk_d3 ?? '',
+                        },
+
+                        get isS1() {
+                            return this.pendidikanLabels[this.fields.id_pendidikan_terakhir] === 'S1';
+                        },
+
+                        get isS2() {
+                            return this.pendidikanLabels[this.fields.id_pendidikan_terakhir] === 'S2';
+                        },
+
+                        get isD3() {
+                            return this.pendidikanLabels[this.fields.id_pendidikan_terakhir] === 'D3';
                         },
 
                         init() {
@@ -320,8 +482,24 @@
                             return true;
                         },
 
+                        get usia() {
+                            if (!this.fields.tanggal_lahir) return null;
+                            const dob = new Date(this.fields.tanggal_lahir);
+                            if (isNaN(dob)) return null;
+                            const today = new Date();
+                            let age = today.getFullYear() - dob.getFullYear();
+                            const beforeBirthdayThisYear = (today.getMonth() < dob.getMonth())
+                                || (today.getMonth() === dob.getMonth() && today.getDate() < dob.getDate());
+                            if (beforeBirthdayThisYear) age--;
+                            return age;
+                        },
+
                         next() {
                             if (!this.validateStep(this.step)) return;
+                            if (this.step === 1 && this.usia !== null && this.usia > 35) {
+                                this.ageAlertOpen = true;
+                                return;
+                            }
                             if (this.step < 3) this.step++;
                             this.$refs.form.scrollIntoView({ behavior: 'smooth', block: 'start' });
                         },

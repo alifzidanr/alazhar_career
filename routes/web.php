@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\JenjangController as AdminJenjangController;
 use App\Http\Controllers\Admin\KriteriaController as AdminKriteriaController;
 use App\Http\Controllers\Admin\KriteriaLokerController;
 use App\Http\Controllers\Admin\LokasiController as AdminLokasiController;
@@ -34,6 +35,10 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::patch('/pelamar/{pelamar}/lanjut', [AdminPelamarController::class, 'advanceTahap'])->name('pelamar.lanjut');
     Route::patch('/pelamar/{pelamar}/mundur', [AdminPelamarController::class, 'regressTahap'])->name('pelamar.mundur');
     Route::patch('/pelamar/{pelamar}/catatan', [AdminPelamarController::class, 'updateCatatan'])->name('pelamar.catatan');
+    Route::patch('/pelamar/{pelamar}/tes-tulis', [AdminPelamarController::class, 'updateTesTulis'])->name('pelamar.tes-tulis');
+    Route::patch('/pelamar/{pelamar}/wawancara', [AdminPelamarController::class, 'updateWawancara'])->name('pelamar.wawancara');
+    Route::patch('/pelamar/{pelamar}/orientasi', [AdminPelamarController::class, 'updateOrientasi'])->name('pelamar.orientasi');
+    Route::patch('/pelamar/{pelamar}/tugas-sementara', [AdminPelamarController::class, 'updateTugasSementara'])->name('pelamar.tugas-sementara');
 
     Route::post('/pelamar/{pelamar}/notify', [NotifikasiController::class, 'send'])->name('pelamar.notify');
 
@@ -45,6 +50,11 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::post('/kriteria', [AdminKriteriaController::class, 'store'])->name('kriteria.store');
     Route::patch('/kriteria/{kriteria}', [AdminKriteriaController::class, 'update'])->name('kriteria.update');
     Route::delete('/kriteria/{kriteria}', [AdminKriteriaController::class, 'destroy'])->name('kriteria.destroy');
+
+    Route::get('/jenjang', [AdminJenjangController::class, 'index'])->name('jenjang.index');
+    Route::post('/jenjang', [AdminJenjangController::class, 'store'])->name('jenjang.store');
+    Route::patch('/jenjang/{jenjang}', [AdminJenjangController::class, 'update'])->name('jenjang.update');
+    Route::delete('/jenjang/{jenjang}', [AdminJenjangController::class, 'destroy'])->name('jenjang.destroy');
 
     Route::get('/lokasi', [AdminLokasiController::class, 'index'])->name('lokasi.index');
     Route::post('/lokasi', [AdminLokasiController::class, 'store'])->name('lokasi.store');

@@ -27,6 +27,27 @@
     </div>
 
     <div>
+        <x-ui.label for="id_pendidikan_terakhir">Pendidikan Minimum <span class="text-destructive">*</span></x-ui.label>
+        <x-ui.select id="id_pendidikan_terakhir" name="id_pendidikan_terakhir" required>
+            <option value="">-- Pilih --</option>
+            @foreach ($pendidikanList as $p)
+                <option value="{{ $p->id_pendidikan_terakhir }}" @selected((string) old('id_pendidikan_terakhir', $loker->id_pendidikan_terakhir ?? '') === (string) $p->id_pendidikan_terakhir)>{{ $p->pendidikan_terakhir }}</option>
+            @endforeach
+        </x-ui.select>
+    </div>
+
+    <div>
+        <x-ui.label for="id_jenjang">Jenjang <span class="text-destructive">*</span></x-ui.label>
+        <x-ui.select id="id_jenjang" name="id_jenjang" required>
+            <option value="">-- Pilih --</option>
+            @foreach ($jenjangList as $j)
+                <option value="{{ $j->id_jenjang }}" @selected((string) old('id_jenjang', $loker->id_jenjang ?? '') === (string) $j->id_jenjang)>{{ $j->nama_jenjang }}</option>
+            @endforeach
+        </x-ui.select>
+        <p class="text-xs text-muted-foreground mt-1">Belum ada pilihan yang cocok? Tambahkan lewat menu <a href="{{ route('admin.jenjang.index') }}" class="underline">Jenjang</a>.</p>
+    </div>
+
+    <div>
         <x-ui.label for="status_loker">Status <span class="text-destructive">*</span></x-ui.label>
         <x-ui.select id="status_loker" name="status_loker" required>
             <option value="dibuka" @selected(old('status_loker', $loker->status_loker ?? 'dibuka') === 'dibuka')>Dibuka</option>

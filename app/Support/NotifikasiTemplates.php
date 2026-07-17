@@ -46,12 +46,7 @@ class NotifikasiTemplates
             'lolos_tugas_sementara' => [
                 'label' => 'Lolos Tugas Sementara',
                 'subject' => 'Info Lamaran :loker - Lolos Tugas Sementara',
-                'body' => "Yth. :nama,\n\nSelamat, Anda dinyatakan LOLOS Tugas Sementara untuk lowongan :loker. Anda berhak melanjutkan ke Tes Kesehatan.\n\nTerima kasih,\nHR Al Azhar",
-            ],
-            'lolos_tes_kesehatan' => [
-                'label' => 'Lolos Tes Kesehatan',
-                'subject' => 'Info Lamaran :loker - Lolos Tes Kesehatan',
-                'body' => "Yth. :nama,\n\nSelamat, Anda dinyatakan LOLOS Tes Kesehatan untuk lowongan :loker. Proses selanjutnya adalah penerbitan SK dari HR.\n\nTerima kasih,\nHR Al Azhar",
+                'body' => "Yth. :nama,\n\nSelamat, Anda dinyatakan LOLOS Tugas Sementara untuk lowongan :loker. Proses selanjutnya adalah penerbitan SK dari HR.\n\nTerima kasih,\nHR Al Azhar",
             ],
             'terima_sk' => [
                 'label' => 'Terima SK dari HR',
@@ -111,8 +106,7 @@ class NotifikasiTemplates
             TahapRekrutmen::WAWANCARA => 'lolos_tes_tulis',
             TahapRekrutmen::ORIENTASI => 'lolos_wawancara',
             TahapRekrutmen::TUGAS_SEMENTARA => 'lolos_orientasi',
-            TahapRekrutmen::TES_KESEHATAN => 'lolos_tugas_sementara',
-            TahapRekrutmen::TERIMA_SK => 'lolos_tes_kesehatan',
+            TahapRekrutmen::TERIMA_SK => 'lolos_tugas_sementara',
             TahapRekrutmen::MIGRASI_DATA => 'terima_sk',
             default => null,
         };

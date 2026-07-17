@@ -17,11 +17,9 @@ class TahapRekrutmen extends Model
 
     public const TUGAS_SEMENTARA = 5;
 
-    public const TES_KESEHATAN = 6;
+    public const TERIMA_SK = 6;
 
-    public const TERIMA_SK = 7;
-
-    public const MIGRASI_DATA = 8;
+    public const MIGRASI_DATA = 7;
 
     protected $table = 'tahap_rekrutmen';
 

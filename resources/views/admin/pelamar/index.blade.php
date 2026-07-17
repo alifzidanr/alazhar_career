@@ -12,7 +12,7 @@
                         <p class="text-sm">
                             Menampilkan pelamar untuk loker: <span class="font-semibold">{{ $lokerAktifModel->judul_loker }}</span>
                         </p>
-                        <a href="{{ route('admin.pelamar.index', ['tahap' => $tahapAktif]) }}" class="text-sm font-medium text-primary hover:underline">
+                        <a href="{{ route('admin.pelamar.index', ['tahap' => $tahapAktif, 'kategori' => $kategoriAktif]) }}" class="text-sm font-medium text-primary hover:underline">
                             Lihat semua loker &times;
                         </a>
                     </div>
@@ -20,7 +20,7 @@
             @endif
 
             <div class="flex flex-wrap gap-2">
-                <a href="{{ route('admin.pelamar.index', ['tahap' => 0, 'loker' => $lokerAktif]) }}"
+                <a href="{{ route('admin.pelamar.index', ['tahap' => 0, 'loker' => $lokerAktif, 'kategori' => $kategoriAktif]) }}"
                    class="relative inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium border transition-colors {{ $tahapAktif === 0 ? 'bg-primary text-primary-foreground border-primary' : 'bg-background text-muted-foreground border-input hover:bg-accent hover:text-accent-foreground' }}">
                     Semua
                     @if ($totalSemua > 0)
@@ -28,12 +28,21 @@
                     @endif
                 </a>
                 @foreach ($tahapOptions as $t)
-                    <a href="{{ route('admin.pelamar.index', ['tahap' => $t->id_tahap_rekrutmen, 'loker' => $lokerAktif]) }}"
+                    <a href="{{ route('admin.pelamar.index', ['tahap' => $t->id_tahap_rekrutmen, 'loker' => $lokerAktif, 'kategori' => $kategoriAktif]) }}"
                        class="relative inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium border transition-colors {{ $tahapAktif === $t->id_tahap_rekrutmen ? 'bg-primary text-primary-foreground border-primary' : 'bg-background text-muted-foreground border-input hover:bg-accent hover:text-accent-foreground' }}">
                         {{ $t->tahap_rekrutmen }}
                         @if (($counts[$t->id_tahap_rekrutmen] ?? 0) > 0)
                             <span class="absolute -top-1.5 -right-1.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-semibold leading-none text-white ring-2 ring-background">{{ $counts[$t->id_tahap_rekrutmen] }}</span>
                         @endif
+                    </a>
+                @endforeach
+            </div>
+
+            <div class="flex flex-wrap gap-2">
+                @foreach (['' => 'Semua Kategori', 'Perguruan Tinggi Negeri' => 'PTN', 'Perguruan Tinggi Swasta' => 'PTS', 'Lain-lain' => 'Lain-lain'] as $val => $label)
+                    <a href="{{ route('admin.pelamar.index', ['tahap' => $tahapAktif, 'loker' => $lokerAktif, 'kategori' => $val]) }}"
+                       class="inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium border transition-colors {{ $kategoriAktif === $val ? 'bg-primary text-primary-foreground border-primary' : 'bg-background text-muted-foreground border-input hover:bg-accent hover:text-accent-foreground' }}">
+                        {{ $label }}
                     </a>
                 @endforeach
             </div>
@@ -50,6 +59,19 @@
                             <th class="px-4 py-3">Nama</th>
                             <th class="px-4 py-3">Loker</th>
                             <th class="px-4 py-3">Tahap</th>
+                            @if ($tesTulisAktif)
+                                <th class="px-4 py-3">Agama Umum</th>
+                                <th class="px-4 py-3">Bidang Studi</th>
+                                <th class="px-4 py-3">Inggris Umum</th>
+                                <th class="px-4 py-3">Rata-rata</th>
+                            @endif
+                            @if ($wawancaraAktif)
+                                <th class="px-4 py-3">Rata-rata Tes Tulis</th>
+                                <th class="px-4 py-3">Wawancara Agama</th>
+                                <th class="px-4 py-3">Praktik/Micro Teaching</th>
+                                <th class="px-4 py-3">Wawancara Umum</th>
+                                <th class="px-4 py-3">Rata-rata Wawancara</th>
+                            @endif
                             <th class="px-4 py-3">Status</th>
                             <th class="px-4 py-3">Tgl Apply</th>
                             <th class="px-4 py-3">Aksi Cepat</th>
@@ -62,6 +84,19 @@
                                 <td class="px-4 py-3 font-medium whitespace-nowrap">{{ $p->namaLengkap() }}</td>
                                 <td class="px-4 py-3 text-muted-foreground whitespace-nowrap">{{ $p->loker->judul_loker }}</td>
                                 <td class="px-4 py-3 whitespace-nowrap"><x-tahap-badge :tahap="$p->tahapRekrutmen" /></td>
+                                @if ($tesTulisAktif)
+                                    <td class="px-4 py-3 text-muted-foreground whitespace-nowrap">{{ $p->tesTulis?->nilai_tes_agama_umum ?? '-' }}</td>
+                                    <td class="px-4 py-3 text-muted-foreground whitespace-nowrap">{{ $p->tesTulis?->nilai_tes_bidang_studi ?? '-' }}</td>
+                                    <td class="px-4 py-3 text-muted-foreground whitespace-nowrap">{{ $p->tesTulis?->nilai_tes_inggris_umum ?? '-' }}</td>
+                                    <td class="px-4 py-3 font-medium whitespace-nowrap">{{ $p->tesTulis?->nilaiRataRata() ?? '-' }}</td>
+                                @endif
+                                @if ($wawancaraAktif)
+                                    <td class="px-4 py-3 text-muted-foreground whitespace-nowrap">{{ $p->tesTulis?->nilaiRataRata() ?? '-' }}</td>
+                                    <td class="px-4 py-3 text-muted-foreground whitespace-nowrap">{{ $p->wawancara?->nilai_wawancara_agama ?? '-' }}</td>
+                                    <td class="px-4 py-3 text-muted-foreground whitespace-nowrap">{{ $p->wawancara?->nilai_praktik_micro_teaching ?? '-' }}</td>
+                                    <td class="px-4 py-3 text-muted-foreground whitespace-nowrap">{{ $p->wawancara?->nilai_wawancara_umum ?? '-' }}</td>
+                                    <td class="px-4 py-3 font-medium whitespace-nowrap">{{ $p->wawancara?->nilaiRataRataWawancara() ?? '-' }}</td>
+                                @endif
                                 <td class="px-4 py-3 whitespace-nowrap"><x-status-badge :status="$p->statusPelamar" /></td>
                                 <td class="px-4 py-3 text-muted-foreground whitespace-nowrap">{{ $p->tanggal_apply->translatedFormat('d M Y') }}</td>
                                 <td class="px-4 py-3">
@@ -101,10 +136,10 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="7" class="px-4 py-8 text-center text-muted-foreground">Belum ada pelamar pada tahap ini.</td></tr>
+                            <tr><td colspan="{{ 7 + ($tesTulisAktif ? 4 : 0) + ($wawancaraAktif ? 5 : 0) }}" class="px-4 py-8 text-center text-muted-foreground">Belum ada pelamar pada tahap ini.</td></tr>
                         @endforelse
                         @if ($pelamarList->isNotEmpty())
-                            <tr x-show="total === 0"><td colspan="7" class="px-4 py-8 text-center text-muted-foreground">Tidak ada pelamar yang cocok dengan pencarian.</td></tr>
+                            <tr x-show="total === 0"><td colspan="{{ 7 + ($tesTulisAktif ? 4 : 0) + ($wawancaraAktif ? 5 : 0) }}" class="px-4 py-8 text-center text-muted-foreground">Tidak ada pelamar yang cocok dengan pencarian.</td></tr>
                         @endif
                     </tbody>
                 </table>
