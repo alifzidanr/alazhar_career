@@ -2,18 +2,34 @@
   <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <a href="{{ route('loker.list') }}" class="text-sm text-muted-foreground hover:text-foreground">&larr; Kembali ke daftar lowongan</a>
 
+    @php
+        $daysLeft = $loker->end_time ? (int) now()->startOfDay()->diffInDays($loker->end_time->copy()->startOfDay(), false) : null;
+    @endphp
+
     <x-ui.card class="mt-4">
         <div class="flex items-start justify-between gap-2">
             <h1 class="text-xl font-semibold tracking-tight">{{ $loker->judul_loker }}</h1>
-            <x-ui.badge variant="success" class="shrink-0">Dibuka</x-ui.badge>
+            @if ($daysLeft === null)
+                <x-ui.badge variant="success" class="shrink-0">Dibuka</x-ui.badge>
+            @elseif ($daysLeft <= 0)
+                <x-ui.badge variant="destructive" class="shrink-0">Hari Terakhir</x-ui.badge>
+            @else
+                <x-ui.badge :variant="$daysLeft <= 7 ? 'destructive' : 'success'" class="shrink-0">H-{{ $daysLeft }}</x-ui.badge>
+            @endif
         </div>
 
         <div class="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
             @if ($loker->lokasi)
-                <span>📍 {{ $loker->lokasi }}</span>
+                <span class="inline-flex items-center gap-1.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" class="h-4 w-4 shrink-0 text-brand-navy-600"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" /></svg>
+                    {{ $loker->lokasi }}
+                </span>
             @endif
             @if ($loker->end_time)
-                <span>⏰ Berlaku sampai {{ $loker->end_time->format('d/m') }}</span>
+                <span class="inline-flex items-center gap-1.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" class="h-4 w-4 shrink-0 text-brand-navy-600"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>
+                    Berlaku sampai {{ $loker->end_time->translatedFormat('d M Y') }}
+                </span>
             @endif
         </div>
 
@@ -47,7 +63,7 @@
     </x-ui.card>
 
     @php
-        $step2Fields = ['id_pendidikan_terakhir', 'gelar', 'institusi', 'program_studi', 'kategori_perguruan_tinggi', 'akreditasi', 'tahun_lulus', 'ipk_s1', 'ipk_s2', 'ipk_d3'];
+        $step2Fields = ['id_pendidikan_terakhir', 'gelar', 'institusi', 'program_studi', 'kategori_perguruan_tinggi', 'akreditasi', 'tahun_lulus', 'ipk_s1', 'ipk_s2', 'ipk_s3', 'ipk_d3'];
         $step3Fields = ['cv_upload', 'ktp_upload', 'ijazah_upload', 'transkrip_nilai_upload', 'pas_foto_upload', 'surat_lamaran_upload', 'sim_upload', 'sertifikat_gada_pratama_upload', 'sertifikat_tambahan_upload', 'loker'];
         $errorStep = null;
         if ($errors->any()) {
@@ -181,10 +197,90 @@
                         </x-ui.select>
                         <x-input-error :messages="$errors->get('pernah_bekerja_di_al_azhar')" class="mt-2" />
                     </div>
-                    <div class="sm:col-span-2" x-show="fields.pernah_bekerja_di_al_azhar === 'Ya'" x-cloak>
-                        <x-ui.label for="lokasi_kerja_al_azhar_sebelumnya">Jika pernah, dimana? <span class="text-destructive">*</span></x-ui.label>
-                        <x-ui.input type="text" id="lokasi_kerja_al_azhar_sebelumnya" name="lokasi_kerja_al_azhar_sebelumnya" x-model="fields.lokasi_kerja_al_azhar_sebelumnya" value="{{ old('lokasi_kerja_al_azhar_sebelumnya') }}" x-bind:required="fields.pernah_bekerja_di_al_azhar === 'Ya'" />
-                        <x-input-error :messages="$errors->get('lokasi_kerja_al_azhar_sebelumnya')" class="mt-2" />
+                    <div class="sm:col-span-2 grid sm:grid-cols-2 gap-4" x-show="fields.pernah_bekerja_di_al_azhar === 'Ya'" x-cloak>
+                        <div :class="fields.jenis_kepegawaian_al_azhar_sebelumnya === 'Lain-lain' ? '' : 'sm:col-span-2'">
+                            <x-ui.label for="jenis_kepegawaian_al_azhar_sebelumnya">Sebagai apa? <span class="text-destructive">*</span></x-ui.label>
+                            <x-ui.select id="jenis_kepegawaian_al_azhar_sebelumnya" name="jenis_kepegawaian_al_azhar_sebelumnya" x-model="fields.jenis_kepegawaian_al_azhar_sebelumnya" x-bind:required="fields.pernah_bekerja_di_al_azhar === 'Ya'">
+                                <option value="">-- Pilih --</option>
+                                <option value="Pegawai Honor" @selected(old('jenis_kepegawaian_al_azhar_sebelumnya') === 'Pegawai Honor')>Pegawai Honor</option>
+                                <option value="Pegawai Tetap" @selected(old('jenis_kepegawaian_al_azhar_sebelumnya') === 'Pegawai Tetap')>Pegawai Tetap</option>
+                                <option value="Pegawai Inval" @selected(old('jenis_kepegawaian_al_azhar_sebelumnya') === 'Pegawai Inval')>Pegawai Inval</option>
+                                <option value="Pegawai Ekskul" @selected(old('jenis_kepegawaian_al_azhar_sebelumnya') === 'Pegawai Ekskul')>Pegawai Ekskul</option>
+                                <option value="Lain-lain" @selected(old('jenis_kepegawaian_al_azhar_sebelumnya') === 'Lain-lain')>Lain-lain</option>
+                            </x-ui.select>
+                            <x-input-error :messages="$errors->get('jenis_kepegawaian_al_azhar_sebelumnya')" class="mt-2" />
+                        </div>
+                        <div x-show="fields.jenis_kepegawaian_al_azhar_sebelumnya === 'Lain-lain'" x-cloak>
+                            <x-ui.label for="jenis_kepegawaian_al_azhar_lainnya">Sebutkan <span class="text-destructive">*</span></x-ui.label>
+                            <x-ui.input type="text" id="jenis_kepegawaian_al_azhar_lainnya" name="jenis_kepegawaian_al_azhar_lainnya" x-model="fields.jenis_kepegawaian_al_azhar_lainnya" value="{{ old('jenis_kepegawaian_al_azhar_lainnya') }}" x-bind:required="fields.pernah_bekerja_di_al_azhar === 'Ya' && fields.jenis_kepegawaian_al_azhar_sebelumnya === 'Lain-lain'" />
+                            <x-input-error :messages="$errors->get('jenis_kepegawaian_al_azhar_lainnya')" class="mt-2" />
+                        </div>
+                        <div class="sm:col-span-2">
+                            <x-ui.label for="lokasi_kerja_al_azhar_sebelumnya">Dimana? <span class="text-destructive">*</span></x-ui.label>
+                            <x-ui.input type="text" id="lokasi_kerja_al_azhar_sebelumnya" name="lokasi_kerja_al_azhar_sebelumnya" x-model="fields.lokasi_kerja_al_azhar_sebelumnya" value="{{ old('lokasi_kerja_al_azhar_sebelumnya') }}" x-bind:required="fields.pernah_bekerja_di_al_azhar === 'Ya'" />
+                            <x-input-error :messages="$errors->get('lokasi_kerja_al_azhar_sebelumnya')" class="mt-2" />
+                        </div>
+                        <div
+                            class="sm:col-span-2 relative"
+                            x-data="{
+                                open: false,
+                                bulanNama: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'],
+                                pickerYear: fields.kerja_al_azhar_periode ? parseInt(fields.kerja_al_azhar_periode.split('-')[0]) : new Date().getFullYear(),
+                                get display() {
+                                    if (!fields.kerja_al_azhar_periode) return '';
+                                    const [y, m] = fields.kerja_al_azhar_periode.split('-');
+                                    return this.bulanNama[parseInt(m) - 1] + ' ' + y;
+                                },
+                                pick(monthIndex) {
+                                    fields.kerja_al_azhar_periode = this.pickerYear + '-' + String(monthIndex + 1).padStart(2, '0');
+                                    this.open = false;
+                                },
+                            }"
+                        >
+                            <x-ui.label for="kerja_al_azhar_periode_btn">Kapan <span class="text-destructive">*</span></x-ui.label>
+                            <button
+                                type="button"
+                                id="kerja_al_azhar_periode_btn"
+                                @click="open = !open"
+                                @click.outside="open = false"
+                                class="mt-1.5 flex h-9 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm"
+                            >
+                                <span :class="display ? '' : 'text-muted-foreground'" x-text="display || 'Pilih bulan & tahun'"></span>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" class="h-4 w-4 shrink-0 text-muted-foreground"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>
+                            </button>
+                            <input type="hidden" name="kerja_al_azhar_periode" :value="fields.kerja_al_azhar_periode" x-bind:required="fields.pernah_bekerja_di_al_azhar === 'Ya'" />
+
+                            <div
+                                x-show="open"
+                                x-cloak
+                                x-transition:enter="transition ease-out duration-150"
+                                x-transition:enter-start="opacity-0 -translate-y-1"
+                                x-transition:enter-end="opacity-100 translate-y-0"
+                                class="absolute z-30 mt-1.5 w-64 rounded-lg border bg-popover text-popover-foreground p-3 shadow-lg"
+                            >
+                                <div class="flex items-center justify-between mb-2">
+                                    <button type="button" @click="pickerYear--" class="flex h-7 w-7 items-center justify-center rounded-md hover:bg-accent">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>
+                                    </button>
+                                    <span class="text-sm font-semibold" x-text="pickerYear"></span>
+                                    <button type="button" @click="pickerYear++" class="flex h-7 w-7 items-center justify-center rounded-md hover:bg-accent">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
+                                    </button>
+                                </div>
+                                <div class="grid grid-cols-3 gap-1">
+                                    <template x-for="(bulan, i) in bulanNama" :key="i">
+                                        <button
+                                            type="button"
+                                            @click="pick(i)"
+                                            class="rounded-md px-2 py-1.5 text-xs hover:bg-accent"
+                                            :class="fields.kerja_al_azhar_periode === (pickerYear + '-' + String(i + 1).padStart(2, '0')) ? 'bg-primary text-primary-foreground hover:bg-primary' : ''"
+                                            x-text="bulan.slice(0, 3)"
+                                        ></button>
+                                    </template>
+                                </div>
+                            </div>
+                            <x-input-error :messages="$errors->get('kerja_al_azhar_periode')" class="mt-2" />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -208,18 +304,20 @@
                         <x-input-error :messages="$errors->get('gelar')" class="mt-2" />
                     </div>
                     <div class="sm:col-span-2">
-                        <x-ui.label for="institusi">Institusi / Sekolah <span class="text-destructive">*</span></x-ui.label>
+                        <x-ui.label for="institusi">
+                            <span x-text="isSekolahMenengah ? 'Nama Sekolah' : 'Institusi / Perguruan Tinggi'">Institusi / Sekolah</span> <span class="text-destructive">*</span>
+                        </x-ui.label>
                         <x-ui.input type="text" id="institusi" name="institusi" x-model="fields.institusi" value="{{ old('institusi') }}" required />
                         <x-input-error :messages="$errors->get('institusi')" class="mt-2" />
                     </div>
-                    <div>
+                    <div x-show="!isSekolahMenengah" x-cloak>
                         <x-ui.label for="program_studi">Program Studi / Jurusan <span class="text-destructive">*</span></x-ui.label>
-                        <x-ui.input type="text" id="program_studi" name="program_studi" x-model="fields.program_studi" value="{{ old('program_studi') }}" required />
+                        <x-ui.input type="text" id="program_studi" name="program_studi" x-model="fields.program_studi" value="{{ old('program_studi') }}" x-bind:required="!isSekolahMenengah" />
                         <x-input-error :messages="$errors->get('program_studi')" class="mt-2" />
                     </div>
-                    <div>
+                    <div x-show="!isSekolahMenengah" x-cloak>
                         <x-ui.label for="kategori_perguruan_tinggi">Kategori Perguruan Tinggi <span class="text-destructive">*</span></x-ui.label>
-                        <x-ui.select id="kategori_perguruan_tinggi" name="kategori_perguruan_tinggi" x-model="fields.kategori_perguruan_tinggi" required>
+                        <x-ui.select id="kategori_perguruan_tinggi" name="kategori_perguruan_tinggi" x-model="fields.kategori_perguruan_tinggi" x-bind:required="!isSekolahMenengah">
                             <option value="">-- Pilih --</option>
                             @foreach (['Perguruan Tinggi Negeri', 'Perguruan Tinggi Swasta', 'Lain-lain'] as $kat)
                                 <option value="{{ $kat }}" @selected(old('kategori_perguruan_tinggi') === $kat)>{{ $kat }}</option>
@@ -227,13 +325,13 @@
                         </x-ui.select>
                         <x-input-error :messages="$errors->get('kategori_perguruan_tinggi')" class="mt-2" />
                     </div>
-                    <div>
+                    <div x-show="!isSekolahMenengah" x-cloak>
                         <x-ui.label for="akreditasi">Akreditasi Program Studi Saat Lulus <span class="text-destructive">*</span></x-ui.label>
-                        <x-ui.select id="akreditasi" name="akreditasi" x-model="fields.akreditasi" required>
+                        <x-ui.select id="akreditasi" name="akreditasi" x-model="fields.akreditasi" x-bind:required="!isSekolahMenengah">
                             <option value="">-- Pilih --</option>
-                            @foreach (['A', 'B', 'C'] as $akr)
-                                <option value="{{ $akr }}" @selected(old('akreditasi') === $akr)>{{ $akr }}</option>
-                            @endforeach
+                            <option value="A" @selected(old('akreditasi') === 'A')>A &mdash; Unggul</option>
+                            <option value="B" @selected(old('akreditasi') === 'B')>B &mdash; Baik Sekali</option>
+                            <option value="C" @selected(old('akreditasi') === 'C')>C &mdash; Baik</option>
                         </x-ui.select>
                         <x-input-error :messages="$errors->get('akreditasi')" class="mt-2" />
                     </div>
@@ -252,15 +350,20 @@
                         <x-ui.input type="number" id="ipk_d3" name="ipk_d3" x-model="fields.ipk_d3" value="{{ old('ipk_d3') }}" min="0" max="4" step="0.01" placeholder="cth. 3.50" x-bind:required="isD3" />
                         <x-input-error :messages="$errors->get('ipk_d3')" class="mt-2" />
                     </div>
-                    <div x-show="isS1 || isS2" x-cloak>
+                    <div x-show="isS1 || isS2 || isS3" x-cloak>
                         <x-ui.label for="ipk_s1">IPK S1 <span class="text-destructive">*</span></x-ui.label>
-                        <x-ui.input type="number" id="ipk_s1" name="ipk_s1" x-model="fields.ipk_s1" value="{{ old('ipk_s1') }}" min="0" max="4" step="0.01" placeholder="cth. 3.50" x-bind:required="isS1 || isS2" />
+                        <x-ui.input type="number" id="ipk_s1" name="ipk_s1" x-model="fields.ipk_s1" value="{{ old('ipk_s1') }}" min="0" max="4" step="0.01" placeholder="cth. 3.50" x-bind:required="isS1 || isS2 || isS3" />
                         <x-input-error :messages="$errors->get('ipk_s1')" class="mt-2" />
                     </div>
-                    <div x-show="isS2" x-cloak>
+                    <div x-show="isS2 || isS3" x-cloak>
                         <x-ui.label for="ipk_s2">IPK S2 <span class="text-destructive">*</span></x-ui.label>
-                        <x-ui.input type="number" id="ipk_s2" name="ipk_s2" x-model="fields.ipk_s2" value="{{ old('ipk_s2') }}" min="0" max="4" step="0.01" placeholder="cth. 3.50" x-bind:required="isS2" />
+                        <x-ui.input type="number" id="ipk_s2" name="ipk_s2" x-model="fields.ipk_s2" value="{{ old('ipk_s2') }}" min="0" max="4" step="0.01" placeholder="cth. 3.50" x-bind:required="isS2 || isS3" />
                         <x-input-error :messages="$errors->get('ipk_s2')" class="mt-2" />
+                    </div>
+                    <div x-show="isS3" x-cloak>
+                        <x-ui.label for="ipk_s3">IPK S3 <span class="text-destructive">*</span></x-ui.label>
+                        <x-ui.input type="number" id="ipk_s3" name="ipk_s3" x-model="fields.ipk_s3" value="{{ old('ipk_s3') }}" min="0" max="4" step="0.01" placeholder="cth. 3.50" x-bind:required="isS3" />
+                        <x-input-error :messages="$errors->get('ipk_s3')" class="mt-2" />
                     </div>
                 </div>
             </div>
@@ -297,7 +400,7 @@
                     <div>
                         <x-ui.label for="ijazah_upload">Ijazah <span class="text-destructive">*</span></x-ui.label>
                         <input type="file" id="ijazah_upload" name="ijazah_upload" required accept=".pdf" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
-                        <p class="text-xs text-muted-foreground mt-1">Format PDF, maksimal 5MB.</p>
+                        <p class="text-xs text-muted-foreground mt-1">Format PDF, maksimal 5MB. Sertakan ijazah dari jenjang pendidikan awal hingga pendidikan terakhir (dapat digabungkan dalam satu file PDF).</p>
                         <x-input-error :messages="$errors->get('ijazah_upload')" class="mt-2" />
                     </div>
                     <div>
@@ -418,6 +521,9 @@
                             id_tahap_rekrutmen_sebelumnya: oldInput.id_tahap_rekrutmen_sebelumnya ?? '',
                             pernah_bekerja_di_al_azhar: oldInput.pernah_bekerja_di_al_azhar ?? '',
                             lokasi_kerja_al_azhar_sebelumnya: oldInput.lokasi_kerja_al_azhar_sebelumnya ?? '',
+                            kerja_al_azhar_periode: oldInput.kerja_al_azhar_periode ?? '',
+                            jenis_kepegawaian_al_azhar_sebelumnya: oldInput.jenis_kepegawaian_al_azhar_sebelumnya ?? '',
+                            jenis_kepegawaian_al_azhar_lainnya: oldInput.jenis_kepegawaian_al_azhar_lainnya ?? '',
                             id_pendidikan_terakhir: oldInput.id_pendidikan_terakhir ?? '',
                             gelar: oldInput.gelar ?? '',
                             institusi: oldInput.institusi ?? '',
@@ -427,6 +533,7 @@
                             tahun_lulus: oldInput.tahun_lulus ?? '',
                             ipk_s1: oldInput.ipk_s1 ?? '',
                             ipk_s2: oldInput.ipk_s2 ?? '',
+                            ipk_s3: oldInput.ipk_s3 ?? '',
                             ipk_d3: oldInput.ipk_d3 ?? '',
                         },
 
@@ -438,8 +545,17 @@
                             return this.pendidikanLabels[this.fields.id_pendidikan_terakhir] === 'S2';
                         },
 
+                        get isS3() {
+                            return this.pendidikanLabels[this.fields.id_pendidikan_terakhir] === 'S3';
+                        },
+
                         get isD3() {
                             return this.pendidikanLabels[this.fields.id_pendidikan_terakhir] === 'D3';
+                        },
+
+                        get isSekolahMenengah() {
+                            const label = this.pendidikanLabels[this.fields.id_pendidikan_terakhir];
+                            return label === 'SMP' || label === 'SMA';
                         },
 
                         init() {

@@ -16,7 +16,8 @@ export default {
         },
         extend: {
             fontFamily: {
-                sans: ['Inter', ...defaultTheme.fontFamily.sans],
+                sans: ['Manrope', ...defaultTheme.fontFamily.sans],
+                heading: ['"Plus Jakarta Sans"', ...defaultTheme.fontFamily.sans],
             },
             colors: {
                 border: 'hsl(var(--border))',
@@ -51,6 +52,22 @@ export default {
                 card: {
                     DEFAULT: 'hsl(var(--card))',
                     foreground: 'hsl(var(--card-foreground))',
+                },
+                brand: {
+                    green: {
+                        50: '#e8f8ef',
+                        100: '#c8ecda',
+                        500: '#00a859',
+                        600: '#00934e',
+                        700: '#007a41',
+                    },
+                    navy: {
+                        50: '#eaf2fa',
+                        100: '#cfe3f3',
+                        600: '#005596',
+                        700: '#01467c',
+                        900: '#0b2c4d',
+                    },
                 },
             },
             borderRadius: {

@@ -22,7 +22,13 @@ class LamaranController extends Controller
 
         $data = $request->validated();
 
-        $pelamar = DB::transaction(function () use ($data, $loker, $request) {
+        // The "Kapan" month picker submits a single "YYYY-MM" value; split it
+        // into the bulan/tahun columns the rest of the app already relies on.
+        [$tahunKerjaAlAzhar, $bulanKerjaAlAzhar] = isset($data['kerja_al_azhar_periode'])
+            ? array_map('intval', explode('-', $data['kerja_al_azhar_periode']))
+            : [null, null];
+
+        $pelamar = DB::transaction(function () use ($data, $loker, $request, $bulanKerjaAlAzhar, $tahunKerjaAlAzhar) {
             $pelamar = Pelamar::create([
                 'id_loker' => $loker->id_loker,
                 'nama' => $data['nama'],
@@ -39,14 +45,19 @@ class LamaranController extends Controller
                 'id_tahap_rekrutmen_sebelumnya' => $data['id_tahap_rekrutmen_sebelumnya'] ?? null,
                 'pernah_bekerja_di_al_azhar' => $data['pernah_bekerja_di_al_azhar'],
                 'lokasi_kerja_al_azhar_sebelumnya' => $data['lokasi_kerja_al_azhar_sebelumnya'] ?? null,
+                'bulan_kerja_al_azhar_sebelumnya' => $bulanKerjaAlAzhar,
+                'tahun_kerja_al_azhar_sebelumnya' => $tahunKerjaAlAzhar,
+                'jenis_kepegawaian_al_azhar_sebelumnya' => $data['jenis_kepegawaian_al_azhar_sebelumnya'] ?? null,
+                'jenis_kepegawaian_al_azhar_lainnya' => $data['jenis_kepegawaian_al_azhar_lainnya'] ?? null,
                 'id_pendidikan_terakhir' => $data['id_pendidikan_terakhir'],
                 'institusi' => $data['institusi'],
-                'program_studi' => $data['program_studi'],
-                'kategori_perguruan_tinggi' => $data['kategori_perguruan_tinggi'],
-                'akreditasi' => $data['akreditasi'],
+                'program_studi' => $data['program_studi'] ?? null,
+                'kategori_perguruan_tinggi' => $data['kategori_perguruan_tinggi'] ?? null,
+                'akreditasi' => $data['akreditasi'] ?? null,
                 'tahun_lulus' => $data['tahun_lulus'],
                 'ipk_s1' => $data['ipk_s1'] ?? null,
                 'ipk_s2' => $data['ipk_s2'] ?? null,
+                'ipk_s3' => $data['ipk_s3'] ?? null,
                 'ipk_d3' => $data['ipk_d3'] ?? null,
                 'id_status_pelamar' => StatusPelamar::SCREENING,
                 'id_tahap_rekrutmen' => TahapRekrutmen::SELEKSI_BERKAS,

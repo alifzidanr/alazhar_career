@@ -27,6 +27,10 @@ class Pelamar extends Model
         'id_tahap_rekrutmen_sebelumnya',
         'pernah_bekerja_di_al_azhar',
         'lokasi_kerja_al_azhar_sebelumnya',
+        'bulan_kerja_al_azhar_sebelumnya',
+        'tahun_kerja_al_azhar_sebelumnya',
+        'jenis_kepegawaian_al_azhar_sebelumnya',
+        'jenis_kepegawaian_al_azhar_lainnya',
         'id_pendidikan_terakhir',
         'institusi',
         'program_studi',
@@ -35,6 +39,7 @@ class Pelamar extends Model
         'tahun_lulus',
         'ipk_s1',
         'ipk_s2',
+        'ipk_s3',
         'ipk_d3',
         'cv_upload',
         'pas_foto_upload',
@@ -59,6 +64,7 @@ class Pelamar extends Model
             'tanggal_lahir' => 'date',
             'ipk_s1' => 'decimal:2',
             'ipk_s2' => 'decimal:2',
+            'ipk_s3' => 'decimal:2',
             'ipk_d3' => 'decimal:2',
         ];
     }
@@ -147,6 +153,24 @@ class Pelamar extends Model
         }
 
         return \Carbon\Carbon::create(null, (int) $this->bulan_rekrutmen_sebelumnya, 1)->translatedFormat('F');
+    }
+
+    public function bulanKerjaAlAzharSebelumnyaLabel(): ?string
+    {
+        if (! $this->bulan_kerja_al_azhar_sebelumnya) {
+            return null;
+        }
+
+        return \Carbon\Carbon::create(null, (int) $this->bulan_kerja_al_azhar_sebelumnya, 1)->translatedFormat('F');
+    }
+
+    public function jenisKepegawaianAlAzharLabel(): ?string
+    {
+        if ($this->jenis_kepegawaian_al_azhar_sebelumnya === 'Lain-lain') {
+            return $this->jenis_kepegawaian_al_azhar_lainnya ?: 'Lain-lain';
+        }
+
+        return $this->jenis_kepegawaian_al_azhar_sebelumnya;
     }
 
     public function ijazahUrl(): ?string

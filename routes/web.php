@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\JenjangController as AdminJenjangController;
 use App\Http\Controllers\Admin\KriteriaController as AdminKriteriaController;
 use App\Http\Controllers\Admin\KriteriaLokerController;
@@ -27,7 +28,9 @@ Route::view('/tentang-kami', 'public.tentang')->name('tentang.index');
 
 // Admin
 Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
-    Route::redirect('/', '/admin/pelamar');
+    Route::redirect('/', '/admin/dashboard');
+
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/pelamar', [AdminPelamarController::class, 'index'])->name('pelamar.index');
     Route::get('/pelamar/{pelamar}', [AdminPelamarController::class, 'show'])->name('pelamar.show');

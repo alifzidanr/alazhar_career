@@ -16,6 +16,9 @@
         'secondary' => 'bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80',
         'ghost' => 'hover:bg-accent hover:text-accent-foreground',
         'link' => 'text-primary underline-offset-4 hover:underline',
+        'brand' => 'bg-brand-green-500 text-white shadow hover:bg-brand-green-600',
+        'navy' => 'bg-brand-navy-600 text-white shadow hover:bg-brand-navy-700',
+        'outline-invert' => 'border border-white/40 bg-white/10 text-white backdrop-blur-sm hover:bg-white/20',
     ];
 
     $sizes = [

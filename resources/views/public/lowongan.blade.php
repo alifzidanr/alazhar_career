@@ -1,35 +1,52 @@
 <x-layouts.public :title="'Lowongan Kerja - Rekrutmen YPI Al Azhar'">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10"
-         x-data="tableFilter(9, { unit: '', lokasi: '' }, { terbaru: { field: 'start', dir: 'desc' }, terlama: { field: 'start', dir: 'asc' }, batas_terdekat: { field: 'end', dir: 'asc' } })"
-         x-init="init()">
+    <div class="w-full px-4 sm:px-6 lg:px-10 xl:px-16 py-10"
+         x-data="tableFilter(12, { unit: '', jenjang: '', lokasi: '' }, { terbaru: { field: 'start', dir: 'desc' }, terlama: { field: 'start', dir: 'asc' }, batas_terdekat: { field: 'end', dir: 'asc' } })"
+         x-init="
+            const qs = new URLSearchParams(location.search);
+            search = qs.get('q') || '';
+            filters.unit = qs.get('unit') || '';
+            filters.jenjang = qs.get('jenjang') || '';
+            init();
+         ">
         <h1 class="text-2xl font-semibold tracking-tight mb-1">Seluruh Lowongan</h1>
-        <p class="text-muted-foreground mb-8">Bergabunglah bersama YPI Al Azhar. Berikut lowongan yang sedang dibuka.</p>
+        <p class="text-muted-foreground mb-8">Bergabunglah bersama YPI Al Azhar. Berikut {{ $lokerList->count() }} lowongan yang sedang dibuka.</p>
 
         <x-ui.card class="mb-8">
-            <div class="grid gap-3 sm:grid-cols-6">
-                <x-ui.input type="text" x-model="search" placeholder="Cari judul atau kata kunci..." class="sm:col-span-2" />
+            <div class="grid gap-3">
+                <x-ui.input type="text" x-model="search" placeholder="Cari judul atau kata kunci..." />
 
-                <x-ui.select x-model="filters.unit">
-                    <option value="">Semua Unit Kerja</option>
-                    @foreach ($unitOptions as $u)
-                        <option value="{{ $u->id_unit_kerja }}">{{ $u->nama_unit }}</option>
-                    @endforeach
-                </x-ui.select>
+                <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                    <x-ui.select x-model="filters.unit">
+                        <option value="">Semua Unit Kerja</option>
+                        @foreach ($unitOptions as $u)
+                            <option value="{{ $u->id_unit_kerja }}">{{ $u->nama_unit }}</option>
+                        @endforeach
+                    </x-ui.select>
 
-                <x-ui.select x-model="filters.lokasi">
-                    <option value="">Semua Lokasi</option>
-                    @foreach ($lokasiOptions as $l)
-                        <option value="{{ $l }}">{{ $l }}</option>
-                    @endforeach
-                </x-ui.select>
+                    <x-ui.select x-model="filters.jenjang">
+                        <option value="">Semua Jenis Posisi</option>
+                        @foreach ($jenjangOptions as $j)
+                            <option value="{{ $j->id_jenjang }}">{{ $j->nama_jenjang }}</option>
+                        @endforeach
+                    </x-ui.select>
 
-                <x-ui.select x-model="sort">
-                    <option value="terbaru">Terbaru</option>
-                    <option value="terlama">Terlama</option>
-                    <option value="batas_terdekat">Batas Lamaran Terdekat</option>
-                </x-ui.select>
+                    <x-ui.select x-model="filters.lokasi">
+                        <option value="">Semua Lokasi</option>
+                        @foreach ($lokasiOptions as $l)
+                            <option value="{{ $l }}">{{ $l }}</option>
+                        @endforeach
+                    </x-ui.select>
 
-                <x-ui.button type="button" @click="reset()" variant="outline">Reset</x-ui.button>
+                    <x-ui.select x-model="sort">
+                        <option value="terbaru">Terbaru</option>
+                        <option value="terlama">Terlama</option>
+                        <option value="batas_terdekat">Batas Lamaran Terdekat</option>
+                    </x-ui.select>
+                </div>
+
+                <div>
+                    <x-ui.button type="button" @click="reset()" variant="outline" class="rounded-full">Reset Filter</x-ui.button>
+                </div>
             </div>
         </x-ui.card>
 
@@ -44,30 +61,17 @@
                 </x-ui.card>
             </div>
 
-            <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3" x-ref="tbody">
+            <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" x-ref="tbody">
                 @foreach ($lokerList as $loker)
                     <a href="{{ route('loker.show', $loker) }}" class="block" data-row
                        data-search="{{ Str::lower($loker->judul_loker.' '.$loker->deskripsi_loker) }}"
                        data-unit="{{ $loker->kriteria->pluck('id_unit_kerja')->filter()->unique()->implode(' ') }}"
+                       data-jenjang="{{ $loker->id_jenjang }}"
                        data-lokasi="{{ $loker->lokasi }}"
                        data-start="{{ optional($loker->start_time)->timestamp ?? 0 }}"
                        data-end="{{ optional($loker->end_time)->timestamp ?? PHP_INT_MAX }}"
                        x-show="isVisible($el)">
-                        <x-ui.card class="hover:border-foreground/30 hover:shadow-md transition-all h-full">
-                            <div class="flex items-start justify-between gap-2">
-                                <h2 class="font-semibold text-base">{{ $loker->judul_loker }}</h2>
-                                <x-ui.badge variant="success" class="shrink-0">Dibuka</x-ui.badge>
-                            </div>
-                            @if ($loker->lokasi)
-                                <p class="text-sm text-muted-foreground mt-1">📍 {{ $loker->lokasi }}</p>
-                            @endif
-                            @if ($loker->deskripsi_loker)
-                                <p class="text-sm text-muted-foreground mt-3 line-clamp-3">{{ $loker->deskripsi_loker }}</p>
-                            @endif
-                            @if ($loker->end_time)
-                                <p class="text-xs text-muted-foreground/70 mt-3">Batas lamaran: {{ $loker->end_time->format('d/m/Y') }}</p>
-                            @endif
-                        </x-ui.card>
+                        <x-loker-card :loker="$loker" />
                     </a>
                 @endforeach
             </div>

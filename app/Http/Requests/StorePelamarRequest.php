@@ -41,17 +41,30 @@ class StorePelamarRequest extends FormRequest
             ],
             'pernah_bekerja_di_al_azhar' => ['required', 'in:Ya,Tidak'],
             'lokasi_kerja_al_azhar_sebelumnya' => ['nullable', 'string', 'max:255', Rule::requiredIf(fn () => $this->input('pernah_bekerja_di_al_azhar') === 'Ya')],
+            'kerja_al_azhar_periode' => ['nullable', 'date_format:Y-m', Rule::requiredIf(fn () => $this->input('pernah_bekerja_di_al_azhar') === 'Ya')],
+            'jenis_kepegawaian_al_azhar_sebelumnya' => [
+                'nullable',
+                'in:Pegawai Honor,Pegawai Tetap,Pegawai Inval,Pegawai Ekskul,Lain-lain',
+                Rule::requiredIf(fn () => $this->input('pernah_bekerja_di_al_azhar') === 'Ya'),
+            ],
+            'jenis_kepegawaian_al_azhar_lainnya' => [
+                'nullable', 'string', 'max:255',
+                Rule::requiredIf(fn () => $this->input('pernah_bekerja_di_al_azhar') === 'Ya' && $this->input('jenis_kepegawaian_al_azhar_sebelumnya') === 'Lain-lain'),
+            ],
 
             // Step 2: Pendidikan
             'id_pendidikan_terakhir' => ['required', 'exists:pendidikan_terakhir,id_pendidikan_terakhir'],
             'institusi' => ['required', 'string', 'max:150'],
-            'program_studi' => ['required', 'string', 'max:150'],
-            'kategori_perguruan_tinggi' => ['required', 'in:Perguruan Tinggi Negeri,Perguruan Tinggi Swasta,Lain-lain'],
-            'akreditasi' => ['required', 'in:A,B,C'],
+            // Prodi/kategori PT/akreditasi only apply to tertiary education (D3/S1/S2/S3), not SMP/SMA.
+            'program_studi' => ['nullable', 'string', 'max:150', Rule::requiredIf(fn () => ! $this->isSekolahMenengah())],
+            'kategori_perguruan_tinggi' => ['nullable', 'in:Perguruan Tinggi Negeri,Perguruan Tinggi Swasta,Lain-lain', Rule::requiredIf(fn () => ! $this->isSekolahMenengah())],
+            'akreditasi' => ['nullable', 'in:A,B,C', Rule::requiredIf(fn () => ! $this->isSekolahMenengah())],
             'tahun_lulus' => ['required', 'integer', 'between:2012,2026'],
-            // IPK S1 is also required for S2 applicants (an S2 always has a prior S1 IPK on record).
-            'ipk_s1' => ['nullable', 'numeric', 'between:0,4', Rule::requiredIf(fn () => in_array($this->pendidikanLabel(), ['S1', 'S2'], true))],
-            'ipk_s2' => ['nullable', 'numeric', 'between:0,4', Rule::requiredIf(fn () => $this->pendidikanLabel() === 'S2')],
+            // IPK S1 is also required for S2/S3 applicants (an S2/S3 always has a prior S1 IPK on record).
+            'ipk_s1' => ['nullable', 'numeric', 'between:0,4', Rule::requiredIf(fn () => in_array($this->pendidikanLabel(), ['S1', 'S2', 'S3'], true))],
+            // IPK S2 is also required for S3 applicants (an S3 always has a prior S2 IPK on record).
+            'ipk_s2' => ['nullable', 'numeric', 'between:0,4', Rule::requiredIf(fn () => in_array($this->pendidikanLabel(), ['S2', 'S3'], true))],
+            'ipk_s3' => ['nullable', 'numeric', 'between:0,4', Rule::requiredIf(fn () => $this->pendidikanLabel() === 'S3')],
             'ipk_d3' => ['nullable', 'numeric', 'between:0,4', Rule::requiredIf(fn () => $this->pendidikanLabel() === 'D3')],
 
             // Step 3: Unggah Dokumen
@@ -80,6 +93,11 @@ class StorePelamarRequest extends FormRequest
         }
 
         return $this->cachedPendidikanLabel;
+    }
+
+    private function isSekolahMenengah(): bool
+    {
+        return in_array($this->pendidikanLabel(), ['SMP', 'SMA'], true);
     }
 
     private function lokerJenjangIs(string $nama): bool

@@ -59,7 +59,9 @@
                             @endif
                             <div><dt class="text-muted-foreground">Pernah Bekerja di Al Azhar</dt><dd class="font-medium">{{ $pelamar->pernah_bekerja_di_al_azhar ?: '-' }}</dd></div>
                             @if ($pelamar->pernah_bekerja_di_al_azhar === 'Ya')
-                                <div><dt class="text-muted-foreground">Lokasi Bekerja Sebelumnya</dt><dd class="font-medium">{{ $pelamar->lokasi_kerja_al_azhar_sebelumnya }}</dd></div>
+                                <div><dt class="text-muted-foreground">Lokasi Bekerja Sebelumnya</dt><dd class="font-medium">{{ $pelamar->lokasi_kerja_al_azhar_sebelumnya ?: '-' }}</dd></div>
+                                <div><dt class="text-muted-foreground">Kapan Bekerja</dt><dd class="font-medium">{{ $pelamar->bulanKerjaAlAzharSebelumnyaLabel() ?? '-' }} {{ $pelamar->tahun_kerja_al_azhar_sebelumnya }}</dd></div>
+                                <div><dt class="text-muted-foreground">Sebagai Apa</dt><dd class="font-medium">{{ $pelamar->jenisKepegawaianAlAzharLabel() ?? '-' }}</dd></div>
                             @endif
                         </dl>
                     </x-ui.card>
@@ -123,24 +125,31 @@
                 </div>
 
                 <x-ui.card title="Pendidikan & Berkas">
+                    @php
+                        $pendidikanLabel = $pelamar->pendidikanTerakhir->pendidikan_terakhir;
+                        $isSekolahMenengah = in_array($pendidikanLabel, ['SMP', 'SMA'], true);
+                        $akreditasiLabel = ['A' => 'Unggul', 'B' => 'Baik Sekali', 'C' => 'Baik'][$pelamar->akreditasi] ?? null;
+                    @endphp
                     <dl class="grid sm:grid-cols-2 gap-4 text-sm pb-4 mb-4 border-b">
-                        <div><dt class="text-muted-foreground">Pendidikan Terakhir</dt><dd class="font-medium">{{ $pelamar->pendidikanTerakhir->pendidikan_terakhir }}</dd></div>
-                        <div><dt class="text-muted-foreground">Institusi</dt><dd class="font-medium">{{ $pelamar->institusi }}</dd></div>
-                        <div><dt class="text-muted-foreground">Program Studi</dt><dd class="font-medium">{{ $pelamar->program_studi }}</dd></div>
-                        <div><dt class="text-muted-foreground">Kategori Perguruan Tinggi</dt><dd class="font-medium">{{ $pelamar->kategori_perguruan_tinggi ?: '-' }}</dd></div>
-                        <div><dt class="text-muted-foreground">Akreditasi</dt><dd class="font-medium">{{ $pelamar->akreditasi }}</dd></div>
+                        <div><dt class="text-muted-foreground">Pendidikan Terakhir</dt><dd class="font-medium">{{ $pendidikanLabel }}</dd></div>
+                        <div><dt class="text-muted-foreground">{{ $isSekolahMenengah ? 'Nama Sekolah' : 'Institusi / Perguruan Tinggi' }}</dt><dd class="font-medium">{{ $pelamar->institusi }}</dd></div>
+                        @unless ($isSekolahMenengah)
+                            <div><dt class="text-muted-foreground">Program Studi</dt><dd class="font-medium">{{ $pelamar->program_studi ?: '-' }}</dd></div>
+                            <div><dt class="text-muted-foreground">Kategori Perguruan Tinggi</dt><dd class="font-medium">{{ $pelamar->kategori_perguruan_tinggi ?: '-' }}</dd></div>
+                            <div><dt class="text-muted-foreground">Akreditasi</dt><dd class="font-medium">{{ $pelamar->akreditasi ?: '-' }}{{ $akreditasiLabel ? ' ('.$akreditasiLabel.')' : '' }}</dd></div>
+                        @endunless
                         <div><dt class="text-muted-foreground">Tahun Lulus</dt><dd class="font-medium">{{ $pelamar->tahun_lulus }}</dd></div>
-                        @php
-                            $pendidikanLabel = $pelamar->pendidikanTerakhir->pendidikan_terakhir;
-                        @endphp
                         @if ($pendidikanLabel === 'D3')
                             <div><dt class="text-muted-foreground">IPK D3</dt><dd class="font-medium">{{ $pelamar->ipk_d3 ? number_format((float) $pelamar->ipk_d3, 2) : '-' }}</dd></div>
                         @endif
-                        @if (in_array($pendidikanLabel, ['S1', 'S2']))
+                        @if (in_array($pendidikanLabel, ['S1', 'S2', 'S3']))
                             <div><dt class="text-muted-foreground">IPK S1</dt><dd class="font-medium">{{ $pelamar->ipk_s1 ? number_format((float) $pelamar->ipk_s1, 2) : '-' }}</dd></div>
                         @endif
-                        @if ($pendidikanLabel === 'S2')
+                        @if (in_array($pendidikanLabel, ['S2', 'S3']))
                             <div><dt class="text-muted-foreground">IPK S2</dt><dd class="font-medium">{{ $pelamar->ipk_s2 ? number_format((float) $pelamar->ipk_s2, 2) : '-' }}</dd></div>
+                        @endif
+                        @if ($pendidikanLabel === 'S3')
+                            <div><dt class="text-muted-foreground">IPK S3</dt><dd class="font-medium">{{ $pelamar->ipk_s3 ? number_format((float) $pelamar->ipk_s3, 2) : '-' }}</dd></div>
                         @endif
                     </dl>
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
+use App\Models\Jenjang;
 use App\Models\Loker;
 use App\Models\PendidikanTerakhir;
 use App\Models\TahapRekrutmen;
@@ -13,22 +14,25 @@ class LokerController extends Controller
 {
     public function index(): View
     {
-        $lokerTerbaru = Loker::dibuka()->orderByDesc('start_time')->take(6)->get();
+        $lokerTerbaru = Loker::dibuka()->with('jenjang')->orderByDesc('start_time')->take(3)->get();
         $totalLowongan = Loker::dibuka()->count();
-        $lokerUntukPencarian = Loker::dibuka()->orderBy('judul_loker')->get(['id_loker', 'judul_loker', 'lokasi']);
         $tahapRekrutmen = TahapRekrutmen::orderBy('id_tahap_rekrutmen')->get();
+        $unitOptions = UnitKerja::orderBy('nama_unit')->get();
+        $jenjangOptions = Jenjang::orderBy('nama_jenjang')->get();
+        $lokerUntukPencarian = Loker::dibuka()->orderBy('judul_loker')->get(['id_loker', 'judul_loker', 'lokasi']);
 
-        return view('public.index', compact('lokerTerbaru', 'totalLowongan', 'lokerUntukPencarian', 'tahapRekrutmen'));
+        return view('public.index', compact('lokerTerbaru', 'totalLowongan', 'tahapRekrutmen', 'unitOptions', 'jenjangOptions', 'lokerUntukPencarian'));
     }
 
     public function list(): View
     {
-        $lokerList = Loker::dibuka()->with('kriteria')->orderByDesc('start_time')->get();
+        $lokerList = Loker::dibuka()->with(['kriteria', 'jenjang'])->orderByDesc('start_time')->get();
 
         $lokasiOptions = Loker::dibuka()->whereNotNull('lokasi')->distinct()->orderBy('lokasi')->pluck('lokasi');
         $unitOptions = UnitKerja::orderBy('nama_unit')->get();
+        $jenjangOptions = Jenjang::orderBy('nama_jenjang')->get();
 
-        return view('public.lowongan', compact('lokerList', 'lokasiOptions', 'unitOptions'));
+        return view('public.lowongan', compact('lokerList', 'lokasiOptions', 'unitOptions', 'jenjangOptions'));
     }
 
     public function show(Loker $loker): View
