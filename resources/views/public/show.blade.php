@@ -115,12 +115,14 @@
                     </div>
                     <div>
                         <x-ui.label for="nik">NIK <span class="text-destructive">*</span></x-ui.label>
-                        <x-ui.input type="text" id="nik" name="nik" x-model="fields.nik" value="{{ old('nik') }}" required maxlength="16" inputmode="numeric" placeholder="16 digit sesuai KTP" />
+                        <x-ui.input type="text" id="nik" name="nik" x-model="fields.nik" value="{{ old('nik') }}" required maxlength="16" inputmode="numeric" placeholder="16 digit sesuai KTP" @input="nikIsDuplicate = false" @input.debounce.600ms="checkNik()" @blur="checkNik()" />
+                        <p class="text-xs text-muted-foreground mt-1" x-show="nikChecking" x-cloak>Memeriksa NIK&hellip;</p>
+                        <p class="text-xs text-destructive mt-1" x-show="nikIsDuplicate && !nikChecking" x-cloak>NIK ini sudah pernah digunakan untuk melamar lowongan ini.</p>
                         <x-input-error :messages="$errors->get('nik')" class="mt-2" />
                     </div>
                     <div>
                         <x-ui.label for="tanggal_lahir">Tanggal Lahir <span class="text-destructive">*</span></x-ui.label>
-                        <x-ui.input type="date" id="tanggal_lahir" name="tanggal_lahir" x-model="fields.tanggal_lahir" value="{{ old('tanggal_lahir') }}" required />
+                        <x-ui.input type="date" id="tanggal_lahir" name="tanggal_lahir" x-model="fields.tanggal_lahir" value="{{ old('tanggal_lahir') }}" required max="{{ now()->subYears(18)->format('Y-m-d') }}" @change="checkAge()" />
                         <x-input-error :messages="$errors->get('tanggal_lahir')" class="mt-2" />
                     </div>
                     <div>
@@ -430,6 +432,14 @@
                         <x-input-error :messages="$errors->get('sertifikat_tambahan_upload')" class="mt-2" />
                     </div>
                 </div>
+
+                <div class="flex items-start gap-2.5 rounded-md border bg-muted/40 p-3">
+                    <input type="checkbox" id="bersedia_ditempatkan" name="bersedia_ditempatkan" value="1" x-model="fields.bersedia_ditempatkan" required class="mt-0.5 h-4 w-4 shrink-0 rounded border-input text-primary focus:ring-primary">
+                    <label for="bersedia_ditempatkan" class="text-sm leading-snug">
+                        Dengan ini saya bersedia ditempatkan di unit Al Azhar Wilayah {{ $loker->wilayah ?? $loker->lokasi ?? '-' }}. <span class="text-destructive">*</span>
+                    </label>
+                </div>
+                <x-input-error :messages="$errors->get('bersedia_ditempatkan')" class="mt-1" />
             </div>
 
             <!-- Navigation -->
@@ -475,6 +485,25 @@
             </div>
         </div>
 
+        <!-- NIK duplicate alert -->
+        <div x-show="nikDuplicateAlertOpen" x-cloak class="fixed inset-0 z-[90] flex items-center justify-center p-4">
+            <div class="absolute inset-0 bg-black/50" @click="nikDuplicateAlertOpen = false"></div>
+            <div
+                x-show="nikDuplicateAlertOpen"
+                x-transition:enter="transition ease-out duration-200"
+                x-transition:enter-start="opacity-0 scale-95"
+                x-transition:enter-end="opacity-100 scale-100"
+                class="relative w-full max-w-md rounded-lg border bg-background p-6 shadow-lg"
+            >
+                <h3 class="text-base font-semibold">NIK Sudah Pernah Melamar</h3>
+                <p class="mt-1.5 text-sm text-muted-foreground">NIK yang Anda masukkan sudah pernah digunakan untuk melamar lowongan ini sebelumnya. Setiap NIK hanya dapat melamar satu kali untuk lowongan yang sama. Silakan periksa kembali NIK Anda, atau pilih lowongan lain jika ingin melamar posisi berbeda.</p>
+
+                <div class="mt-5 flex justify-end gap-2">
+                    <x-ui.button type="button" @click="nikDuplicateAlertOpen = false">Mengerti</x-ui.button>
+                </div>
+            </div>
+        </div>
+
         <!-- Age limit alert -->
         <div x-show="ageAlertOpen" x-cloak class="fixed inset-0 z-[90] flex items-center justify-center p-4">
             <div class="absolute inset-0 bg-black/50" @click="ageAlertOpen = false"></div>
@@ -486,7 +515,7 @@
                 class="relative w-full max-w-md rounded-lg border bg-background p-6 shadow-lg"
             >
                 <h3 class="text-base font-semibold">Batas Usia Pelamar</h3>
-                <p class="mt-1.5 text-sm text-muted-foreground" x-text="'Maaf, usia Anda saat ini adalah ' + usia + ' tahun. Pelamar dengan usia lebih dari 35 tahun tidak dapat melanjutkan proses pendaftaran ini.'"></p>
+                <p class="mt-1.5 text-sm text-muted-foreground" x-text="ageAlertMessage"></p>
 
                 <div class="mt-5 flex justify-end gap-2">
                     <x-ui.button type="button" @click="ageAlertOpen = false">Mengerti</x-ui.button>
@@ -505,6 +534,9 @@
                         step: 1,
                         confirmOpen: false,
                         ageAlertOpen: false,
+                        nikChecking: false,
+                        nikIsDuplicate: false,
+                        nikDuplicateAlertOpen: false,
                         draftKey: 'lamaran_draft_' + lokerId,
                         pendidikanLabels: pendidikanLabels ?? {},
                         fields: {
@@ -535,6 +567,7 @@
                             ipk_s2: oldInput.ipk_s2 ?? '',
                             ipk_s3: oldInput.ipk_s3 ?? '',
                             ipk_d3: oldInput.ipk_d3 ?? '',
+                            bersedia_ditempatkan: !!oldInput.bersedia_ditempatkan,
                         },
 
                         get isS1() {
@@ -610,10 +643,50 @@
                             return age;
                         },
 
+                        get ageAlertMessage() {
+                            const batas = this.usia !== null && this.usia < 18
+                                ? 'Pelamar dengan usia kurang dari 18 tahun tidak dapat melanjutkan proses pendaftaran ini.'
+                                : 'Pelamar dengan usia lebih dari 35 tahun tidak dapat melanjutkan proses pendaftaran ini.';
+                            return 'Maaf, usia Anda saat ini adalah ' + this.usia + ' tahun. ' + batas;
+                        },
+
+                        checkAge() {
+                            if (this.usia !== null && (this.usia < 18 || this.usia > 35)) {
+                                this.ageAlertOpen = true;
+                            }
+                        },
+
+                        async checkNik() {
+                            const nik = this.fields.nik;
+                            if (!/^\d{16}$/.test(nik)) {
+                                this.nikIsDuplicate = false;
+                                return;
+                            }
+                            this.nikChecking = true;
+                            try {
+                                const res = await fetch(`/loker/${lokerId}/cek-nik?nik=${encodeURIComponent(nik)}`, {
+                                    headers: { 'Accept': 'application/json' },
+                                });
+                                const data = await res.json();
+                                this.nikIsDuplicate = !!data.sudah_melamar;
+                                if (this.nikIsDuplicate) {
+                                    this.nikDuplicateAlertOpen = true;
+                                }
+                            } catch (e) {
+                                // Network error: let server-side validation on submit catch it instead.
+                            } finally {
+                                this.nikChecking = false;
+                            }
+                        },
+
                         next() {
                             if (!this.validateStep(this.step)) return;
-                            if (this.step === 1 && this.usia !== null && this.usia > 35) {
+                            if (this.step === 1 && this.usia !== null && (this.usia < 18 || this.usia > 35)) {
                                 this.ageAlertOpen = true;
+                                return;
+                            }
+                            if (this.step === 1 && this.nikIsDuplicate) {
+                                this.nikDuplicateAlertOpen = true;
                                 return;
                             }
                             if (this.step < 3) this.step++;

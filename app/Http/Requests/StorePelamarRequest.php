@@ -19,9 +19,17 @@ class StorePelamarRequest extends FormRequest
         return [
             // Step 1: Data Pelamar
             'nama' => ['required', 'string', 'max:150'],
-            'nik' => ['required', 'digits:16'],
+            'nik' => [
+                'required',
+                'digits:16',
+                Rule::unique('pelamar', 'nik')
+                    ->where(fn ($query) => $query->where('id_loker', $this->route('loker')?->id_loker)),
+            ],
             'tanggal_lahir' => ['required', 'date', 'before:today', function ($attribute, $value, $fail) {
-                if (\Carbon\Carbon::parse($value)->age > 35) {
+                $age = \Carbon\Carbon::parse($value)->age;
+                if ($age < 18) {
+                    $fail('Maaf, pelamar dengan usia kurang dari 18 tahun tidak dapat melanjutkan proses pendaftaran ini.');
+                } elseif ($age > 35) {
                     $fail('Maaf, pelamar dengan usia lebih dari 35 tahun tidak dapat melanjutkan proses pendaftaran ini.');
                 }
             }],
@@ -78,6 +86,16 @@ class StorePelamarRequest extends FormRequest
             'sim_upload' => [$this->lokerJenjangIs('Driver') ? 'required' : 'nullable', 'file', 'mimes:jpg,jpeg,png', 'max:5120'],
             'sertifikat_gada_pratama_upload' => [$this->lokerJenjangIs('Satpam') ? 'required' : 'nullable', 'file', 'mimes:pdf', 'max:5120'],
             'sertifikat_tambahan_upload' => ['nullable', 'file', 'mimes:pdf', 'max:5120'],
+            'bersedia_ditempatkan' => ['required', 'accepted'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'nik.unique' => 'NIK ini sudah pernah digunakan untuk melamar lowongan ini.',
+            'bersedia_ditempatkan.required' => 'Anda harus menyetujui pernyataan kesediaan penempatan sebelum mengirim lamaran.',
+            'bersedia_ditempatkan.accepted' => 'Anda harus menyetujui pernyataan kesediaan penempatan sebelum mengirim lamaran.',
         ];
     }
 

@@ -27,6 +27,12 @@
     </div>
 
     <div>
+        <x-ui.label for="wilayah">Wilayah</x-ui.label>
+        <x-ui.input type="text" id="wilayah" name="wilayah" value="{{ old('wilayah', $loker->wilayah ?? '') }}" placeholder="cth. Jadetabek" />
+        <p class="text-xs text-muted-foreground mt-1">Dipakai pada pernyataan kesediaan penempatan di formulir lamaran.</p>
+    </div>
+
+    <div>
         <x-ui.label for="id_pendidikan_terakhir">Pendidikan Minimum <span class="text-destructive">*</span></x-ui.label>
         <x-ui.select id="id_pendidikan_terakhir" name="id_pendidikan_terakhir" required>
             <option value="">-- Pilih --</option>

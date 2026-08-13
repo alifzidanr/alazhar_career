@@ -14,6 +14,7 @@ class Loker extends Model
         'judul_loker',
         'deskripsi_loker',
         'lokasi',
+        'wilayah',
         'id_pendidikan_terakhir',
         'id_jenjang',
         'status_loker',

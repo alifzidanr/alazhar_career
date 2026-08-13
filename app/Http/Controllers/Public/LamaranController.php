@@ -9,11 +9,28 @@ use App\Models\Pelamar;
 use App\Models\RiwayatTahapPelamar;
 use App\Models\StatusPelamar;
 use App\Models\TahapRekrutmen;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class LamaranController extends Controller
 {
+    public function cekNik(Request $request, Loker $loker): JsonResponse
+    {
+        $nik = (string) $request->query('nik', '');
+
+        if (! preg_match('/^\d{16}$/', $nik)) {
+            return response()->json(['sudah_melamar' => false]);
+        }
+
+        $sudahMelamar = Pelamar::where('id_loker', $loker->id_loker)
+            ->where('nik', $nik)
+            ->exists();
+
+        return response()->json(['sudah_melamar' => $sudahMelamar]);
+    }
+
     public function store(StorePelamarRequest $request, Loker $loker): RedirectResponse
     {
         if ($loker->status_loker !== 'dibuka') {
@@ -77,6 +94,7 @@ class LamaranController extends Controller
                 'sertifikat_tambahan_upload' => $request->hasFile('sertifikat_tambahan_upload')
                     ? $request->file('sertifikat_tambahan_upload')->store('pelamar/sertifikat_tambahan', 'public')
                     : null,
+                'bersedia_ditempatkan' => true,
             ]);
 
             RiwayatTahapPelamar::create([

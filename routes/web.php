@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [LokerController::class, 'index'])->name('loker.index');
 Route::get('/lowongan', [LokerController::class, 'list'])->name('loker.list');
 Route::get('/loker/{loker}', [LokerController::class, 'show'])->name('loker.show');
+Route::get('/loker/{loker}/cek-nik', [LamaranController::class, 'cekNik'])->name('loker.cek-nik');
 Route::post('/loker/{loker}/lamar', [LamaranController::class, 'store'])->name('loker.lamar');
 
 Route::get('/status-lamaran', [StatusLamaranController::class, 'index'])->name('status.index');

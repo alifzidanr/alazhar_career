@@ -128,7 +128,13 @@
       "Bash(php -l app/Http/Controllers/Admin/DashboardController.php)",
       "Bash(php -l resources/views/admin/dashboard.blade.php)",
       "Bash(php -l resources/views/layouts/sidebar.blade.php)",
-      "Bash(php -l routes/web.php)"
+      "Bash(php -l routes/web.php)",
+      "Bash(git *)",
+      "Bash(pkill -f \"artisan serve --port=8791\")",
+      "Bash(pkill -f \"artisan serve --port=8792\")",
+      "Bash(sed -i '' \"s/'35 Tahun'/'Usia Maksimal 35 Tahun'/g\" database/seeders/DemoRekrutmenSeeder.php)",
+      "Bash(php -l database/seeders/DemoRekrutmenSeeder.php)",
+      "Bash(pkill -f \"artisan serve --port=8793\")"
     ]
   }
 }

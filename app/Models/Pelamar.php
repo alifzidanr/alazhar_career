@@ -53,6 +53,7 @@ class Pelamar extends Model
         'transkrip_nilai_upload',
         'sertifikat_gada_pratama_upload',
         'sertifikat_tambahan_upload',
+        'bersedia_ditempatkan',
         'id_pelamar_cadangan_dari',
         'catatan',
     ];
@@ -66,6 +67,7 @@ class Pelamar extends Model
             'ipk_s2' => 'decimal:2',
             'ipk_s3' => 'decimal:2',
             'ipk_d3' => 'decimal:2',
+            'bersedia_ditempatkan' => 'boolean',
         ];
     }
 

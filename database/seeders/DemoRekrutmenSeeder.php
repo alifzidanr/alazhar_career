@@ -45,7 +45,7 @@ class DemoRekrutmenSeeder extends Seeder
         $today = Carbon::parse('2026-08-11');
 
         $sharedJadetabekPersyaratan = [
-            ['35 Tahun', 'wajib'],
+            ['Usia Maksimal 35 Tahun', 'wajib'],
             ['Pendidikan Minimal S1 Linier', 'wajib'],
             ['IPK Minimal 3.00 dari 4.00', 'wajib'],
             ['Akreditasi Minimal B (Baik Sekali)', 'wajib'],
@@ -66,7 +66,7 @@ class DemoRekrutmenSeeder extends Seeder
                 'deskripsi_loker' => 'Mengemudikan kendaraan operasional yayasan, menjaga kebersihan dan kelaikan kendaraan, serta siap bertugas sesuai jadwal.',
                 'end_offset' => 5, 'start_offset' => -20,
                 'persyaratan' => [
-                    ['35 Tahun', 'wajib'],
+                    ['Usia Maksimal 35 Tahun', 'wajib'],
                     ['Pendidikan Minimal SMA/Sederajat', 'wajib'],
                     ['Memiliki SIM A', 'wajib'],
                     ['Memiliki Pengalaman Kerja', 'diutamakan'],
@@ -86,7 +86,7 @@ class DemoRekrutmenSeeder extends Seeder
                 'deskripsi_loker' => 'Mengelola komunikasi publik, media sosial, dan dokumentasi kegiatan yayasan.',
                 'end_offset' => 30, 'start_offset' => -10,
                 'persyaratan' => [
-                    ['35 Tahun', 'wajib'],
+                    ['Usia Maksimal 35 Tahun', 'wajib'],
                     ['S1 Ilmu Komunikasi/Hubungan Masyarakat/Manajemen Pemasaran/Jurnalistik/Penyiaran/Linier', 'wajib'],
                     ['IPK Minimal 3.00 dari 4.00', 'wajib'],
                     ['Akreditasi Minimal B (Baik Sekali)', 'wajib'],
@@ -106,7 +106,7 @@ class DemoRekrutmenSeeder extends Seeder
                 'deskripsi_loker' => 'Mengelola infrastruktur IT, jaringan, dan dukungan teknis operasional unit.',
                 'end_offset' => 45, 'start_offset' => -5,
                 'persyaratan' => [
-                    ['35 Tahun', 'wajib'],
+                    ['Usia Maksimal 35 Tahun', 'wajib'],
                     ['S1 Teknik Informatika/Sistem Informasi/Ilmu Komputer/Linier', 'wajib'],
                     ['IPK Minimal 3.00 dari 4.00', 'wajib'],
                     ['Akreditasi Minimal B (Baik Sekali)', 'wajib'],
@@ -128,7 +128,7 @@ class DemoRekrutmenSeeder extends Seeder
                 'end_offset' => 21, 'start_offset' => -15,
                 'persyaratan' => [
                     ['Pria', 'wajib'],
-                    ['35 Tahun', 'wajib'],
+                    ['Usia Maksimal 35 Tahun', 'wajib'],
                     ['S1 Ilmu Perpustakaan/Teknologi Pendidikan/Linier', 'wajib'],
                     ['IPK Minimal 3.00 dari 4.00', 'wajib'],
                     ['Akreditasi Minimal B (Baik Sekali)', 'wajib'],
@@ -149,7 +149,7 @@ class DemoRekrutmenSeeder extends Seeder
                 'deskripsi_loker' => 'Mengajar Pendidikan Agama Islam untuk siswa SD, membina akhlak dan praktik ibadah harian.',
                 'end_offset' => 25, 'start_offset' => -30,
                 'persyaratan' => [
-                    ['35 Tahun', 'wajib'],
+                    ['Usia Maksimal 35 Tahun', 'wajib'],
                     ['S1 Pendidikan Agama Islam/Ilmu Agama Islam/Linier', 'wajib'],
                     ['Akreditasi Minimal B (Baik Sekali)', 'wajib'],
                     ['IPK Minimal 3.00 dari 4.00', 'wajib'],
@@ -236,7 +236,7 @@ class DemoRekrutmenSeeder extends Seeder
                 'deskripsi_loker' => 'Menjaga kebersihan dan kerapian lingkungan unit, termasuk ruang kelas, kantor, dan area umum.',
                 'end_offset' => 50, 'start_offset' => -8,
                 'persyaratan' => [
-                    ['35 Tahun', 'wajib'],
+                    ['Usia Maksimal 35 Tahun', 'wajib'],
                     ['Pendidikan Minimal SMP/SLTP/Sederajat', 'wajib'],
                     ['Memiliki Pengalaman Kerja', 'diutamakan'],
                     ['Berpenampilan Islami', 'wajib'],
@@ -254,7 +254,7 @@ class DemoRekrutmenSeeder extends Seeder
                 'deskripsi_loker' => 'Mengajar Seni Rupa, membimbing kreativitas siswa dalam karya dua dan tiga dimensi.',
                 'end_offset' => 60, 'start_offset' => -12,
                 'persyaratan' => [
-                    ['35 Tahun', 'wajib'],
+                    ['Usia Maksimal 35 Tahun', 'wajib'],
                     ['Minimal S1 Pendidikan Seni Rupa', 'wajib'],
                     ['IPK Minimal 3.00 dari 4.00', 'wajib'],
                     ['Akreditasi Minimal B (Baik Sekali)', 'wajib'],
@@ -275,7 +275,7 @@ class DemoRekrutmenSeeder extends Seeder
                 'deskripsi_loker' => 'Mengelola dan menyiapkan peralatan laboratorium IPA untuk kegiatan praktikum siswa.',
                 'end_offset' => 60, 'start_offset' => -12,
                 'persyaratan' => [
-                    ['35 Tahun', 'wajib'],
+                    ['Usia Maksimal 35 Tahun', 'wajib'],
                     ['Minimal D3 IPA/Kimia/Biologi/Fisika', 'wajib'],
                     ['IPK Minimal 3.00 dari 4.00', 'wajib'],
                     ['Akreditasi Minimal B (Baik Sekali)', 'wajib'],
@@ -296,7 +296,7 @@ class DemoRekrutmenSeeder extends Seeder
                 'deskripsi_loker' => 'Mengelola administrasi keuangan unit, pencatatan transaksi, dan pelaporan berkala.',
                 'end_offset' => 35, 'start_offset' => -18,
                 'persyaratan' => [
-                    ['35 Tahun', 'wajib'],
+                    ['Usia Maksimal 35 Tahun', 'wajib'],
                     ['S1 Manajemen Keuangan/Akuntansi/Ekonomi', 'wajib'],
                     ['IPK Minimal 3.00 dari 4.00', 'wajib'],
                     ['Akreditasi Minimal B (Baik Sekali)', 'wajib'],
@@ -317,7 +317,7 @@ class DemoRekrutmenSeeder extends Seeder
                 'deskripsi_loker' => 'Mengajar Pendidikan Jasmani, Olahraga, dan Kesehatan untuk siswa SD.',
                 'end_offset' => 3, 'start_offset' => -40,
                 'persyaratan' => [
-                    ['35 Tahun', 'wajib'],
+                    ['Usia Maksimal 35 Tahun', 'wajib'],
                     ['S1 Pendidikan Jasmani/Olahraga/Linier', 'wajib'],
                     ['Akreditasi Minimal B (Baik Sekali)', 'wajib'],
                     ['IPK Minimal 3.00 dari 4.00', 'wajib'],
@@ -338,7 +338,7 @@ class DemoRekrutmenSeeder extends Seeder
                 'deskripsi_loker' => 'Mengelola administrasi umum unit, korespondensi, dan kearsipan dokumen.',
                 'end_offset' => 6, 'start_offset' => -25,
                 'persyaratan' => [
-                    ['35 Tahun', 'wajib'],
+                    ['Usia Maksimal 35 Tahun', 'wajib'],
                     ['S1 Manajemen/Ilmu Ekonomi/Ilmu Administrasi/Ilmu Komunikasi/Linier', 'wajib'],
                     ['IPK Minimal 3.00 dari 4.00', 'wajib'],
                     ['Akreditasi Minimal B (Baik Sekali)', 'wajib'],
@@ -359,7 +359,7 @@ class DemoRekrutmenSeeder extends Seeder
                 'deskripsi_loker' => 'Menjaga keamanan dan ketertiban lingkungan unit selama jam operasional.',
                 'end_offset' => 2, 'start_offset' => -33,
                 'persyaratan' => [
-                    ['35 Tahun', 'wajib'],
+                    ['Usia Maksimal 35 Tahun', 'wajib'],
                     ['Pendidikan Minimal SMA', 'wajib'],
                     ['Memiliki Ijazah Gada Pratama', 'wajib'],
                     ['Tinggi Badan Minimal 167cm', 'wajib'],
