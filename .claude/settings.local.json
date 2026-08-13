@@ -134,7 +134,18 @@
       "Bash(pkill -f \"artisan serve --port=8792\")",
       "Bash(sed -i '' \"s/'35 Tahun'/'Usia Maksimal 35 Tahun'/g\" database/seeders/DemoRekrutmenSeeder.php)",
       "Bash(php -l database/seeders/DemoRekrutmenSeeder.php)",
-      "Bash(pkill -f \"artisan serve --port=8793\")"
+      "Bash(pkill -f \"artisan serve --port=8793\")",
+      "Bash(php -l app/Models/User.php)",
+      "Bash(pkill -f \"artisan serve --port=8794\")",
+      "Bash(pkill -f \"artisan serve --port=8795\")",
+      "Bash(sips --help)",
+      "Bash(sips -h)",
+      "Bash(sips *)",
+      "Bash(cp __TRACKED_VAR__/favicon.ico public/favicon.ico)",
+      "Bash(cp __TRACKED_VAR__/favicon-32.png public/favicon-32x32.png)",
+      "Bash(cp __TRACKED_VAR__/favicon-16.png public/favicon-16x16.png)",
+      "Bash(cp __TRACKED_VAR__/apple-touch-icon.png public/apple-touch-icon.png)",
+      "Bash(pkill -f \"artisan serve --port=8796\")"
     ]
   }
 }

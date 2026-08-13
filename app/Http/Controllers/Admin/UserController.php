@@ -12,9 +12,10 @@ use Illuminate\View\View;
 
 class UserController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        $users = User::orderBy('nama')->get();
+        $users = User::orderBy('nama')->get()
+            ->filter(fn (User $u) => ! $u->isProtected() || $u->id_admin === $request->user()->id_admin);
 
         return view('admin.user.index', compact('users'));
     }
@@ -65,6 +66,10 @@ class UserController extends Controller
     {
         if ($user->id_admin === $request->user()->id_admin) {
             return back()->withErrors(['nama' => 'Anda tidak dapat menghapus akun Anda sendiri.']);
+        }
+
+        if ($user->isProtected()) {
+            return back()->withErrors(['nama' => 'Akun ini tidak dapat dihapus.']);
         }
 
         $user->delete();
