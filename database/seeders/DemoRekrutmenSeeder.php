@@ -481,19 +481,21 @@ class DemoRekrutmenSeeder extends Seeder
 
             $ipkS1 = null;
             $ipkD3 = null;
+            $kategoriPtS1 = null;
+            $kategoriPtD3 = null;
 
             if ($idPendidikan === 7) {
                 $institusi = $institusiS1[array_rand($institusiS1)];
                 $ipkS1 = number_format(random_int(300, 390) / 100, 2);
+                $kategoriPtS1 = $kategoriPt;
             } elseif ($idPendidikan === 6) {
                 $institusi = $institusiD3[array_rand($institusiD3)];
                 $ipkD3 = number_format(random_int(300, 390) / 100, 2);
+                $kategoriPtD3 = $kategoriPt;
             } elseif ($idPendidikan === 3) {
                 $institusi = $institusiSma[array_rand($institusiSma)].' '.$loker->lokasi;
-                $kategoriPt = 'Lain-lain';
             } else {
                 $institusi = $institusiSmp[array_rand($institusiSmp)].' '.$loker->lokasi;
-                $kategoriPt = 'Lain-lain';
             }
 
             $tanggalLahir = Carbon::parse('2026-08-11')->subYears(random_int(23, 34))->subDays(random_int(0, 364));
@@ -515,7 +517,8 @@ class DemoRekrutmenSeeder extends Seeder
                 'id_pendidikan_terakhir' => $idPendidikan,
                 'institusi' => $institusi,
                 'program_studi' => $programStudi,
-                'kategori_perguruan_tinggi' => $kategoriPt,
+                'kategori_perguruan_tinggi_d3' => $kategoriPtD3,
+                'kategori_perguruan_tinggi_s1' => $kategoriPtS1,
                 'akreditasi' => $akreditasi,
                 'tahun_lulus' => $tahunLulus,
                 'ipk_s1' => $ipkS1,

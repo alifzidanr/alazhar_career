@@ -37,7 +37,12 @@ class PelamarController extends Controller
         }
 
         if ($kategoriAktif !== '') {
-            $query->where('kategori_perguruan_tinggi', $kategoriAktif);
+            $query->where(function ($q) use ($kategoriAktif) {
+                $q->where('kategori_perguruan_tinggi_d3', $kategoriAktif)
+                    ->orWhere('kategori_perguruan_tinggi_s1', $kategoriAktif)
+                    ->orWhere('kategori_perguruan_tinggi_s2', $kategoriAktif)
+                    ->orWhere('kategori_perguruan_tinggi_s3', $kategoriAktif);
+            });
         }
 
         $pelamarList = $query->orderByDesc('tanggal_apply')->get();
@@ -51,7 +56,12 @@ class PelamarController extends Controller
         }
 
         if ($kategoriAktif !== '') {
-            $countsQuery->where('kategori_perguruan_tinggi', $kategoriAktif);
+            $countsQuery->where(function ($q) use ($kategoriAktif) {
+                $q->where('kategori_perguruan_tinggi_d3', $kategoriAktif)
+                    ->orWhere('kategori_perguruan_tinggi_s1', $kategoriAktif)
+                    ->orWhere('kategori_perguruan_tinggi_s2', $kategoriAktif)
+                    ->orWhere('kategori_perguruan_tinggi_s3', $kategoriAktif);
+            });
         }
 
         $counts = $countsQuery->pluck('total', 'id_tahap_rekrutmen');

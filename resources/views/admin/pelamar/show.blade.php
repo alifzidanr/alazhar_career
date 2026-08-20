@@ -135,20 +135,23 @@
                         <div><dt class="text-muted-foreground">{{ $isSekolahMenengah ? 'Nama Sekolah' : 'Institusi / Perguruan Tinggi' }}</dt><dd class="font-medium">{{ $pelamar->institusi }}</dd></div>
                         @unless ($isSekolahMenengah)
                             <div><dt class="text-muted-foreground">Program Studi</dt><dd class="font-medium">{{ $pelamar->program_studi ?: '-' }}</dd></div>
-                            <div><dt class="text-muted-foreground">Kategori Perguruan Tinggi</dt><dd class="font-medium">{{ $pelamar->kategori_perguruan_tinggi ?: '-' }}</dd></div>
                             <div><dt class="text-muted-foreground">Akreditasi</dt><dd class="font-medium">{{ $pelamar->akreditasi ?: '-' }}{{ $akreditasiLabel ? ' ('.$akreditasiLabel.')' : '' }}</dd></div>
                         @endunless
                         <div><dt class="text-muted-foreground">Tahun Lulus</dt><dd class="font-medium">{{ $pelamar->tahun_lulus }}</dd></div>
                         @if ($pendidikanLabel === 'D3')
+                            <div><dt class="text-muted-foreground">Kategori Perguruan Tinggi D3</dt><dd class="font-medium">{{ $pelamar->kategori_perguruan_tinggi_d3 ?: '-' }}</dd></div>
                             <div><dt class="text-muted-foreground">IPK D3</dt><dd class="font-medium">{{ $pelamar->ipk_d3 ? number_format((float) $pelamar->ipk_d3, 2) : '-' }}</dd></div>
                         @endif
                         @if (in_array($pendidikanLabel, ['S1', 'S2', 'S3']))
+                            <div><dt class="text-muted-foreground">Kategori Perguruan Tinggi S1</dt><dd class="font-medium">{{ $pelamar->kategori_perguruan_tinggi_s1 ?: '-' }}</dd></div>
                             <div><dt class="text-muted-foreground">IPK S1</dt><dd class="font-medium">{{ $pelamar->ipk_s1 ? number_format((float) $pelamar->ipk_s1, 2) : '-' }}</dd></div>
                         @endif
                         @if (in_array($pendidikanLabel, ['S2', 'S3']))
+                            <div><dt class="text-muted-foreground">Kategori Perguruan Tinggi S2</dt><dd class="font-medium">{{ $pelamar->kategori_perguruan_tinggi_s2 ?: '-' }}</dd></div>
                             <div><dt class="text-muted-foreground">IPK S2</dt><dd class="font-medium">{{ $pelamar->ipk_s2 ? number_format((float) $pelamar->ipk_s2, 2) : '-' }}</dd></div>
                         @endif
                         @if ($pendidikanLabel === 'S3')
+                            <div><dt class="text-muted-foreground">Kategori Perguruan Tinggi S3</dt><dd class="font-medium">{{ $pelamar->kategori_perguruan_tinggi_s3 ?: '-' }}</dd></div>
                             <div><dt class="text-muted-foreground">IPK S3</dt><dd class="font-medium">{{ $pelamar->ipk_s3 ? number_format((float) $pelamar->ipk_s3, 2) : '-' }}</dd></div>
                         @endif
                     </dl>

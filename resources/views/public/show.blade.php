@@ -63,7 +63,7 @@
     </x-ui.card>
 
     @php
-        $step2Fields = ['id_pendidikan_terakhir', 'gelar', 'institusi', 'program_studi', 'kategori_perguruan_tinggi', 'akreditasi', 'tahun_lulus', 'ipk_s1', 'ipk_s2', 'ipk_s3', 'ipk_d3'];
+        $step2Fields = ['id_pendidikan_terakhir', 'gelar', 'institusi', 'program_studi', 'akreditasi', 'tahun_lulus', 'kategori_perguruan_tinggi_d3', 'ipk_d3', 'kategori_perguruan_tinggi_s1', 'ipk_s1', 'kategori_perguruan_tinggi_s2', 'ipk_s2', 'kategori_perguruan_tinggi_s3', 'ipk_s3'];
         $step3Fields = ['cv_upload', 'ktp_upload', 'ijazah_upload', 'transkrip_nilai_upload', 'pas_foto_upload', 'surat_lamaran_upload', 'sim_upload', 'sertifikat_gada_pratama_upload', 'sertifikat_tambahan_upload', 'loker'];
         $errorStep = null;
         if ($errors->any()) {
@@ -318,16 +318,6 @@
                         <x-input-error :messages="$errors->get('program_studi')" class="mt-2" />
                     </div>
                     <div x-show="!isSekolahMenengah" x-cloak>
-                        <x-ui.label for="kategori_perguruan_tinggi">Kategori Perguruan Tinggi <span class="text-destructive">*</span></x-ui.label>
-                        <x-ui.select id="kategori_perguruan_tinggi" name="kategori_perguruan_tinggi" x-model="fields.kategori_perguruan_tinggi" x-bind:required="!isSekolahMenengah">
-                            <option value="">-- Pilih --</option>
-                            @foreach (['Perguruan Tinggi Negeri', 'Perguruan Tinggi Swasta', 'Lain-lain'] as $kat)
-                                <option value="{{ $kat }}" @selected(old('kategori_perguruan_tinggi') === $kat)>{{ $kat }}</option>
-                            @endforeach
-                        </x-ui.select>
-                        <x-input-error :messages="$errors->get('kategori_perguruan_tinggi')" class="mt-2" />
-                    </div>
-                    <div x-show="!isSekolahMenengah" x-cloak>
                         <x-ui.label for="akreditasi">Akreditasi Program Studi Saat Lulus <span class="text-destructive">*</span></x-ui.label>
                         <x-ui.select id="akreditasi" name="akreditasi" x-model="fields.akreditasi" x-bind:required="!isSekolahMenengah">
                             <option value="">-- Pilih --</option>
@@ -348,23 +338,63 @@
                         <x-input-error :messages="$errors->get('tahun_lulus')" class="mt-2" />
                     </div>
                     <div x-show="isD3" x-cloak>
+                        <x-ui.label for="kategori_perguruan_tinggi_d3">Kategori Perguruan Tinggi D3 <span class="text-destructive">*</span></x-ui.label>
+                        <x-ui.select id="kategori_perguruan_tinggi_d3" name="kategori_perguruan_tinggi_d3" x-model="fields.kategori_perguruan_tinggi_d3" x-bind:required="isD3">
+                            <option value="">-- Pilih --</option>
+                            @foreach (['Perguruan Tinggi Negeri', 'Perguruan Tinggi Swasta', 'Lain-lain'] as $kat)
+                                <option value="{{ $kat }}" @selected(old('kategori_perguruan_tinggi_d3') === $kat)>{{ $kat }}</option>
+                            @endforeach
+                        </x-ui.select>
+                        <x-input-error :messages="$errors->get('kategori_perguruan_tinggi_d3')" class="mt-2" />
+                    </div>
+                    <div x-show="isD3" x-cloak>
                         <x-ui.label for="ipk_d3">IPK D3 <span class="text-destructive">*</span></x-ui.label>
                         <x-ui.input type="number" id="ipk_d3" name="ipk_d3" x-model="fields.ipk_d3" value="{{ old('ipk_d3') }}" min="0" max="4" step="0.01" placeholder="cth. 3.50" x-bind:required="isD3" />
                         <x-input-error :messages="$errors->get('ipk_d3')" class="mt-2" />
                     </div>
                     <div x-show="isS1 || isS2 || isS3" x-cloak>
+                        <x-ui.label for="kategori_perguruan_tinggi_s1">Kategori Perguruan Tinggi S1 <span class="text-destructive">*</span></x-ui.label>
+                        <x-ui.select id="kategori_perguruan_tinggi_s1" name="kategori_perguruan_tinggi_s1" x-model="fields.kategori_perguruan_tinggi_s1" x-bind:required="isS1 || isS2 || isS3">
+                            <option value="">-- Pilih --</option>
+                            @foreach (['Perguruan Tinggi Negeri', 'Perguruan Tinggi Swasta', 'Lain-lain'] as $kat)
+                                <option value="{{ $kat }}" @selected(old('kategori_perguruan_tinggi_s1') === $kat)>{{ $kat }}</option>
+                            @endforeach
+                        </x-ui.select>
+                        <x-input-error :messages="$errors->get('kategori_perguruan_tinggi_s1')" class="mt-2" />
+                    </div>
+                    <div x-show="isS1 || isS2 || isS3" x-cloak>
                         <x-ui.label for="ipk_s1">IPK S1 <span class="text-destructive">*</span></x-ui.label>
-                        <x-ui.input type="number" id="ipk_s1" name="ipk_s1" x-model="fields.ipk_s1" value="{{ old('ipk_s1') }}" min="0" max="4" step="0.01" placeholder="cth. 3.50" x-bind:required="isS1 || isS2 || isS3" />
+                        <x-ui.input type="number" id="ipk_s1" name="ipk_s1" x-model="fields.ipk_s1" value="{{ old('ipk_s1') }}" min="0" max="4" step="0.01" placeholder="cth. 3.50" x-bind:required="isS1 || isS2 || isS3" @change="checkIpk()" />
                         <x-input-error :messages="$errors->get('ipk_s1')" class="mt-2" />
                     </div>
                     <div x-show="isS2 || isS3" x-cloak>
+                        <x-ui.label for="kategori_perguruan_tinggi_s2">Kategori Perguruan Tinggi S2 <span class="text-destructive">*</span></x-ui.label>
+                        <x-ui.select id="kategori_perguruan_tinggi_s2" name="kategori_perguruan_tinggi_s2" x-model="fields.kategori_perguruan_tinggi_s2" x-bind:required="isS2 || isS3">
+                            <option value="">-- Pilih --</option>
+                            @foreach (['Perguruan Tinggi Negeri', 'Perguruan Tinggi Swasta', 'Lain-lain'] as $kat)
+                                <option value="{{ $kat }}" @selected(old('kategori_perguruan_tinggi_s2') === $kat)>{{ $kat }}</option>
+                            @endforeach
+                        </x-ui.select>
+                        <x-input-error :messages="$errors->get('kategori_perguruan_tinggi_s2')" class="mt-2" />
+                    </div>
+                    <div x-show="isS2 || isS3" x-cloak>
                         <x-ui.label for="ipk_s2">IPK S2 <span class="text-destructive">*</span></x-ui.label>
-                        <x-ui.input type="number" id="ipk_s2" name="ipk_s2" x-model="fields.ipk_s2" value="{{ old('ipk_s2') }}" min="0" max="4" step="0.01" placeholder="cth. 3.50" x-bind:required="isS2 || isS3" />
+                        <x-ui.input type="number" id="ipk_s2" name="ipk_s2" x-model="fields.ipk_s2" value="{{ old('ipk_s2') }}" min="0" max="4" step="0.01" placeholder="cth. 3.50" x-bind:required="isS2 || isS3" @change="checkIpk()" />
                         <x-input-error :messages="$errors->get('ipk_s2')" class="mt-2" />
                     </div>
                     <div x-show="isS3" x-cloak>
+                        <x-ui.label for="kategori_perguruan_tinggi_s3">Kategori Perguruan Tinggi S3 <span class="text-destructive">*</span></x-ui.label>
+                        <x-ui.select id="kategori_perguruan_tinggi_s3" name="kategori_perguruan_tinggi_s3" x-model="fields.kategori_perguruan_tinggi_s3" x-bind:required="isS3">
+                            <option value="">-- Pilih --</option>
+                            @foreach (['Perguruan Tinggi Negeri', 'Perguruan Tinggi Swasta', 'Lain-lain'] as $kat)
+                                <option value="{{ $kat }}" @selected(old('kategori_perguruan_tinggi_s3') === $kat)>{{ $kat }}</option>
+                            @endforeach
+                        </x-ui.select>
+                        <x-input-error :messages="$errors->get('kategori_perguruan_tinggi_s3')" class="mt-2" />
+                    </div>
+                    <div x-show="isS3" x-cloak>
                         <x-ui.label for="ipk_s3">IPK S3 <span class="text-destructive">*</span></x-ui.label>
-                        <x-ui.input type="number" id="ipk_s3" name="ipk_s3" x-model="fields.ipk_s3" value="{{ old('ipk_s3') }}" min="0" max="4" step="0.01" placeholder="cth. 3.50" x-bind:required="isS3" />
+                        <x-ui.input type="number" id="ipk_s3" name="ipk_s3" x-model="fields.ipk_s3" value="{{ old('ipk_s3') }}" min="0" max="4" step="0.01" placeholder="cth. 3.50" x-bind:required="isS3" @change="checkIpk()" />
                         <x-input-error :messages="$errors->get('ipk_s3')" class="mt-2" />
                     </div>
                 </div>
@@ -522,6 +552,25 @@
                 </div>
             </div>
         </div>
+
+        <!-- Minimum IPK alert -->
+        <div x-show="ipkAlertOpen" x-cloak class="fixed inset-0 z-[90] flex items-center justify-center p-4">
+            <div class="absolute inset-0 bg-black/50" @click="ipkAlertOpen = false"></div>
+            <div
+                x-show="ipkAlertOpen"
+                x-transition:enter="transition ease-out duration-200"
+                x-transition:enter-start="opacity-0 scale-95"
+                x-transition:enter-end="opacity-100 scale-100"
+                class="relative w-full max-w-md rounded-lg border bg-background p-6 shadow-lg"
+            >
+                <h3 class="text-base font-semibold">Batas Minimal IPK</h3>
+                <p class="mt-1.5 text-sm text-muted-foreground">Maaf, IPK minimal yang dipersyaratkan untuk jenjang S1/S2/S3 adalah 3.00 dari 4.00. Mohon periksa kembali IPK yang Anda masukkan.</p>
+
+                <div class="mt-5 flex justify-end gap-2">
+                    <x-ui.button type="button" @click="ipkAlertOpen = false">Mengerti</x-ui.button>
+                </div>
+            </div>
+        </div>
       </div>
     </x-ui.card>
   </div>
@@ -534,6 +583,7 @@
                         step: 1,
                         confirmOpen: false,
                         ageAlertOpen: false,
+                        ipkAlertOpen: false,
                         nikChecking: false,
                         nikIsDuplicate: false,
                         nikDuplicateAlertOpen: false,
@@ -560,13 +610,16 @@
                             gelar: oldInput.gelar ?? '',
                             institusi: oldInput.institusi ?? '',
                             program_studi: oldInput.program_studi ?? '',
-                            kategori_perguruan_tinggi: oldInput.kategori_perguruan_tinggi ?? '',
                             akreditasi: oldInput.akreditasi ?? '',
                             tahun_lulus: oldInput.tahun_lulus ?? '',
-                            ipk_s1: oldInput.ipk_s1 ?? '',
-                            ipk_s2: oldInput.ipk_s2 ?? '',
-                            ipk_s3: oldInput.ipk_s3 ?? '',
+                            kategori_perguruan_tinggi_d3: oldInput.kategori_perguruan_tinggi_d3 ?? '',
                             ipk_d3: oldInput.ipk_d3 ?? '',
+                            kategori_perguruan_tinggi_s1: oldInput.kategori_perguruan_tinggi_s1 ?? '',
+                            ipk_s1: oldInput.ipk_s1 ?? '',
+                            kategori_perguruan_tinggi_s2: oldInput.kategori_perguruan_tinggi_s2 ?? '',
+                            ipk_s2: oldInput.ipk_s2 ?? '',
+                            kategori_perguruan_tinggi_s3: oldInput.kategori_perguruan_tinggi_s3 ?? '',
+                            ipk_s3: oldInput.ipk_s3 ?? '',
                             bersedia_ditempatkan: !!oldInput.bersedia_ditempatkan,
                         },
 
@@ -656,6 +709,23 @@
                             }
                         },
 
+                        get ipkDiBawahMinimum() {
+                            const minIpk = 3;
+                            const dibawahMinimum = (nilai) => nilai !== '' && nilai !== null && parseFloat(nilai) < minIpk;
+
+                            if ((this.isS1 || this.isS2 || this.isS3) && dibawahMinimum(this.fields.ipk_s1)) return true;
+                            if ((this.isS2 || this.isS3) && dibawahMinimum(this.fields.ipk_s2)) return true;
+                            if (this.isS3 && dibawahMinimum(this.fields.ipk_s3)) return true;
+
+                            return false;
+                        },
+
+                        checkIpk() {
+                            if (this.ipkDiBawahMinimum) {
+                                this.ipkAlertOpen = true;
+                            }
+                        },
+
                         async checkNik() {
                             const nik = this.fields.nik;
                             if (!/^\d{16}$/.test(nik)) {
@@ -687,6 +757,10 @@
                             }
                             if (this.step === 1 && this.nikIsDuplicate) {
                                 this.nikDuplicateAlertOpen = true;
+                                return;
+                            }
+                            if (this.step === 2 && this.ipkDiBawahMinimum) {
+                                this.ipkAlertOpen = true;
                                 return;
                             }
                             if (this.step < 3) this.step++;

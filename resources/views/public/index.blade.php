@@ -262,7 +262,7 @@
 
         <p class="mt-6 text-sm text-muted-foreground">
             Butuh bantuan teknis lamaran?
-            <a href="mailto:hrdypia@al-azhar.sch.id" class="font-medium text-brand-navy-600 hover:underline">hrdypia@al-azhar.sch.id</a>
+            <a href="mailto:karir@al-azhar.or.id" class="font-medium text-brand-navy-600 hover:underline">karir@al-azhar.or.id</a>
             &middot;
             <a href="tel:+622172783683" class="font-medium text-brand-navy-600 hover:underline">(021) 72783683</a>
         </p>

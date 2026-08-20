@@ -93,7 +93,7 @@
                         Yayasan Pendidikan Islam Al Azhar<br>
                         Jl. Sisingamangaraja No. 1, Kebayoran Baru, Jakarta Selatan, 12110
                     </p>
-                    <a href="mailto:hrdypia@al-azhar.sch.id" class="mt-2 block text-sm text-brand-navy-600 hover:underline">hrdypia@al-azhar.sch.id</a>
+                    <a href="mailto:karir@al-azhar.or.id" class="mt-2 block text-sm text-brand-navy-600 hover:underline">karir@al-azhar.or.id</a>
                     <a href="{{ auth()->check() ? route('admin.pelamar.index') : route('login') }}" class="mt-3 block text-sm text-white hover:text-white">{{ auth()->check() ? 'Panel Admin' : 'Masuk' }}</a>
                 </div>
             </div>
