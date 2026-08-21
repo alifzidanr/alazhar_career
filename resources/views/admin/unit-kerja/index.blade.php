@@ -1,24 +1,24 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-lg tracking-tight">Manajemen Lokasi</h2>
+        <h2 class="font-semibold text-lg tracking-tight">Manajemen Unit Kerja</h2>
     </x-slot>
 
     <div class="py-8">
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
-            <x-ui.card title="Tambah Lokasi" description="Lokasi ini akan tersedia sebagai pilihan dropdown saat menambahkan atau mengubah sebuah loker.">
-                <form method="POST" action="{{ route('admin.lokasi.store') }}" class="flex gap-2">
+            <x-ui.card title="Tambah Unit Kerja" description="Unit kerja ini akan tersedia sebagai pilihan dropdown saat menambahkan kriteria loker maupun mencatat penempatan orientasi pelamar.">
+                <form method="POST" action="{{ route('admin.unit-kerja.store') }}" class="flex gap-2">
                     @csrf
-                    <x-ui.input type="text" name="nama_lokasi" placeholder="cth. SMAIA 1, Jakarta Selatan" value="{{ old('nama_lokasi') }}" required class="flex-1" />
+                    <x-ui.input type="text" name="nama_unit" placeholder="cth. SMAIA 1 Jakarta Selatan" value="{{ old('nama_unit') }}" required class="flex-1" />
                     <x-ui.button type="submit">Tambah</x-ui.button>
                 </form>
-                <x-input-error :messages="$errors->get('nama_lokasi')" class="mt-2" />
+                <x-input-error :messages="$errors->get('nama_unit')" class="mt-2" />
             </x-ui.card>
 
             <div x-data="tableFilter(15)" x-init="init()" class="space-y-6">
                 <x-ui.card>
                     <div class="flex gap-3">
-                        <x-ui.input type="text" x-model="search" placeholder="Cari lokasi..." class="flex-1" />
+                        <x-ui.input type="text" x-model="search" placeholder="Cari unit kerja..." class="flex-1" />
                         <x-ui.button type="button" @click="reset()" variant="outline">Reset</x-ui.button>
                     </div>
                 </x-ui.card>
@@ -27,34 +27,34 @@
                     <table class="min-w-full divide-y text-sm">
                         <thead class="bg-muted/50">
                             <tr class="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                                <th class="px-4 py-3">Lokasi</th>
+                                <th class="px-4 py-3">Unit Kerja</th>
                                 <th class="px-4 py-3">Dipakai</th>
                                 <th class="px-4 py-3"></th>
                             </tr>
                         </thead>
                         <tbody class="divide-y" x-ref="tbody">
-                            @forelse ($lokasiList as $l)
-                                <tr class="hover:bg-muted/30" data-row data-search="{{ Str::lower($l->nama_lokasi) }}" x-show="isVisible($el)">
+                            @forelse ($unitKerjaList as $u)
+                                <tr class="hover:bg-muted/30" data-row data-search="{{ Str::lower($u->nama_unit) }}" x-show="isVisible($el)">
                                     <td class="px-4 py-3">
-                                        <form method="POST" action="{{ route('admin.lokasi.update', $l) }}" class="flex items-center gap-2">
+                                        <form method="POST" action="{{ route('admin.unit-kerja.update', $u) }}" class="flex items-center gap-2">
                                             @csrf @method('PATCH')
-                                            <x-ui.input type="text" name="nama_lokasi" value="{{ $l->nama_lokasi }}" class="h-8 text-sm" />
+                                            <x-ui.input type="text" name="nama_unit" value="{{ $u->nama_unit }}" class="h-8 text-sm" />
                                             <x-ui.button type="submit" variant="outline" size="sm">Simpan</x-ui.button>
                                         </form>
                                     </td>
-                                    <td class="px-4 py-3 text-muted-foreground">{{ $l->dipakai_count }}x</td>
+                                    <td class="px-4 py-3 text-muted-foreground">{{ $u->kriteria_loker_count + $u->orientasi_count }}x</td>
                                     <td class="px-4 py-3 text-right">
-                                        <form method="POST" action="{{ route('admin.lokasi.destroy', $l) }}" x-data @submit.prevent="$dispatch('confirm-dialog', { title: 'Hapus lokasi ini?', destructive: true, confirmText: 'Hapus', form: $el })">
+                                        <form method="POST" action="{{ route('admin.unit-kerja.destroy', $u) }}" x-data @submit.prevent="$dispatch('confirm-dialog', { title: 'Hapus unit kerja ini?', destructive: true, confirmText: 'Hapus', form: $el })">
                                             @csrf @method('DELETE')
                                             <x-ui.button type="submit" variant="ghost" size="sm" class="text-destructive hover:text-destructive">Hapus</x-ui.button>
                                         </form>
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="3" class="px-4 py-8 text-center text-muted-foreground">Belum ada lokasi.</td></tr>
+                                <tr><td colspan="3" class="px-4 py-8 text-center text-muted-foreground">Belum ada unit kerja.</td></tr>
                             @endforelse
-                            @if ($lokasiList->isNotEmpty())
-                                <tr x-show="total === 0"><td colspan="3" class="px-4 py-8 text-center text-muted-foreground">Tidak ada lokasi yang cocok.</td></tr>
+                            @if ($unitKerjaList->isNotEmpty())
+                                <tr x-show="total === 0"><td colspan="3" class="px-4 py-8 text-center text-muted-foreground">Tidak ada unit kerja yang cocok.</td></tr>
                             @endif
                         </tbody>
                     </table>

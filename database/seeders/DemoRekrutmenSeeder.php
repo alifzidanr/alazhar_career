@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use App\Models\Jenjang;
 use App\Models\Kriteria;
 use App\Models\Loker;
-use App\Models\Lokasi;
 use App\Models\LogNotifikasi;
 use App\Models\Orientasi;
 use App\Models\Pelamar;
@@ -16,6 +15,7 @@ use App\Models\TesTulis;
 use App\Models\TugasSementara;
 use App\Models\UnitKerja;
 use App\Models\Wawancara;
+use App\Models\Wilayah;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -39,7 +39,7 @@ class DemoRekrutmenSeeder extends Seeder
 
         $jenjangId = $this->ensureJenjang();
         $unitId = $this->ensureUnitKerja();
-        $this->ensureLokasi();
+        $this->ensureWilayah();
         $kriteriaId = fn (string $text) => $this->kriteria($text);
 
         $today = Carbon::parse('2026-08-11');
@@ -59,7 +59,7 @@ class DemoRekrutmenSeeder extends Seeder
         $lokers = [
             [
                 'judul_loker' => 'Driver',
-                'lokasi' => 'Pangkalpinang',
+                'wilayah' => 'Pangkalpinang',
                 'jenjang' => 'Driver',
                 'pendidikan' => 3, // SMA
                 'unit' => null,
@@ -79,7 +79,7 @@ class DemoRekrutmenSeeder extends Seeder
             ],
             [
                 'judul_loker' => 'Staf Humas',
-                'lokasi' => 'Jadetabek',
+                'wilayah' => 'Jadetabek',
                 'jenjang' => 'Staf Humas',
                 'pendidikan' => 7, // S1
                 'unit' => null,
@@ -99,7 +99,7 @@ class DemoRekrutmenSeeder extends Seeder
             ],
             [
                 'judul_loker' => 'Tata Usaha (TU IT)',
-                'lokasi' => 'Bengkulu',
+                'wilayah' => 'Bengkulu',
                 'jenjang' => 'Tata Usaha',
                 'pendidikan' => 7,
                 'unit' => null,
@@ -120,7 +120,7 @@ class DemoRekrutmenSeeder extends Seeder
             ],
             [
                 'judul_loker' => 'TU PSB',
-                'lokasi' => 'Sidoarjo',
+                'wilayah' => 'Sidoarjo',
                 'jenjang' => 'Tata Usaha',
                 'pendidikan' => 7,
                 'unit' => null,
@@ -142,7 +142,7 @@ class DemoRekrutmenSeeder extends Seeder
             ],
             [
                 'judul_loker' => 'Guru PAI (SD)',
-                'lokasi' => 'Malang',
+                'wilayah' => 'Malang',
                 'jenjang' => 'Guru SD',
                 'pendidikan' => 7,
                 'unit' => null,
@@ -163,7 +163,7 @@ class DemoRekrutmenSeeder extends Seeder
             ],
             [
                 'judul_loker' => 'Guru Damping (SD)',
-                'lokasi' => 'Jadetabek',
+                'wilayah' => 'Jadetabek',
                 'jenjang' => 'Guru SD',
                 'pendidikan' => 7,
                 'unit' => null,
@@ -174,7 +174,7 @@ class DemoRekrutmenSeeder extends Seeder
             ],
             [
                 'judul_loker' => 'Guru Bahasa Indonesia (SMP)',
-                'lokasi' => 'Jadetabek',
+                'wilayah' => 'Jadetabek',
                 'jenjang' => 'Guru SMP',
                 'pendidikan' => 7,
                 'unit' => null,
@@ -185,7 +185,7 @@ class DemoRekrutmenSeeder extends Seeder
             ],
             [
                 'judul_loker' => 'Guru IPS (SMP)',
-                'lokasi' => 'Jadetabek',
+                'wilayah' => 'Jadetabek',
                 'jenjang' => 'Guru SMP',
                 'pendidikan' => 7,
                 'unit' => null,
@@ -196,7 +196,7 @@ class DemoRekrutmenSeeder extends Seeder
             ],
             [
                 'judul_loker' => 'Guru Matematika (SMP)',
-                'lokasi' => 'Jadetabek',
+                'wilayah' => 'Jadetabek',
                 'jenjang' => 'Guru SMP',
                 'pendidikan' => 7,
                 'unit' => null,
@@ -207,7 +207,7 @@ class DemoRekrutmenSeeder extends Seeder
             ],
             [
                 'judul_loker' => 'Guru Matematika (SMA)',
-                'lokasi' => 'Jadetabek',
+                'wilayah' => 'Jadetabek',
                 'jenjang' => 'Guru SMA',
                 'pendidikan' => 7,
                 'unit' => null,
@@ -218,7 +218,7 @@ class DemoRekrutmenSeeder extends Seeder
             ],
             [
                 'judul_loker' => 'Guru Bahasa Arab (SMA)',
-                'lokasi' => 'Jadetabek',
+                'wilayah' => 'Jadetabek',
                 'jenjang' => 'Guru SMA',
                 'pendidikan' => 7,
                 'unit' => null,
@@ -229,7 +229,7 @@ class DemoRekrutmenSeeder extends Seeder
             ],
             [
                 'judul_loker' => 'Janitor',
-                'lokasi' => 'Jadetabek',
+                'wilayah' => 'Jadetabek',
                 'jenjang' => 'Janitor',
                 'pendidikan' => 2, // SMP
                 'unit' => null,
@@ -247,7 +247,7 @@ class DemoRekrutmenSeeder extends Seeder
             ],
             [
                 'judul_loker' => 'Guru Seni Rupa',
-                'lokasi' => 'DKI Jakarta',
+                'wilayah' => 'DKI Jakarta',
                 'jenjang' => 'Guru SMA',
                 'pendidikan' => 7,
                 'unit' => 'SMA IB DKI Jakarta',
@@ -268,7 +268,7 @@ class DemoRekrutmenSeeder extends Seeder
             ],
             [
                 'judul_loker' => 'Laboran',
-                'lokasi' => 'DKI Jakarta',
+                'wilayah' => 'DKI Jakarta',
                 'jenjang' => 'Laboran',
                 'pendidikan' => 6, // D3
                 'unit' => 'SMA IB DKI Jakarta',
@@ -289,7 +289,7 @@ class DemoRekrutmenSeeder extends Seeder
             ],
             [
                 'judul_loker' => 'TU Keuangan',
-                'lokasi' => 'Pangkalpinang',
+                'wilayah' => 'Pangkalpinang',
                 'jenjang' => 'Tata Usaha',
                 'pendidikan' => 7,
                 'unit' => null,
@@ -310,7 +310,7 @@ class DemoRekrutmenSeeder extends Seeder
             ],
             [
                 'judul_loker' => 'Guru PJOK (SD)',
-                'lokasi' => 'Depok',
+                'wilayah' => 'Depok',
                 'jenjang' => 'Guru SD',
                 'pendidikan' => 7,
                 'unit' => 'Al Fauzien Depok',
@@ -331,7 +331,7 @@ class DemoRekrutmenSeeder extends Seeder
             ],
             [
                 'judul_loker' => 'Tata Usaha',
-                'lokasi' => 'Jadetabek',
+                'wilayah' => 'Jadetabek',
                 'jenjang' => 'Tata Usaha',
                 'pendidikan' => 7,
                 'unit' => null,
@@ -352,7 +352,7 @@ class DemoRekrutmenSeeder extends Seeder
             ],
             [
                 'judul_loker' => 'Satpam',
-                'lokasi' => 'Malang',
+                'wilayah' => 'Malang',
                 'jenjang' => 'Satpam',
                 'pendidikan' => 3,
                 'unit' => null,
@@ -376,7 +376,7 @@ class DemoRekrutmenSeeder extends Seeder
             $loker = Loker::create([
                 'judul_loker' => $def['judul_loker'],
                 'deskripsi_loker' => $def['deskripsi_loker'],
-                'lokasi' => $def['lokasi'],
+                'wilayah' => $def['wilayah'],
                 'id_pendidikan_terakhir' => $def['pendidikan'],
                 'id_jenjang' => $jenjangId[$def['jenjang']],
                 'status_loker' => 'dibuka',
@@ -430,10 +430,10 @@ class DemoRekrutmenSeeder extends Seeder
         return UnitKerja::pluck('id_unit_kerja', 'nama_unit')->toArray();
     }
 
-    private function ensureLokasi(): void
+    private function ensureWilayah(): void
     {
         foreach (['Pangkalpinang', 'Jadetabek', 'Bengkulu', 'Sidoarjo', 'Malang', 'DKI Jakarta', 'Depok'] as $nama) {
-            Lokasi::firstOrCreate(['nama_lokasi' => $nama]);
+            Wilayah::firstOrCreate(['nama_wilayah' => $nama]);
         }
     }
 
@@ -493,9 +493,9 @@ class DemoRekrutmenSeeder extends Seeder
                 $ipkD3 = number_format(random_int(300, 390) / 100, 2);
                 $kategoriPtD3 = $kategoriPt;
             } elseif ($idPendidikan === 3) {
-                $institusi = $institusiSma[array_rand($institusiSma)].' '.$loker->lokasi;
+                $institusi = $institusiSma[array_rand($institusiSma)].' '.$loker->wilayah;
             } else {
-                $institusi = $institusiSmp[array_rand($institusiSmp)].' '.$loker->lokasi;
+                $institusi = $institusiSmp[array_rand($institusiSmp)].' '.$loker->wilayah;
             }
 
             $tanggalLahir = Carbon::parse('2026-08-11')->subYears(random_int(23, 34))->subDays(random_int(0, 364));
@@ -511,12 +511,14 @@ class DemoRekrutmenSeeder extends Seeder
                 'jenis_kelamin' => $isPria ? 'L' : 'P',
                 'no_hp' => '08'.random_int(1000000000, 9999999999),
                 'email' => $slug.'@gmail.com',
-                'alamat' => 'Jl. Contoh No. '.random_int(1, 99).', '.$loker->lokasi,
+                'alamat' => 'Jl. Contoh No. '.random_int(1, 99).', '.$loker->wilayah,
                 'pernah_rekrutmen_sebelumnya' => 'Tidak',
                 'pernah_bekerja_di_al_azhar' => 'Tidak',
                 'id_pendidikan_terakhir' => $idPendidikan,
-                'institusi' => $institusi,
-                'program_studi' => $programStudi,
+                'institusi' => $idPendidikan === 7 ? null : $institusi,
+                'institusi_s1' => $idPendidikan === 7 ? $institusi : null,
+                'program_studi' => $idPendidikan === 6 ? $programStudi : null,
+                'program_studi_s1' => $idPendidikan === 7 ? $programStudi : null,
                 'kategori_perguruan_tinggi_d3' => $kategoriPtD3,
                 'kategori_perguruan_tinggi_s1' => $kategoriPtS1,
                 'akreditasi' => $akreditasi,
@@ -526,8 +528,9 @@ class DemoRekrutmenSeeder extends Seeder
                 'cv_upload' => self::PLACEHOLDER_PDF,
                 'ijazah_upload' => self::PLACEHOLDER_PDF,
                 'ktp_upload' => self::PLACEHOLDER_IMG,
-                'transkrip_nilai_upload' => self::PLACEHOLDER_PDF,
                 'pas_foto_upload' => self::PLACEHOLDER_IMG,
+                'transkrip_nilai_upload' => $idPendidikan === 7 ? null : self::PLACEHOLDER_PDF,
+                'transkrip_nilai_s1_upload' => $idPendidikan === 7 ? self::PLACEHOLDER_PDF : null,
                 'surat_lamaran_upload' => self::PLACEHOLDER_PDF,
                 'sim_upload' => $jenjangNama === 'Driver' ? self::PLACEHOLDER_IMG : null,
                 'sertifikat_gada_pratama_upload' => $jenjangNama === 'Satpam' ? self::PLACEHOLDER_PDF : null,

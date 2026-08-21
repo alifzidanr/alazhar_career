@@ -16,8 +16,7 @@ class StoreLokerRequest extends FormRequest
         return [
             'judul_loker' => ['required', 'string', 'max:150'],
             'deskripsi_loker' => ['nullable', 'string'],
-            'lokasi' => ['nullable', 'string', 'max:150'],
-            'wilayah' => ['nullable', 'string', 'max:100'],
+            'wilayah' => ['nullable', 'string', 'max:150'],
             'id_pendidikan_terakhir' => ['required', 'exists:pendidikan_terakhir,id_pendidikan_terakhir'],
             'id_jenjang' => ['required', 'exists:jenjang,id_jenjang'],
             'status_loker' => ['required', 'in:dibuka,ditutup'],

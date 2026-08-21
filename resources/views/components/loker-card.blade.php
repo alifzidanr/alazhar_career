@@ -48,10 +48,10 @@
 
     <h3 class="mt-4 font-semibold text-base leading-snug">{{ $loker->judul_loker }}</h3>
 
-    @if ($loker->lokasi || $jenjangNama)
+    @if ($loker->wilayah || $jenjangNama)
         <p class="mt-1.5 flex items-center gap-1.5 text-sm text-muted-foreground">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" class="h-4 w-4 shrink-0 text-brand-navy-600"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" /></svg>
-            {{ $loker->lokasi }}{{ $loker->lokasi && $jenjangNama ? ' — ' : '' }}{{ $jenjangNama }}
+            {{ $loker->wilayah }}{{ $loker->wilayah && $jenjangNama ? ' — ' : '' }}{{ $jenjangNama }}
         </p>
     @endif
 

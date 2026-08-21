@@ -7,8 +7,8 @@ use App\Http\Requests\StoreLokerRequest;
 use App\Models\Jenjang;
 use App\Models\Kriteria;
 use App\Models\Loker;
-use App\Models\Lokasi;
 use App\Models\PendidikanTerakhir;
+use App\Models\Wilayah;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
@@ -17,18 +17,18 @@ class LokerController extends Controller
     public function index(): View
     {
         $lokerList = Loker::withCount('pelamar')->orderByDesc('created_at')->get();
-        $lokasiOptions = Lokasi::orderBy('nama_lokasi')->get();
+        $wilayahOptions = Wilayah::orderBy('nama_wilayah')->get();
 
-        return view('admin.loker.index', compact('lokerList', 'lokasiOptions'));
+        return view('admin.loker.index', compact('lokerList', 'wilayahOptions'));
     }
 
     public function create(): View
     {
-        $lokasiList = Lokasi::orderBy('nama_lokasi')->get();
+        $wilayahList = Wilayah::orderBy('nama_wilayah')->get();
         $pendidikanList = PendidikanTerakhir::orderBy('id_pendidikan_terakhir')->get();
         $jenjangList = Jenjang::orderBy('nama_jenjang')->get();
 
-        return view('admin.loker.create', compact('lokasiList', 'pendidikanList', 'jenjangList'));
+        return view('admin.loker.create', compact('wilayahList', 'pendidikanList', 'jenjangList'));
     }
 
     public function store(StoreLokerRequest $request): RedirectResponse
@@ -42,11 +42,11 @@ class LokerController extends Controller
     {
         $loker->load(['kriteria.kriteria']);
         $kriteriaList = Kriteria::orderBy('teks_kriteria')->get();
-        $lokasiList = Lokasi::orderBy('nama_lokasi')->get();
+        $wilayahList = Wilayah::orderBy('nama_wilayah')->get();
         $pendidikanList = PendidikanTerakhir::orderBy('id_pendidikan_terakhir')->get();
         $jenjangList = Jenjang::orderBy('nama_jenjang')->get();
 
-        return view('admin.loker.edit', compact('loker', 'kriteriaList', 'lokasiList', 'pendidikanList', 'jenjangList'));
+        return view('admin.loker.edit', compact('loker', 'kriteriaList', 'wilayahList', 'pendidikanList', 'jenjangList'));
     }
 
     public function update(StoreLokerRequest $request, Loker $loker): RedirectResponse

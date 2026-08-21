@@ -5,18 +5,18 @@ namespace Database\Seeders;
 use App\Models\Jenjang;
 use App\Models\Kriteria;
 use App\Models\Loker;
-use App\Models\Lokasi;
 use App\Models\Pelamar;
 use App\Models\RiwayatTahapPelamar;
 use App\Models\StatusPelamar;
 use App\Models\TahapRekrutmen;
+use App\Models\Wilayah;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
 /**
  * Bulk-generates 100 active (dibuka) loker, each with a handful of kriteria
- * and 3-5 pelamar, on top of whatever is already seeded (jenjang, lokasi,
+ * and 3-5 pelamar, on top of whatever is already seeded (jenjang, wilayah,
  * pendidikan_terakhir). Unlike DemoRekrutmenSeeder this does not wipe
  * existing data — it only adds new rows — and is meant for load/volume
  * testing of the admin listing, filters, and pagination.
@@ -37,7 +37,7 @@ class MockScaleSeeder extends Seeder
         $today = Carbon::parse('2026-08-19');
 
         $jenjangId = Jenjang::pluck('id_jenjang', 'nama_jenjang')->toArray();
-        $lokasiList = Lokasi::pluck('nama_lokasi')->toArray();
+        $wilayahList = Wilayah::pluck('nama_wilayah')->toArray();
 
         $posisiPool = $this->posisiPool();
 
@@ -45,13 +45,13 @@ class MockScaleSeeder extends Seeder
             $jenjangNama = array_rand($posisiPool);
             $posisi = $posisiPool[$jenjangNama];
             $judul = $posisi['judul'][array_rand($posisi['judul'])];
-            $lokasi = $lokasiList[array_rand($lokasiList)];
+            $wilayah = $wilayahList[array_rand($wilayahList)];
             $pendidikanLabel = $posisi['pendidikan'][array_rand($posisi['pendidikan'])];
 
             $loker = Loker::create([
                 'judul_loker' => $judul,
                 'deskripsi_loker' => $posisi['deskripsi'],
-                'lokasi' => $lokasi,
+                'wilayah' => $wilayah,
                 'id_pendidikan_terakhir' => self::PENDIDIKAN_ID[$pendidikanLabel],
                 'id_jenjang' => $jenjangId[$jenjangNama],
                 'status_loker' => 'dibuka',
@@ -226,15 +226,18 @@ class MockScaleSeeder extends Seeder
             $nama = ($isPria ? $namaDepanL[array_rand($namaDepanL)] : $namaDepanP[array_rand($namaDepanP)]).' '.$namaBelakang[array_rand($namaBelakang)];
 
             $institusi = $institusiByLevel[$pendidikanLabel][array_rand($institusiByLevel[$pendidikanLabel])];
-            $programStudi = $programByJenjang ? $programByJenjang[array_rand($programByJenjang)] : null;
             $akreditasi = ['A', 'B', 'B', 'C'][array_rand(['A', 'B', 'B', 'C'])];
             $tahunLulus = random_int(2015, 2024);
 
             $ipkByLevel = [];
             $kategoriByLevel = [];
+            $programStudiByLevel = [];
+            $institusiByLevelFilled = [];
             foreach ($levelsToFill as $level) {
                 $ipkByLevel[$level] = number_format(random_int(300, 390) / 100, 2);
                 $kategoriByLevel[$level] = $kategoriPtOptions[array_rand($kategoriPtOptions)];
+                $programStudiByLevel[$level] = $programByJenjang ? $programByJenjang[array_rand($programByJenjang)] : null;
+                $institusiByLevelFilled[$level] = $institusiByLevel[$level][array_rand($institusiByLevel[$level])];
             }
 
             $tanggalLahir = Carbon::parse('2026-08-19')->subYears(random_int(23, 34))->subDays(random_int(0, 364));
@@ -250,17 +253,23 @@ class MockScaleSeeder extends Seeder
                 'jenis_kelamin' => $isPria ? 'L' : 'P',
                 'no_hp' => '08'.random_int(1000000000, 9999999999),
                 'email' => $slug.'@gmail.com',
-                'alamat' => 'Jl. Contoh No. '.random_int(1, 99).', '.$loker->lokasi,
+                'alamat' => 'Jl. Contoh No. '.random_int(1, 99).', '.$loker->wilayah,
                 'pernah_rekrutmen_sebelumnya' => 'Tidak',
                 'pernah_bekerja_di_al_azhar' => 'Tidak',
                 'id_pendidikan_terakhir' => $loker->id_pendidikan_terakhir,
-                'institusi' => $institusi,
-                'program_studi' => $programStudi,
+                'institusi' => in_array($pendidikanLabel, ['S1', 'S2', 'S3'], true) ? null : $institusi,
+                'institusi_s1' => $institusiByLevelFilled['S1'] ?? null,
+                'institusi_s2' => $institusiByLevelFilled['S2'] ?? null,
+                'institusi_s3' => $institusiByLevelFilled['S3'] ?? null,
+                'program_studi' => $programStudiByLevel['D3'] ?? null,
+                'program_studi_s1' => $programStudiByLevel['S1'] ?? null,
+                'program_studi_s2' => $programStudiByLevel['S2'] ?? null,
+                'program_studi_s3' => $programStudiByLevel['S3'] ?? null,
                 'kategori_perguruan_tinggi_d3' => $kategoriByLevel['D3'] ?? null,
                 'kategori_perguruan_tinggi_s1' => $kategoriByLevel['S1'] ?? null,
                 'kategori_perguruan_tinggi_s2' => $kategoriByLevel['S2'] ?? null,
                 'kategori_perguruan_tinggi_s3' => $kategoriByLevel['S3'] ?? null,
-                'akreditasi' => $programStudi ? $akreditasi : null,
+                'akreditasi' => $programStudiByLevel ? $akreditasi : null,
                 'tahun_lulus' => $tahunLulus,
                 'ipk_d3' => $ipkByLevel['D3'] ?? null,
                 'ipk_s1' => $ipkByLevel['S1'] ?? null,
@@ -269,7 +278,10 @@ class MockScaleSeeder extends Seeder
                 'cv_upload' => self::PLACEHOLDER_PDF,
                 'ijazah_upload' => self::PLACEHOLDER_PDF,
                 'ktp_upload' => self::PLACEHOLDER_IMG,
-                'transkrip_nilai_upload' => self::PLACEHOLDER_PDF,
+                'transkrip_nilai_upload' => in_array($pendidikanLabel, ['S1', 'S2', 'S3'], true) ? null : self::PLACEHOLDER_PDF,
+                'transkrip_nilai_s1_upload' => isset($ipkByLevel['S1']) ? self::PLACEHOLDER_PDF : null,
+                'transkrip_nilai_s2_upload' => isset($ipkByLevel['S2']) ? self::PLACEHOLDER_PDF : null,
+                'transkrip_nilai_s3_upload' => isset($ipkByLevel['S3']) ? self::PLACEHOLDER_PDF : null,
                 'pas_foto_upload' => self::PLACEHOLDER_IMG,
                 'surat_lamaran_upload' => self::PLACEHOLDER_PDF,
                 'sim_upload' => $posisi['tema'] === 'driver' ? self::PLACEHOLDER_IMG : null,

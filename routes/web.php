@@ -4,11 +4,12 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\JenjangController as AdminJenjangController;
 use App\Http\Controllers\Admin\KriteriaController as AdminKriteriaController;
 use App\Http\Controllers\Admin\KriteriaLokerController;
-use App\Http\Controllers\Admin\LokasiController as AdminLokasiController;
 use App\Http\Controllers\Admin\LokerController as AdminLokerController;
 use App\Http\Controllers\Admin\NotifikasiController;
 use App\Http\Controllers\Admin\PelamarController as AdminPelamarController;
+use App\Http\Controllers\Admin\UnitKerjaController as AdminUnitKerjaController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Admin\WilayahController as AdminWilayahController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Public\LamaranController;
 use App\Http\Controllers\Public\LokerController;
@@ -60,10 +61,15 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::patch('/jenjang/{jenjang}', [AdminJenjangController::class, 'update'])->name('jenjang.update');
     Route::delete('/jenjang/{jenjang}', [AdminJenjangController::class, 'destroy'])->name('jenjang.destroy');
 
-    Route::get('/lokasi', [AdminLokasiController::class, 'index'])->name('lokasi.index');
-    Route::post('/lokasi', [AdminLokasiController::class, 'store'])->name('lokasi.store');
-    Route::patch('/lokasi/{lokasi}', [AdminLokasiController::class, 'update'])->name('lokasi.update');
-    Route::delete('/lokasi/{lokasi}', [AdminLokasiController::class, 'destroy'])->name('lokasi.destroy');
+    Route::get('/wilayah', [AdminWilayahController::class, 'index'])->name('wilayah.index');
+    Route::post('/wilayah', [AdminWilayahController::class, 'store'])->name('wilayah.store');
+    Route::patch('/wilayah/{wilayah}', [AdminWilayahController::class, 'update'])->name('wilayah.update');
+    Route::delete('/wilayah/{wilayah}', [AdminWilayahController::class, 'destroy'])->name('wilayah.destroy');
+
+    Route::get('/unit-kerja', [AdminUnitKerjaController::class, 'index'])->name('unit-kerja.index');
+    Route::post('/unit-kerja', [AdminUnitKerjaController::class, 'store'])->name('unit-kerja.store');
+    Route::patch('/unit-kerja/{unitKerja}', [AdminUnitKerjaController::class, 'update'])->name('unit-kerja.update');
+    Route::delete('/unit-kerja/{unitKerja}', [AdminUnitKerjaController::class, 'destroy'])->name('unit-kerja.destroy');
 
     Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
     Route::post('/users', [AdminUserController::class, 'store'])->name('users.store');

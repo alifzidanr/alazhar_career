@@ -39,7 +39,7 @@ class LokerSampleSeeder3 extends Seeder
             'Reguler', 'Kontrak', 'Paruh Waktu', 'Pengganti Sementara', 'Program Khusus',
         ];
 
-        $lokasi = [
+        $wilayah = [
             1 => 'SMAIA 1, Jakarta Selatan',
             2 => 'SMAIA 2, Jakarta Selatan',
             3 => 'Bagian Kepegawaian, Jakarta Selatan',
@@ -60,7 +60,7 @@ class LokerSampleSeeder3 extends Seeder
             $rows[] = [
                 'judul_loker' => "{$posisi[$idPosisi]} {$unitKerja[$idUnitKerja]} ({$label})",
                 'deskripsi_loker' => $deskripsi[$idPosisi],
-                'lokasi' => $lokasi[$idUnitKerja],
+                'wilayah' => $wilayah[$idUnitKerja],
                 'status_loker' => $isPastDeadline ? 'ditutup' : 'dibuka',
                 'start_time' => $start,
                 'end_time' => $end,

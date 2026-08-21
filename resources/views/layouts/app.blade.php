@@ -29,7 +29,7 @@
 
             <!-- Sidebar -->
             <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
-                    class="fixed inset-y-0 left-0 z-50 flex w-64 shrink-0 flex-col border-r bg-background shadow-lg transition-transform duration-200 ease-in-out lg:static lg:translate-x-0 lg:shadow-none">
+                    class="fixed inset-y-0 left-0 z-50 flex w-64 shrink-0 flex-col border-r bg-background shadow-lg transition-transform duration-200 ease-in-out lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 lg:shadow-none">
                 <a href="{{ route('admin.dashboard') }}" class="flex h-16 items-center gap-2.5 border-b px-5 shrink-0">
                     <x-application-logo class="h-7 w-7 fill-current text-foreground shrink-0" />
                     <span class="leading-tight">

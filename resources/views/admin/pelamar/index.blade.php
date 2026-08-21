@@ -4,7 +4,7 @@
     </x-slot>
 
     <div class="py-8">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6" x-data="tableFilter(15)" x-init="init()">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6" x-data="tableFilter(15, {}, { '': null, ipk_asc: { field: 'ipk_s1', dir: 'asc' }, ipk_desc: { field: 'ipk_s1', dir: 'desc' } })" x-init="init()">
 
             @if ($lokerAktifModel)
                 <x-ui.card>
@@ -58,6 +58,11 @@
                         <tr class="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                             <th class="px-4 py-3">Nama</th>
                             <th class="px-4 py-3">Loker</th>
+                            <th class="px-4 py-3 cursor-pointer select-none whitespace-nowrap" @click="sort = sort === 'ipk_asc' ? 'ipk_desc' : (sort === 'ipk_desc' ? '' : 'ipk_asc')">
+                                Pendidikan S1
+                                <span x-show="sort === 'ipk_asc'">&uarr;</span>
+                                <span x-show="sort === 'ipk_desc'">&darr;</span>
+                            </th>
                             <th class="px-4 py-3">Tahap</th>
                             @if ($tesTulisAktif)
                                 <th class="px-4 py-3">Agama Umum</th>
@@ -71,18 +76,25 @@
                                 <th class="px-4 py-3">Praktik/Micro Teaching</th>
                                 <th class="px-4 py-3">Wawancara Umum</th>
                                 <th class="px-4 py-3">Rata-rata Wawancara</th>
+                                <th class="px-4 py-3">Nilai Akhir</th>
                             @endif
                             <th class="px-4 py-3">Status</th>
                             <th class="px-4 py-3">Tgl Apply</th>
                             <th class="px-4 py-3">Aksi Cepat</th>
-                            <th class="px-4 py-3"></th>
                         </tr>
                     </thead>
                     <tbody class="divide-y" x-ref="tbody">
                         @forelse ($pelamarList as $p)
-                            <tr class="hover:bg-muted/30" data-row data-search="{{ Str::lower($p->namaLengkap()) }}" x-show="isVisible($el)">
-                                <td class="px-4 py-3 font-medium whitespace-nowrap">{{ $p->namaLengkap() }}</td>
+                            <tr class="hover:bg-muted/30" data-row data-search="{{ Str::lower($p->namaLengkap()) }}" data-ipk_s1="{{ $p->ipk_s1 ?? '' }}" x-show="isVisible($el)">
+                                <td class="px-4 py-3 font-medium whitespace-nowrap">
+                                    <a href="{{ route('admin.pelamar.show', $p) }}" class="hover:underline hover:text-primary">{{ $p->namaLengkap() }}</a>
+                                </td>
                                 <td class="px-4 py-3 text-muted-foreground whitespace-nowrap">{{ $p->loker->judul_loker }}</td>
+                                <td class="px-4 py-3 text-muted-foreground whitespace-nowrap">
+                                    <div>{{ $p->kategori_perguruan_tinggi_s1 ?? '-' }}</div>
+                                    <div>{{ $p->program_studi_s1 ?? '-' }}</div>
+                                    <div>IPK: {{ $p->ipk_s1 ?? '-' }}</div>
+                                </td>
                                 <td class="px-4 py-3 whitespace-nowrap"><x-tahap-badge :tahap="$p->tahapRekrutmen" /></td>
                                 @if ($tesTulisAktif)
                                     <td class="px-4 py-3 text-muted-foreground whitespace-nowrap">{{ $p->tesTulis?->nilai_tes_agama_umum ?? '-' }}</td>
@@ -96,6 +108,7 @@
                                     <td class="px-4 py-3 text-muted-foreground whitespace-nowrap">{{ $p->wawancara?->nilai_praktik_micro_teaching ?? '-' }}</td>
                                     <td class="px-4 py-3 text-muted-foreground whitespace-nowrap">{{ $p->wawancara?->nilai_wawancara_umum ?? '-' }}</td>
                                     <td class="px-4 py-3 font-medium whitespace-nowrap">{{ $p->wawancara?->nilaiRataRataWawancara() ?? '-' }}</td>
+                                    <td class="px-4 py-3 font-semibold whitespace-nowrap">{{ $p->nilaiAkhir() ?? '-' }}</td>
                                 @endif
                                 <td class="px-4 py-3 whitespace-nowrap"><x-status-badge :status="$p->statusPelamar" /></td>
                                 <td class="px-4 py-3 text-muted-foreground whitespace-nowrap">{{ $p->tanggal_apply->translatedFormat('d M Y') }}</td>
@@ -131,15 +144,12 @@
                                         @endif
                                     </div>
                                 </td>
-                                <td class="px-4 py-3 text-right whitespace-nowrap">
-                                    <x-ui.button :href="route('admin.pelamar.show', $p)" variant="ghost" size="sm">Detail &rarr;</x-ui.button>
-                                </td>
                             </tr>
                         @empty
-                            <tr><td colspan="{{ 7 + ($tesTulisAktif ? 4 : 0) + ($wawancaraAktif ? 5 : 0) }}" class="px-4 py-8 text-center text-muted-foreground">Belum ada pelamar pada tahap ini.</td></tr>
+                            <tr><td colspan="{{ 7 + ($tesTulisAktif ? 4 : 0) + ($wawancaraAktif ? 6 : 0) }}" class="px-4 py-8 text-center text-muted-foreground">Belum ada pelamar pada tahap ini.</td></tr>
                         @endforelse
                         @if ($pelamarList->isNotEmpty())
-                            <tr x-show="total === 0"><td colspan="{{ 7 + ($tesTulisAktif ? 4 : 0) + ($wawancaraAktif ? 5 : 0) }}" class="px-4 py-8 text-center text-muted-foreground">Tidak ada pelamar yang cocok dengan pencarian.</td></tr>
+                            <tr x-show="total === 0"><td colspan="{{ 7 + ($tesTulisAktif ? 4 : 0) + ($wawancaraAktif ? 6 : 0) }}" class="px-4 py-8 text-center text-muted-foreground">Tidak ada pelamar yang cocok dengan pencarian.</td></tr>
                         @endif
                     </tbody>
                 </table>

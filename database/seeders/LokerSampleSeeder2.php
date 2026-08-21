@@ -17,7 +17,7 @@ class LokerSampleSeeder2 extends Seeder
             [
                 'judul_loker' => 'Guru Bahasa Inggris Bagian Kepegawaian (Trainer Internal)',
                 'deskripsi_loker' => 'Memberikan pelatihan Bahasa Inggris untuk staf dan guru di lingkungan Al-Azhar.',
-                'lokasi' => 'Bagian Kepegawaian, Jakarta Selatan',
+                'wilayah' => 'Bagian Kepegawaian, Jakarta Selatan',
                 'status_loker' => 'dibuka',
                 'start_time' => Carbon::parse('2026-07-15'),
                 'end_time' => Carbon::parse('2026-08-31'),
@@ -27,7 +27,7 @@ class LokerSampleSeeder2 extends Seeder
             [
                 'judul_loker' => 'Guru Matematika Bagian Kepegawaian (Penyusun Modul)',
                 'deskripsi_loker' => 'Menyusun modul dan bank soal Matematika untuk seluruh unit sekolah.',
-                'lokasi' => 'Bagian Kepegawaian, Jakarta Selatan',
+                'wilayah' => 'Bagian Kepegawaian, Jakarta Selatan',
                 'status_loker' => 'dibuka',
                 'start_time' => Carbon::parse('2026-07-12'),
                 'end_time' => Carbon::parse('2026-08-28'),
@@ -37,7 +37,7 @@ class LokerSampleSeeder2 extends Seeder
             [
                 'judul_loker' => 'Guru Bahasa Indonesia Bagian Kepegawaian (Editor Konten)',
                 'deskripsi_loker' => 'Menyunting materi ajar dan publikasi Bahasa Indonesia untuk seluruh unit.',
-                'lokasi' => 'Bagian Kepegawaian, Jakarta Selatan',
+                'wilayah' => 'Bagian Kepegawaian, Jakarta Selatan',
                 'status_loker' => 'ditutup',
                 'start_time' => Carbon::parse('2026-05-10'),
                 'end_time' => Carbon::parse('2026-06-20'),
@@ -47,7 +47,7 @@ class LokerSampleSeeder2 extends Seeder
             [
                 'judul_loker' => 'Staff TU Sekretariat SMAIA 1 (Tambahan Semester Genap)',
                 'deskripsi_loker' => 'Membantu administrasi akademik dan kesiswaan selama semester genap.',
-                'lokasi' => 'SMAIA 1, Jakarta Selatan',
+                'wilayah' => 'SMAIA 1, Jakarta Selatan',
                 'status_loker' => 'dibuka',
                 'start_time' => Carbon::parse('2026-07-14'),
                 'end_time' => Carbon::parse('2026-08-18'),
@@ -57,7 +57,7 @@ class LokerSampleSeeder2 extends Seeder
             [
                 'judul_loker' => 'Staff Helpdesk IT SMAIA 2 (Shift Sore)',
                 'deskripsi_loker' => 'Menangani dukungan teknis IT untuk laboratorium komputer shift sore.',
-                'lokasi' => 'SMAIA 2, Jakarta Selatan',
+                'wilayah' => 'SMAIA 2, Jakarta Selatan',
                 'status_loker' => 'dibuka',
                 'start_time' => Carbon::parse('2026-07-11'),
                 'end_time' => Carbon::parse('2026-08-22'),
@@ -67,7 +67,7 @@ class LokerSampleSeeder2 extends Seeder
             [
                 'judul_loker' => 'Guru Bahasa Inggris SMAIA 1 (Kontrak Semester Ganjil)',
                 'deskripsi_loker' => 'Mengajar Bahasa Inggris kelas X dengan kontrak satu semester.',
-                'lokasi' => 'SMAIA 1, Jakarta Selatan',
+                'wilayah' => 'SMAIA 1, Jakarta Selatan',
                 'status_loker' => 'ditutup',
                 'start_time' => Carbon::parse('2026-02-01'),
                 'end_time' => Carbon::parse('2026-03-15'),
@@ -77,7 +77,7 @@ class LokerSampleSeeder2 extends Seeder
             [
                 'judul_loker' => 'Guru Matematika SMAIA 2 (Kelas Persiapan Olimpiade)',
                 'deskripsi_loker' => 'Membina kelas persiapan olimpiade Matematika tingkat SMA.',
-                'lokasi' => 'SMAIA 2, Jakarta Selatan',
+                'wilayah' => 'SMAIA 2, Jakarta Selatan',
                 'status_loker' => 'dibuka',
                 'start_time' => Carbon::parse('2026-07-16'),
                 'end_time' => Carbon::parse('2026-09-01'),
@@ -87,7 +87,7 @@ class LokerSampleSeeder2 extends Seeder
             [
                 'judul_loker' => 'Guru Bahasa Indonesia SMAIA 1 (Pembina Ekstrakurikuler)',
                 'deskripsi_loker' => 'Mengajar Bahasa Indonesia sekaligus membina ekstrakurikuler teater.',
-                'lokasi' => 'SMAIA 1, Jakarta Selatan',
+                'wilayah' => 'SMAIA 1, Jakarta Selatan',
                 'status_loker' => 'ditutup',
                 'start_time' => Carbon::parse('2026-04-01'),
                 'end_time' => Carbon::parse('2026-05-15'),
@@ -97,7 +97,7 @@ class LokerSampleSeeder2 extends Seeder
             [
                 'judul_loker' => 'Staff TU Sekretariat Bagian Kepegawaian (Arsip Digital)',
                 'deskripsi_loker' => 'Melakukan digitalisasi dan pengarsipan dokumen kepegawaian.',
-                'lokasi' => 'Bagian Kepegawaian, Jakarta Selatan',
+                'wilayah' => 'Bagian Kepegawaian, Jakarta Selatan',
                 'status_loker' => 'dibuka',
                 'start_time' => Carbon::parse('2026-07-13'),
                 'end_time' => Carbon::parse('2026-08-27'),
@@ -107,7 +107,7 @@ class LokerSampleSeeder2 extends Seeder
             [
                 'judul_loker' => 'Staff Helpdesk IT SMAIA 1 (Proyek Jaringan Baru)',
                 'deskripsi_loker' => 'Mendukung instalasi dan pemeliharaan jaringan komputer sekolah.',
-                'lokasi' => 'SMAIA 1, Jakarta Selatan',
+                'wilayah' => 'SMAIA 1, Jakarta Selatan',
                 'status_loker' => 'ditutup',
                 'start_time' => Carbon::parse('2026-03-10'),
                 'end_time' => Carbon::parse('2026-04-25'),

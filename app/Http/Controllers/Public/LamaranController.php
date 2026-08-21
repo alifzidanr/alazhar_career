@@ -67,8 +67,14 @@ class LamaranController extends Controller
                 'jenis_kepegawaian_al_azhar_sebelumnya' => $data['jenis_kepegawaian_al_azhar_sebelumnya'] ?? null,
                 'jenis_kepegawaian_al_azhar_lainnya' => $data['jenis_kepegawaian_al_azhar_lainnya'] ?? null,
                 'id_pendidikan_terakhir' => $data['id_pendidikan_terakhir'],
-                'institusi' => $data['institusi'],
+                'institusi' => $data['institusi'] ?? null,
+                'institusi_s1' => $data['institusi_s1'] ?? null,
+                'institusi_s2' => $data['institusi_s2'] ?? null,
+                'institusi_s3' => $data['institusi_s3'] ?? null,
                 'program_studi' => $data['program_studi'] ?? null,
+                'program_studi_s1' => $data['program_studi_s1'] ?? null,
+                'program_studi_s2' => $data['program_studi_s2'] ?? null,
+                'program_studi_s3' => $data['program_studi_s3'] ?? null,
                 'kategori_perguruan_tinggi_d3' => $data['kategori_perguruan_tinggi_d3'] ?? null,
                 'kategori_perguruan_tinggi_s1' => $data['kategori_perguruan_tinggi_s1'] ?? null,
                 'kategori_perguruan_tinggi_s2' => $data['kategori_perguruan_tinggi_s2'] ?? null,
@@ -85,7 +91,18 @@ class LamaranController extends Controller
                 'cv_upload' => $request->file('cv_upload')->store('pelamar/cv', 'public'),
                 'ijazah_upload' => $request->file('ijazah_upload')->store('pelamar/ijazah', 'public'),
                 'ktp_upload' => $request->file('ktp_upload')->store('pelamar/ktp', 'public'),
-                'transkrip_nilai_upload' => $request->file('transkrip_nilai_upload')->store('pelamar/transkrip', 'public'),
+                'transkrip_nilai_upload' => $request->hasFile('transkrip_nilai_upload')
+                    ? $request->file('transkrip_nilai_upload')->store('pelamar/transkrip', 'public')
+                    : null,
+                'transkrip_nilai_s1_upload' => $request->hasFile('transkrip_nilai_s1_upload')
+                    ? $request->file('transkrip_nilai_s1_upload')->store('pelamar/transkrip', 'public')
+                    : null,
+                'transkrip_nilai_s2_upload' => $request->hasFile('transkrip_nilai_s2_upload')
+                    ? $request->file('transkrip_nilai_s2_upload')->store('pelamar/transkrip', 'public')
+                    : null,
+                'transkrip_nilai_s3_upload' => $request->hasFile('transkrip_nilai_s3_upload')
+                    ? $request->file('transkrip_nilai_s3_upload')->store('pelamar/transkrip', 'public')
+                    : null,
                 'pas_foto_upload' => $request->file('pas_foto_upload')->store('pelamar/pas_foto', 'public'),
                 'surat_lamaran_upload' => $request->file('surat_lamaran_upload')->store('pelamar/surat_lamaran', 'public'),
                 'sim_upload' => $request->hasFile('sim_upload')

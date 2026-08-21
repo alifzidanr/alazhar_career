@@ -132,25 +132,33 @@
                     @endphp
                     <dl class="grid sm:grid-cols-2 gap-4 text-sm pb-4 mb-4 border-b">
                         <div><dt class="text-muted-foreground">Pendidikan Terakhir</dt><dd class="font-medium">{{ $pendidikanLabel }}</dd></div>
-                        <div><dt class="text-muted-foreground">{{ $isSekolahMenengah ? 'Nama Sekolah' : 'Institusi / Perguruan Tinggi' }}</dt><dd class="font-medium">{{ $pelamar->institusi }}</dd></div>
+                        @unless (in_array($pendidikanLabel, ['S1', 'S2', 'S3']))
+                            <div><dt class="text-muted-foreground">{{ $isSekolahMenengah ? 'Nama Sekolah' : 'Institusi / Perguruan Tinggi' }}</dt><dd class="font-medium">{{ $pelamar->institusi }}</dd></div>
+                        @endunless
                         @unless ($isSekolahMenengah)
-                            <div><dt class="text-muted-foreground">Program Studi</dt><dd class="font-medium">{{ $pelamar->program_studi ?: '-' }}</dd></div>
                             <div><dt class="text-muted-foreground">Akreditasi</dt><dd class="font-medium">{{ $pelamar->akreditasi ?: '-' }}{{ $akreditasiLabel ? ' ('.$akreditasiLabel.')' : '' }}</dd></div>
                         @endunless
                         <div><dt class="text-muted-foreground">Tahun Lulus</dt><dd class="font-medium">{{ $pelamar->tahun_lulus }}</dd></div>
                         @if ($pendidikanLabel === 'D3')
+                            <div><dt class="text-muted-foreground">Program Studi D3</dt><dd class="font-medium">{{ $pelamar->program_studi ?: '-' }}</dd></div>
                             <div><dt class="text-muted-foreground">Kategori Perguruan Tinggi D3</dt><dd class="font-medium">{{ $pelamar->kategori_perguruan_tinggi_d3 ?: '-' }}</dd></div>
                             <div><dt class="text-muted-foreground">IPK D3</dt><dd class="font-medium">{{ $pelamar->ipk_d3 ? number_format((float) $pelamar->ipk_d3, 2) : '-' }}</dd></div>
                         @endif
                         @if (in_array($pendidikanLabel, ['S1', 'S2', 'S3']))
+                            <div><dt class="text-muted-foreground">Institusi / Perguruan Tinggi S1</dt><dd class="font-medium">{{ $pelamar->institusi_s1 ?: '-' }}</dd></div>
+                            <div><dt class="text-muted-foreground">Program Studi S1</dt><dd class="font-medium">{{ $pelamar->program_studi_s1 ?: '-' }}</dd></div>
                             <div><dt class="text-muted-foreground">Kategori Perguruan Tinggi S1</dt><dd class="font-medium">{{ $pelamar->kategori_perguruan_tinggi_s1 ?: '-' }}</dd></div>
                             <div><dt class="text-muted-foreground">IPK S1</dt><dd class="font-medium">{{ $pelamar->ipk_s1 ? number_format((float) $pelamar->ipk_s1, 2) : '-' }}</dd></div>
                         @endif
                         @if (in_array($pendidikanLabel, ['S2', 'S3']))
+                            <div><dt class="text-muted-foreground">Institusi / Perguruan Tinggi S2</dt><dd class="font-medium">{{ $pelamar->institusi_s2 ?: '-' }}</dd></div>
+                            <div><dt class="text-muted-foreground">Program Studi S2</dt><dd class="font-medium">{{ $pelamar->program_studi_s2 ?: '-' }}</dd></div>
                             <div><dt class="text-muted-foreground">Kategori Perguruan Tinggi S2</dt><dd class="font-medium">{{ $pelamar->kategori_perguruan_tinggi_s2 ?: '-' }}</dd></div>
                             <div><dt class="text-muted-foreground">IPK S2</dt><dd class="font-medium">{{ $pelamar->ipk_s2 ? number_format((float) $pelamar->ipk_s2, 2) : '-' }}</dd></div>
                         @endif
                         @if ($pendidikanLabel === 'S3')
+                            <div><dt class="text-muted-foreground">Institusi / Perguruan Tinggi S3</dt><dd class="font-medium">{{ $pelamar->institusi_s3 ?: '-' }}</dd></div>
+                            <div><dt class="text-muted-foreground">Program Studi S3</dt><dd class="font-medium">{{ $pelamar->program_studi_s3 ?: '-' }}</dd></div>
                             <div><dt class="text-muted-foreground">Kategori Perguruan Tinggi S3</dt><dd class="font-medium">{{ $pelamar->kategori_perguruan_tinggi_s3 ?: '-' }}</dd></div>
                             <div><dt class="text-muted-foreground">IPK S3</dt><dd class="font-medium">{{ $pelamar->ipk_s3 ? number_format((float) $pelamar->ipk_s3, 2) : '-' }}</dd></div>
                         @endif
@@ -164,6 +172,9 @@
                                 ['icon' => '🪪', 'label' => 'KTP', 'url' => $pelamar->ktpUrl(), 'path' => $pelamar->ktp_upload],
                                 ['icon' => '🪪', 'label' => 'SIM', 'url' => $pelamar->simUrl(), 'path' => $pelamar->sim_upload],
                                 ['icon' => '📄', 'label' => 'Transkrip Nilai', 'url' => $pelamar->transkripUrl(), 'path' => $pelamar->transkrip_nilai_upload],
+                                ['icon' => '📄', 'label' => 'Transkrip Nilai S1', 'url' => $pelamar->transkripS1Url(), 'path' => $pelamar->transkrip_nilai_s1_upload],
+                                ['icon' => '📄', 'label' => 'Transkrip Nilai S2', 'url' => $pelamar->transkripS2Url(), 'path' => $pelamar->transkrip_nilai_s2_upload],
+                                ['icon' => '📄', 'label' => 'Transkrip Nilai S3', 'url' => $pelamar->transkripS3Url(), 'path' => $pelamar->transkrip_nilai_s3_upload],
                                 ['icon' => '📄', 'label' => 'Surat Lamaran', 'url' => $pelamar->suratLamaranUrl(), 'path' => $pelamar->surat_lamaran_upload],
                                 ['icon' => '📄', 'label' => 'Sertifikat Gada Pratama', 'url' => $pelamar->sertifikatGadaPratamaUrl(), 'path' => $pelamar->sertifikat_gada_pratama_upload],
                                 ['icon' => '📄', 'label' => 'Sertifikat Tambahan', 'url' => $pelamar->sertifikatTambahanUrl(), 'path' => $pelamar->sertifikat_tambahan_upload],
@@ -255,6 +266,9 @@
 
                 @if ($pelamar->id_tahap_rekrutmen >= \App\Models\TahapRekrutmen::TES_TULIS)
                     <x-ui.card title="Tes Tulis">
+                        <div class="text-sm pb-4 mb-4 border-b">
+                            <dt class="text-muted-foreground inline">Nilai Rata-rata Tes Tulis (20% Agama Umum + 30% Inggris Umum + 50% Bidang Studi): </dt><dd class="font-medium inline">{{ $pelamar->tesTulis?->nilaiRataRata() ?? '-' }}</dd>
+                        </div>
                         <form method="POST" action="{{ route('admin.pelamar.tes-tulis', $pelamar) }}" class="grid sm:grid-cols-2 gap-4">
                             @csrf
                             @method('PATCH')
@@ -284,8 +298,9 @@
                 @if ($pelamar->id_tahap_rekrutmen >= \App\Models\TahapRekrutmen::WAWANCARA)
                     <x-ui.card title="Wawancara">
                         <div class="grid sm:grid-cols-2 gap-4 text-sm pb-4 mb-4 border-b">
-                            <div><dt class="text-muted-foreground inline">Nilai Rata-rata Tes Tulis: </dt><dd class="font-medium inline">{{ $pelamar->tesTulis?->nilaiRataRata() ?? '-' }}</dd></div>
+                            <div><dt class="text-muted-foreground inline">Nilai Rata-rata Tes Tulis (20% Agama Umum + 30% Inggris Umum + 50% Bidang Studi): </dt><dd class="font-medium inline">{{ $pelamar->tesTulis?->nilaiRataRata() ?? '-' }}</dd></div>
                             <div><dt class="text-muted-foreground inline">Nilai Rata-rata Wawancara: </dt><dd class="font-medium inline">{{ $pelamar->wawancara?->nilaiRataRataWawancara() ?? '-' }}</dd></div>
+                            <div class="sm:col-span-2"><dt class="text-muted-foreground inline">Nilai Akhir (60% Tes Tulis + 40% Wawancara): </dt><dd class="font-semibold inline">{{ $pelamar->nilaiAkhir() ?? '-' }}</dd></div>
                         </div>
                         <form method="POST" action="{{ route('admin.pelamar.wawancara', $pelamar) }}" class="grid sm:grid-cols-2 gap-4">
                             @csrf
@@ -328,13 +343,16 @@
                                 </x-ui.select>
                             </div>
                             <div></div>
+                            @php
+                                $formatRibuan = fn ($v) => is_numeric($v) ? number_format((float) $v, 0, ',', '.') : $v;
+                            @endphp
                             <div>
                                 <x-ui.label for="uang_makan">Uang Makan</x-ui.label>
-                                <x-ui.input type="number" id="uang_makan" name="uang_makan" min="0" value="{{ old('uang_makan', $pelamar->orientasi?->uang_makan) }}" />
+                                <x-ui.input type="text" inputmode="numeric" data-format="ribuan" id="uang_makan" name="uang_makan" value="{{ $formatRibuan(old('uang_makan', $pelamar->orientasi?->uang_makan)) }}" />
                             </div>
                             <div>
                                 <x-ui.label for="uang_transport">Uang Transport</x-ui.label>
-                                <x-ui.input type="number" id="uang_transport" name="uang_transport" min="0" value="{{ old('uang_transport', $pelamar->orientasi?->uang_transport) }}" />
+                                <x-ui.input type="text" inputmode="numeric" data-format="ribuan" id="uang_transport" name="uang_transport" value="{{ $formatRibuan(old('uang_transport', $pelamar->orientasi?->uang_transport)) }}" />
                             </div>
                             <div>
                                 <x-ui.label for="tanggal_mulai">Tanggal Mulai</x-ui.label>

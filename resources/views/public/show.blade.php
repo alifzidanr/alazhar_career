@@ -19,10 +19,10 @@
         </div>
 
         <div class="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
-            @if ($loker->lokasi)
+            @if ($loker->wilayah)
                 <span class="inline-flex items-center gap-1.5">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" class="h-4 w-4 shrink-0 text-brand-navy-600"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" /></svg>
-                    {{ $loker->lokasi }}
+                    {{ $loker->wilayah }}
                 </span>
             @endif
             @if ($loker->end_time)
@@ -63,8 +63,8 @@
     </x-ui.card>
 
     @php
-        $step2Fields = ['id_pendidikan_terakhir', 'gelar', 'institusi', 'program_studi', 'akreditasi', 'tahun_lulus', 'kategori_perguruan_tinggi_d3', 'ipk_d3', 'kategori_perguruan_tinggi_s1', 'ipk_s1', 'kategori_perguruan_tinggi_s2', 'ipk_s2', 'kategori_perguruan_tinggi_s3', 'ipk_s3'];
-        $step3Fields = ['cv_upload', 'ktp_upload', 'ijazah_upload', 'transkrip_nilai_upload', 'pas_foto_upload', 'surat_lamaran_upload', 'sim_upload', 'sertifikat_gada_pratama_upload', 'sertifikat_tambahan_upload', 'loker'];
+        $step2Fields = ['id_pendidikan_terakhir', 'gelar', 'institusi', 'program_studi', 'akreditasi', 'tahun_lulus', 'kategori_perguruan_tinggi_d3', 'ipk_d3', 'institusi_s1', 'program_studi_s1', 'kategori_perguruan_tinggi_s1', 'ipk_s1', 'institusi_s2', 'program_studi_s2', 'kategori_perguruan_tinggi_s2', 'ipk_s2', 'institusi_s3', 'program_studi_s3', 'kategori_perguruan_tinggi_s3', 'ipk_s3'];
+        $step3Fields = ['cv_upload', 'ktp_upload', 'ijazah_upload', 'transkrip_nilai_upload', 'transkrip_nilai_s1_upload', 'transkrip_nilai_s2_upload', 'transkrip_nilai_s3_upload', 'pas_foto_upload', 'surat_lamaran_upload', 'sim_upload', 'sertifikat_gada_pratama_upload', 'sertifikat_tambahan_upload', 'loker'];
         $errorStep = null;
         if ($errors->any()) {
             $errorFields = array_keys($errors->toArray());
@@ -305,17 +305,12 @@
                         <x-ui.input type="text" id="gelar" name="gelar" x-model="fields.gelar" value="{{ old('gelar') }}" placeholder="cth. S.Pd." />
                         <x-input-error :messages="$errors->get('gelar')" class="mt-2" />
                     </div>
-                    <div class="sm:col-span-2">
+                    <div class="sm:col-span-2" x-show="!isS1 && !isS2 && !isS3" x-cloak>
                         <x-ui.label for="institusi">
                             <span x-text="isSekolahMenengah ? 'Nama Sekolah' : 'Institusi / Perguruan Tinggi'">Institusi / Sekolah</span> <span class="text-destructive">*</span>
                         </x-ui.label>
-                        <x-ui.input type="text" id="institusi" name="institusi" x-model="fields.institusi" value="{{ old('institusi') }}" required />
+                        <x-ui.input type="text" id="institusi" name="institusi" x-model="fields.institusi" value="{{ old('institusi') }}" x-bind:required="!isS1 && !isS2 && !isS3" />
                         <x-input-error :messages="$errors->get('institusi')" class="mt-2" />
-                    </div>
-                    <div x-show="!isSekolahMenengah" x-cloak>
-                        <x-ui.label for="program_studi">Program Studi / Jurusan <span class="text-destructive">*</span></x-ui.label>
-                        <x-ui.input type="text" id="program_studi" name="program_studi" x-model="fields.program_studi" value="{{ old('program_studi') }}" x-bind:required="!isSekolahMenengah" />
-                        <x-input-error :messages="$errors->get('program_studi')" class="mt-2" />
                     </div>
                     <div x-show="!isSekolahMenengah" x-cloak>
                         <x-ui.label for="akreditasi">Akreditasi Program Studi Saat Lulus <span class="text-destructive">*</span></x-ui.label>
@@ -338,6 +333,11 @@
                         <x-input-error :messages="$errors->get('tahun_lulus')" class="mt-2" />
                     </div>
                     <div x-show="isD3" x-cloak>
+                        <x-ui.label for="program_studi">Program Studi / Jurusan D3 <span class="text-destructive">*</span></x-ui.label>
+                        <x-ui.input type="text" id="program_studi" name="program_studi" x-model="fields.program_studi" value="{{ old('program_studi') }}" x-bind:required="isD3" />
+                        <x-input-error :messages="$errors->get('program_studi')" class="mt-2" />
+                    </div>
+                    <div x-show="isD3" x-cloak>
                         <x-ui.label for="kategori_perguruan_tinggi_d3">Kategori Perguruan Tinggi D3 <span class="text-destructive">*</span></x-ui.label>
                         <x-ui.select id="kategori_perguruan_tinggi_d3" name="kategori_perguruan_tinggi_d3" x-model="fields.kategori_perguruan_tinggi_d3" x-bind:required="isD3">
                             <option value="">-- Pilih --</option>
@@ -351,6 +351,16 @@
                         <x-ui.label for="ipk_d3">IPK D3 <span class="text-destructive">*</span></x-ui.label>
                         <x-ui.input type="number" id="ipk_d3" name="ipk_d3" x-model="fields.ipk_d3" value="{{ old('ipk_d3') }}" min="0" max="4" step="0.01" placeholder="cth. 3.50" x-bind:required="isD3" />
                         <x-input-error :messages="$errors->get('ipk_d3')" class="mt-2" />
+                    </div>
+                    <div class="sm:col-span-2" x-show="isS1 || isS2 || isS3" x-cloak>
+                        <x-ui.label for="institusi_s1">Institusi / Perguruan Tinggi S1 <span class="text-destructive">*</span></x-ui.label>
+                        <x-ui.input type="text" id="institusi_s1" name="institusi_s1" x-model="fields.institusi_s1" value="{{ old('institusi_s1') }}" x-bind:required="isS1 || isS2 || isS3" />
+                        <x-input-error :messages="$errors->get('institusi_s1')" class="mt-2" />
+                    </div>
+                    <div x-show="isS1 || isS2 || isS3" x-cloak>
+                        <x-ui.label for="program_studi_s1">Program Studi / Jurusan S1 <span class="text-destructive">*</span></x-ui.label>
+                        <x-ui.input type="text" id="program_studi_s1" name="program_studi_s1" x-model="fields.program_studi_s1" value="{{ old('program_studi_s1') }}" x-bind:required="isS1 || isS2 || isS3" />
+                        <x-input-error :messages="$errors->get('program_studi_s1')" class="mt-2" />
                     </div>
                     <div x-show="isS1 || isS2 || isS3" x-cloak>
                         <x-ui.label for="kategori_perguruan_tinggi_s1">Kategori Perguruan Tinggi S1 <span class="text-destructive">*</span></x-ui.label>
@@ -367,6 +377,16 @@
                         <x-ui.input type="number" id="ipk_s1" name="ipk_s1" x-model="fields.ipk_s1" value="{{ old('ipk_s1') }}" min="0" max="4" step="0.01" placeholder="cth. 3.50" x-bind:required="isS1 || isS2 || isS3" @change="checkIpk()" />
                         <x-input-error :messages="$errors->get('ipk_s1')" class="mt-2" />
                     </div>
+                    <div class="sm:col-span-2" x-show="isS2 || isS3" x-cloak>
+                        <x-ui.label for="institusi_s2">Institusi / Perguruan Tinggi S2 <span class="text-destructive">*</span></x-ui.label>
+                        <x-ui.input type="text" id="institusi_s2" name="institusi_s2" x-model="fields.institusi_s2" value="{{ old('institusi_s2') }}" x-bind:required="isS2 || isS3" />
+                        <x-input-error :messages="$errors->get('institusi_s2')" class="mt-2" />
+                    </div>
+                    <div x-show="isS2 || isS3" x-cloak>
+                        <x-ui.label for="program_studi_s2">Program Studi / Jurusan S2 <span class="text-destructive">*</span></x-ui.label>
+                        <x-ui.input type="text" id="program_studi_s2" name="program_studi_s2" x-model="fields.program_studi_s2" value="{{ old('program_studi_s2') }}" x-bind:required="isS2 || isS3" />
+                        <x-input-error :messages="$errors->get('program_studi_s2')" class="mt-2" />
+                    </div>
                     <div x-show="isS2 || isS3" x-cloak>
                         <x-ui.label for="kategori_perguruan_tinggi_s2">Kategori Perguruan Tinggi S2 <span class="text-destructive">*</span></x-ui.label>
                         <x-ui.select id="kategori_perguruan_tinggi_s2" name="kategori_perguruan_tinggi_s2" x-model="fields.kategori_perguruan_tinggi_s2" x-bind:required="isS2 || isS3">
@@ -381,6 +401,16 @@
                         <x-ui.label for="ipk_s2">IPK S2 <span class="text-destructive">*</span></x-ui.label>
                         <x-ui.input type="number" id="ipk_s2" name="ipk_s2" x-model="fields.ipk_s2" value="{{ old('ipk_s2') }}" min="0" max="4" step="0.01" placeholder="cth. 3.50" x-bind:required="isS2 || isS3" @change="checkIpk()" />
                         <x-input-error :messages="$errors->get('ipk_s2')" class="mt-2" />
+                    </div>
+                    <div class="sm:col-span-2" x-show="isS3" x-cloak>
+                        <x-ui.label for="institusi_s3">Institusi / Perguruan Tinggi S3 <span class="text-destructive">*</span></x-ui.label>
+                        <x-ui.input type="text" id="institusi_s3" name="institusi_s3" x-model="fields.institusi_s3" value="{{ old('institusi_s3') }}" x-bind:required="isS3" />
+                        <x-input-error :messages="$errors->get('institusi_s3')" class="mt-2" />
+                    </div>
+                    <div x-show="isS3" x-cloak>
+                        <x-ui.label for="program_studi_s3">Program Studi / Jurusan S3 <span class="text-destructive">*</span></x-ui.label>
+                        <x-ui.input type="text" id="program_studi_s3" name="program_studi_s3" x-model="fields.program_studi_s3" value="{{ old('program_studi_s3') }}" x-bind:required="isS3" />
+                        <x-input-error :messages="$errors->get('program_studi_s3')" class="mt-2" />
                     </div>
                     <div x-show="isS3" x-cloak>
                         <x-ui.label for="kategori_perguruan_tinggi_s3">Kategori Perguruan Tinggi S3 <span class="text-destructive">*</span></x-ui.label>
@@ -430,16 +460,34 @@
                         </div>
                     @endif
                     <div>
-                        <x-ui.label for="ijazah_upload">Ijazah <span class="text-destructive">*</span></x-ui.label>
+                        <x-ui.label for="ijazah_upload">Ijazah SD - Pendidikan Terakhir <span class="text-destructive">*</span></x-ui.label>
                         <input type="file" id="ijazah_upload" name="ijazah_upload" required accept=".pdf" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
                         <p class="text-xs text-muted-foreground mt-1">Format PDF, maksimal 5MB. Sertakan ijazah dari jenjang pendidikan awal hingga pendidikan terakhir (dapat digabungkan dalam satu file PDF).</p>
                         <x-input-error :messages="$errors->get('ijazah_upload')" class="mt-2" />
                     </div>
-                    <div>
+                    <div x-show="!isS1 && !isS2 && !isS3" x-cloak>
                         <x-ui.label for="transkrip_nilai_upload">Transkrip Nilai <span class="text-destructive">*</span></x-ui.label>
-                        <input type="file" id="transkrip_nilai_upload" name="transkrip_nilai_upload" required accept=".pdf" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
+                        <input type="file" id="transkrip_nilai_upload" name="transkrip_nilai_upload" x-bind:required="!isS1 && !isS2 && !isS3" accept=".pdf" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
                         <p class="text-xs text-muted-foreground mt-1">Format PDF, maksimal 5MB.</p>
                         <x-input-error :messages="$errors->get('transkrip_nilai_upload')" class="mt-2" />
+                    </div>
+                    <div x-show="isS1 || isS2 || isS3" x-cloak>
+                        <x-ui.label for="transkrip_nilai_s1_upload">Transkrip Nilai S1 <span class="text-destructive">*</span></x-ui.label>
+                        <input type="file" id="transkrip_nilai_s1_upload" name="transkrip_nilai_s1_upload" x-bind:required="isS1 || isS2 || isS3" accept=".pdf" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
+                        <p class="text-xs text-muted-foreground mt-1">Format PDF, maksimal 5MB.</p>
+                        <x-input-error :messages="$errors->get('transkrip_nilai_s1_upload')" class="mt-2" />
+                    </div>
+                    <div x-show="isS2 || isS3" x-cloak>
+                        <x-ui.label for="transkrip_nilai_s2_upload">Transkrip Nilai S2 <span class="text-destructive">*</span></x-ui.label>
+                        <input type="file" id="transkrip_nilai_s2_upload" name="transkrip_nilai_s2_upload" x-bind:required="isS2 || isS3" accept=".pdf" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
+                        <p class="text-xs text-muted-foreground mt-1">Format PDF, maksimal 5MB.</p>
+                        <x-input-error :messages="$errors->get('transkrip_nilai_s2_upload')" class="mt-2" />
+                    </div>
+                    <div x-show="isS3" x-cloak>
+                        <x-ui.label for="transkrip_nilai_s3_upload">Transkrip Nilai S3 <span class="text-destructive">*</span></x-ui.label>
+                        <input type="file" id="transkrip_nilai_s3_upload" name="transkrip_nilai_s3_upload" x-bind:required="isS3" accept=".pdf" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
+                        <p class="text-xs text-muted-foreground mt-1">Format PDF, maksimal 5MB.</p>
+                        <x-input-error :messages="$errors->get('transkrip_nilai_s3_upload')" class="mt-2" />
                     </div>
                     <div>
                         <x-ui.label for="surat_lamaran_upload">Surat Lamaran <span class="text-destructive">*</span></x-ui.label>
@@ -466,7 +514,7 @@
                 <div class="flex items-start gap-2.5 rounded-md border bg-muted/40 p-3">
                     <input type="checkbox" id="bersedia_ditempatkan" name="bersedia_ditempatkan" value="1" x-model="fields.bersedia_ditempatkan" required class="mt-0.5 h-4 w-4 shrink-0 rounded border-input text-primary focus:ring-primary">
                     <label for="bersedia_ditempatkan" class="text-sm leading-snug">
-                        Dengan ini saya bersedia ditempatkan di unit Al Azhar Wilayah {{ $loker->wilayah ?? $loker->lokasi ?? '-' }}. <span class="text-destructive">*</span>
+                        Dengan ini saya bersedia ditempatkan di unit Al Azhar Wilayah {{ $loker->wilayah ?? '-' }}. <span class="text-destructive">*</span>
                     </label>
                 </div>
                 <x-input-error :messages="$errors->get('bersedia_ditempatkan')" class="mt-1" />
@@ -505,7 +553,7 @@
                     <div class="flex justify-between gap-2"><dt class="text-muted-foreground">Nama</dt><dd class="font-medium text-right" x-text="fields.nama"></dd></div>
                     <div class="flex justify-between gap-2"><dt class="text-muted-foreground">Email</dt><dd class="font-medium text-right" x-text="fields.email"></dd></div>
                     <div class="flex justify-between gap-2"><dt class="text-muted-foreground">No. WhatsApp</dt><dd class="font-medium text-right" x-text="fields.no_hp"></dd></div>
-                    <div class="flex justify-between gap-2"><dt class="text-muted-foreground">Institusi</dt><dd class="font-medium text-right" x-text="fields.institusi"></dd></div>
+                    <div class="flex justify-between gap-2"><dt class="text-muted-foreground">Institusi</dt><dd class="font-medium text-right" x-text="institusiTerakhir"></dd></div>
                 </dl>
 
                 <div class="mt-5 flex justify-end gap-2">
@@ -614,10 +662,16 @@
                             tahun_lulus: oldInput.tahun_lulus ?? '',
                             kategori_perguruan_tinggi_d3: oldInput.kategori_perguruan_tinggi_d3 ?? '',
                             ipk_d3: oldInput.ipk_d3 ?? '',
+                            institusi_s1: oldInput.institusi_s1 ?? '',
+                            program_studi_s1: oldInput.program_studi_s1 ?? '',
                             kategori_perguruan_tinggi_s1: oldInput.kategori_perguruan_tinggi_s1 ?? '',
                             ipk_s1: oldInput.ipk_s1 ?? '',
+                            institusi_s2: oldInput.institusi_s2 ?? '',
+                            program_studi_s2: oldInput.program_studi_s2 ?? '',
                             kategori_perguruan_tinggi_s2: oldInput.kategori_perguruan_tinggi_s2 ?? '',
                             ipk_s2: oldInput.ipk_s2 ?? '',
+                            institusi_s3: oldInput.institusi_s3 ?? '',
+                            program_studi_s3: oldInput.program_studi_s3 ?? '',
                             kategori_perguruan_tinggi_s3: oldInput.kategori_perguruan_tinggi_s3 ?? '',
                             ipk_s3: oldInput.ipk_s3 ?? '',
                             bersedia_ditempatkan: !!oldInput.bersedia_ditempatkan,
@@ -642,6 +696,13 @@
                         get isSekolahMenengah() {
                             const label = this.pendidikanLabels[this.fields.id_pendidikan_terakhir];
                             return label === 'SMP' || label === 'SMA';
+                        },
+
+                        get institusiTerakhir() {
+                            if (this.isS3) return this.fields.institusi_s3;
+                            if (this.isS2) return this.fields.institusi_s2;
+                            if (this.isS1) return this.fields.institusi_s1;
+                            return this.fields.institusi;
                         },
 
                         init() {

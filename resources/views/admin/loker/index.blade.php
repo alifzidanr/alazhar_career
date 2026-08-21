@@ -7,15 +7,15 @@
     </x-slot>
 
     <div class="py-8">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6" x-data="tableFilter(15, { lokasi: '', status: '' })" x-init="init()">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6" x-data="tableFilter(15, { wilayah: '', status: '' })" x-init="init()">
             <x-ui.card>
                 <div class="grid gap-3 sm:grid-cols-5">
-                    <x-ui.input type="text" x-model="search" placeholder="Cari judul atau lokasi..." class="sm:col-span-2" />
+                    <x-ui.input type="text" x-model="search" placeholder="Cari judul atau wilayah..." class="sm:col-span-2" />
 
-                    <x-ui.select x-model="filters.lokasi">
-                        <option value="">Semua Lokasi</option>
-                        @foreach ($lokasiOptions as $l)
-                            <option value="{{ $l->nama_lokasi }}">{{ $l->nama_lokasi }}</option>
+                    <x-ui.select x-model="filters.wilayah">
+                        <option value="">Semua Wilayah</option>
+                        @foreach ($wilayahOptions as $w)
+                            <option value="{{ $w->nama_wilayah }}">{{ $w->nama_wilayah }}</option>
                         @endforeach
                     </x-ui.select>
 
@@ -34,7 +34,7 @@
                     <thead class="bg-muted/50">
                         <tr class="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                             <th class="px-4 py-3">Judul</th>
-                            <th class="px-4 py-3">Lokasi</th>
+                            <th class="px-4 py-3">Wilayah</th>
                             <th class="px-4 py-3">Status</th>
                             <th class="px-4 py-3">Pelamar</th>
                             <th class="px-4 py-3">Berlaku Sampai</th>
@@ -44,8 +44,8 @@
                     <tbody class="divide-y" x-ref="tbody">
                         @forelse ($lokerList as $loker)
                             <tr class="hover:bg-muted/30" data-row
-                                data-search="{{ Str::lower($loker->judul_loker.' '.$loker->lokasi) }}"
-                                data-lokasi="{{ $loker->lokasi }}"
+                                data-search="{{ Str::lower($loker->judul_loker.' '.$loker->wilayah) }}"
+                                data-wilayah="{{ $loker->wilayah }}"
                                 data-status="{{ $loker->status_loker }}"
                                 x-show="isVisible($el)">
                                 <td class="px-4 py-3 font-medium">
@@ -53,7 +53,7 @@
                                         {{ $loker->judul_loker }}
                                     </a>
                                 </td>
-                                <td class="px-4 py-3 text-muted-foreground">{{ $loker->lokasi ?: '-' }}</td>
+                                <td class="px-4 py-3 text-muted-foreground">{{ $loker->wilayah ?: '-' }}</td>
                                 <td class="px-4 py-3">
                                     <x-ui.badge :variant="$loker->status_loker === 'dibuka' ? 'success' : 'muted'">
                                         {{ ucfirst($loker->status_loker) }}

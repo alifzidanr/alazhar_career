@@ -18,4 +18,9 @@ class UnitKerja extends Model
     {
         return $this->hasMany(KriteriaLoker::class, 'id_unit_kerja');
     }
+
+    public function orientasi()
+    {
+        return $this->hasMany(Orientasi::class, 'id_unit_kerja');
+    }
 }

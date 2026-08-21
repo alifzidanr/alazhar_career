@@ -6,6 +6,60 @@ import Viewer from 'viewerjs';
 window.Alpine = Alpine;
 window.Viewer = Viewer;
 
+// Forms across the app do full-page POST/PATCH submits, which reload the
+// page at the top by default. Remember the scroll position right before a
+// submit and restore it once the redirected page loads, so admins editing
+// a record mid-page (or mid-list) aren't dropped back to the top.
+(function () {
+    const scrollKey = () => 'scrollPos:' + location.pathname + location.search;
+
+    const restoreScroll = () => {
+        const saved = sessionStorage.getItem(scrollKey());
+        if (saved === null) return;
+        sessionStorage.removeItem(scrollKey());
+        const y = parseInt(saved, 10);
+        // The app sets a global `scroll-behavior: smooth` on <html>, which would
+        // otherwise turn this into an animated scroll that can be cut short by
+        // layout shifts (fonts/images) still happening while the page loads.
+        if (!Number.isNaN(y)) window.scrollTo({ top: y, left: 0, behavior: 'instant' });
+    };
+
+    if (document.readyState === 'complete') {
+        restoreScroll();
+    } else {
+        window.addEventListener('load', restoreScroll);
+    }
+
+    document.addEventListener('submit', (e) => {
+        if (e.target instanceof HTMLFormElement) {
+            sessionStorage.setItem(scrollKey(), String(window.scrollY));
+        }
+    }, true);
+})();
+
+// Live thousand-separator formatting for currency-style inputs opted in via
+// data-format="ribuan" (e.g. typing "1000" displays as "1.000"). The dots
+// are stripped back to plain digits right before the form submits, so the
+// backend still receives a plain integer.
+(function () {
+    const toDigits = (value) => value.replace(/\D/g, '');
+    const format = (digits) => (digits === '' ? '' : Number(digits).toLocaleString('id-ID'));
+
+    document.addEventListener('input', (e) => {
+        const el = e.target;
+        if (!(el instanceof HTMLInputElement) || el.dataset.format !== 'ribuan') return;
+        el.value = format(toDigits(el.value));
+    });
+
+    document.addEventListener('submit', (e) => {
+        const form = e.target;
+        if (!(form instanceof HTMLFormElement)) return;
+        form.querySelectorAll('input[data-format="ribuan"]').forEach((el) => {
+            el.value = toDigits(el.value);
+        });
+    }, true);
+})();
+
 Alpine.data('tableFilter', (perPage = 15, initialFilters = {}, sortModes = {}) => ({
     search: '',
     filters: { ...initialFilters },

@@ -62,20 +62,28 @@ class StorePelamarRequest extends FormRequest
 
             // Step 2: Pendidikan
             'id_pendidikan_terakhir' => ['required', 'exists:pendidikan_terakhir,id_pendidikan_terakhir'],
-            'institusi' => ['required', 'string', 'max:150'],
-            // Prodi/akreditasi only apply to tertiary education (D3/S1/S2/S3), not SMP/SMA.
-            'program_studi' => ['nullable', 'string', 'max:150', Rule::requiredIf(fn () => ! $this->isSekolahMenengah())],
+            // Institusi only applies to non-tertiary levels (SD through D3); S1/S2/S3 record
+            // institusi per degree below since an S2/S3 applicant has more than one.
+            'institusi' => ['nullable', 'string', 'max:150', Rule::requiredIf(fn () => ! in_array($this->pendidikanLabel(), ['S1', 'S2', 'S3'], true))],
+            // Akreditasi only applies to tertiary education (D3/S1/S2/S3), not SMP/SMA.
             'akreditasi' => ['nullable', 'in:A,B,C', Rule::requiredIf(fn () => ! $this->isSekolahMenengah())],
             'tahun_lulus' => ['required', 'integer', 'between:2012,2026'],
-            // Kategori/IPK D3 only applies to D3 applicants.
+            // Program studi/kategori/IPK D3 only applies to D3 applicants.
+            'program_studi' => ['nullable', 'string', 'max:150', Rule::requiredIf(fn () => $this->pendidikanLabel() === 'D3')],
             'kategori_perguruan_tinggi_d3' => ['nullable', 'in:Perguruan Tinggi Negeri,Perguruan Tinggi Swasta,Lain-lain', Rule::requiredIf(fn () => $this->pendidikanLabel() === 'D3')],
             'ipk_d3' => ['nullable', 'numeric', 'between:0,4', Rule::requiredIf(fn () => $this->pendidikanLabel() === 'D3')],
-            // Kategori/IPK S1 is also required for S2/S3 applicants (an S2/S3 always has a prior S1 on record).
+            // Institusi/program studi/kategori/IPK S1 is also required for S2/S3 applicants (an S2/S3 always has a prior S1 on record).
+            'institusi_s1' => ['nullable', 'string', 'max:150', Rule::requiredIf(fn () => in_array($this->pendidikanLabel(), ['S1', 'S2', 'S3'], true))],
+            'program_studi_s1' => ['nullable', 'string', 'max:150', Rule::requiredIf(fn () => in_array($this->pendidikanLabel(), ['S1', 'S2', 'S3'], true))],
             'kategori_perguruan_tinggi_s1' => ['nullable', 'in:Perguruan Tinggi Negeri,Perguruan Tinggi Swasta,Lain-lain', Rule::requiredIf(fn () => in_array($this->pendidikanLabel(), ['S1', 'S2', 'S3'], true))],
             'ipk_s1' => ['nullable', 'numeric', 'between:0,4', Rule::requiredIf(fn () => in_array($this->pendidikanLabel(), ['S1', 'S2', 'S3'], true))],
-            // Kategori/IPK S2 is also required for S3 applicants (an S3 always has a prior S2 on record).
+            // Institusi/program studi/kategori/IPK S2 is also required for S3 applicants (an S3 always has a prior S2 on record).
+            'institusi_s2' => ['nullable', 'string', 'max:150', Rule::requiredIf(fn () => in_array($this->pendidikanLabel(), ['S2', 'S3'], true))],
+            'program_studi_s2' => ['nullable', 'string', 'max:150', Rule::requiredIf(fn () => in_array($this->pendidikanLabel(), ['S2', 'S3'], true))],
             'kategori_perguruan_tinggi_s2' => ['nullable', 'in:Perguruan Tinggi Negeri,Perguruan Tinggi Swasta,Lain-lain', Rule::requiredIf(fn () => in_array($this->pendidikanLabel(), ['S2', 'S3'], true))],
             'ipk_s2' => ['nullable', 'numeric', 'between:0,4', Rule::requiredIf(fn () => in_array($this->pendidikanLabel(), ['S2', 'S3'], true))],
+            'institusi_s3' => ['nullable', 'string', 'max:150', Rule::requiredIf(fn () => $this->pendidikanLabel() === 'S3')],
+            'program_studi_s3' => ['nullable', 'string', 'max:150', Rule::requiredIf(fn () => $this->pendidikanLabel() === 'S3')],
             'kategori_perguruan_tinggi_s3' => ['nullable', 'in:Perguruan Tinggi Negeri,Perguruan Tinggi Swasta,Lain-lain', Rule::requiredIf(fn () => $this->pendidikanLabel() === 'S3')],
             'ipk_s3' => ['nullable', 'numeric', 'between:0,4', Rule::requiredIf(fn () => $this->pendidikanLabel() === 'S3')],
 
@@ -83,7 +91,12 @@ class StorePelamarRequest extends FormRequest
             'cv_upload' => ['required', 'file', 'mimes:pdf', 'max:5120'],
             'ijazah_upload' => ['required', 'file', 'mimes:pdf', 'max:5120'],
             'ktp_upload' => ['required', 'file', 'mimes:jpg,jpeg,png', 'max:5120'],
-            'transkrip_nilai_upload' => ['required', 'file', 'mimes:pdf', 'max:5120'],
+            // Transkrip nilai only applies to non-tertiary levels (SD through D3); S1/S2/S3 upload one
+            // transcript per degree below since an S2/S3 applicant has more than one.
+            'transkrip_nilai_upload' => [Rule::requiredIf(fn () => ! in_array($this->pendidikanLabel(), ['S1', 'S2', 'S3'], true)), 'nullable', 'file', 'mimes:pdf', 'max:5120'],
+            'transkrip_nilai_s1_upload' => [Rule::requiredIf(fn () => in_array($this->pendidikanLabel(), ['S1', 'S2', 'S3'], true)), 'nullable', 'file', 'mimes:pdf', 'max:5120'],
+            'transkrip_nilai_s2_upload' => [Rule::requiredIf(fn () => in_array($this->pendidikanLabel(), ['S2', 'S3'], true)), 'nullable', 'file', 'mimes:pdf', 'max:5120'],
+            'transkrip_nilai_s3_upload' => [Rule::requiredIf(fn () => $this->pendidikanLabel() === 'S3'), 'nullable', 'file', 'mimes:pdf', 'max:5120'],
             'pas_foto_upload' => ['required', 'file', 'mimes:jpg,jpeg,png', 'max:5120'],
             'surat_lamaran_upload' => ['required', 'file', 'mimes:pdf', 'max:5120'],
             // Only required when the loker itself calls for that jenjang (SIM for Driver, Gada Pratama for Satpam).

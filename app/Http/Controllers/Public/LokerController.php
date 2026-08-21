@@ -17,22 +17,22 @@ class LokerController extends Controller
         $lokerTerbaru = Loker::dibuka()->with('jenjang')->orderByDesc('start_time')->take(3)->get();
         $totalLowongan = Loker::dibuka()->count();
         $tahapRekrutmen = TahapRekrutmen::orderBy('id_tahap_rekrutmen')->get();
-        $unitOptions = UnitKerja::orderBy('nama_unit')->get();
+        $wilayahOptions = Loker::dibuka()->whereNotNull('wilayah')->distinct()->orderBy('wilayah')->pluck('wilayah');
         $jenjangOptions = Jenjang::orderBy('nama_jenjang')->get();
-        $lokerUntukPencarian = Loker::dibuka()->orderBy('judul_loker')->get(['id_loker', 'judul_loker', 'lokasi']);
+        $lokerUntukPencarian = Loker::dibuka()->orderBy('judul_loker')->get(['id_loker', 'judul_loker', 'wilayah']);
 
-        return view('public.index', compact('lokerTerbaru', 'totalLowongan', 'tahapRekrutmen', 'unitOptions', 'jenjangOptions', 'lokerUntukPencarian'));
+        return view('public.index', compact('lokerTerbaru', 'totalLowongan', 'tahapRekrutmen', 'wilayahOptions', 'jenjangOptions', 'lokerUntukPencarian'));
     }
 
     public function list(): View
     {
         $lokerList = Loker::dibuka()->with(['kriteria', 'jenjang'])->orderByDesc('start_time')->get();
 
-        $lokasiOptions = Loker::dibuka()->whereNotNull('lokasi')->distinct()->orderBy('lokasi')->pluck('lokasi');
+        $wilayahOptions = Loker::dibuka()->whereNotNull('wilayah')->distinct()->orderBy('wilayah')->pluck('wilayah');
         $unitOptions = UnitKerja::orderBy('nama_unit')->get();
         $jenjangOptions = Jenjang::orderBy('nama_jenjang')->get();
 
-        return view('public.lowongan', compact('lokerList', 'lokasiOptions', 'unitOptions', 'jenjangOptions'));
+        return view('public.lowongan', compact('lokerList', 'wilayahOptions', 'unitOptions', 'jenjangOptions'));
     }
 
     public function show(Loker $loker): View

@@ -12,24 +12,18 @@
     </div>
 
     <div>
-        <x-ui.label for="lokasi">Lokasi</x-ui.label>
-        @php($lokasiTerpilih = old('lokasi', $loker->lokasi ?? ''))
-        <x-ui.select id="lokasi" name="lokasi">
-            <option value="">-- Pilih Lokasi --</option>
-            @foreach ($lokasiList as $l)
-                <option value="{{ $l->nama_lokasi }}" @selected($lokasiTerpilih === $l->nama_lokasi)>{{ $l->nama_lokasi }}</option>
+        <x-ui.label for="wilayah">Wilayah</x-ui.label>
+        @php($wilayahTerpilih = old('wilayah', $loker->wilayah ?? ''))
+        <x-ui.select id="wilayah" name="wilayah">
+            <option value="">-- Pilih Wilayah --</option>
+            @foreach ($wilayahList as $w)
+                <option value="{{ $w->nama_wilayah }}" @selected($wilayahTerpilih === $w->nama_wilayah)>{{ $w->nama_wilayah }}</option>
             @endforeach
-            @if ($lokasiTerpilih !== '' && ! $lokasiList->contains('nama_lokasi', $lokasiTerpilih))
-                <option value="{{ $lokasiTerpilih }}" selected>{{ $lokasiTerpilih }}</option>
+            @if ($wilayahTerpilih !== '' && ! $wilayahList->contains('nama_wilayah', $wilayahTerpilih))
+                <option value="{{ $wilayahTerpilih }}" selected>{{ $wilayahTerpilih }}</option>
             @endif
         </x-ui.select>
-        <p class="text-xs text-muted-foreground mt-1">Belum ada pilihan yang cocok? Tambahkan lewat menu <a href="{{ route('admin.lokasi.index') }}" class="underline">Lokasi</a>.</p>
-    </div>
-
-    <div>
-        <x-ui.label for="wilayah">Wilayah</x-ui.label>
-        <x-ui.input type="text" id="wilayah" name="wilayah" value="{{ old('wilayah', $loker->wilayah ?? '') }}" placeholder="cth. Jadetabek" />
-        <p class="text-xs text-muted-foreground mt-1">Dipakai pada pernyataan kesediaan penempatan di formulir lamaran.</p>
+        <p class="text-xs text-muted-foreground mt-1">Belum ada pilihan yang cocok? Tambahkan lewat menu <a href="{{ route('admin.wilayah.index') }}" class="underline">Wilayah</a>. Dipakai juga pada pernyataan kesediaan penempatan di formulir lamaran.</p>
     </div>
 
     <div>

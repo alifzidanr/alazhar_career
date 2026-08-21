@@ -33,13 +33,25 @@ class TesTulis extends Model
         return $this->belongsTo(Pelamar::class, 'id_pelamar');
     }
 
+    /** Weighted average: agama umum 20%, inggris umum 30%, bidang studi 50%. */
     public function nilaiRataRata(): ?float
     {
-        $nilai = array_filter(
-            [$this->nilai_tes_agama_umum, $this->nilai_tes_bidang_studi, $this->nilai_tes_inggris_umum],
-            fn ($n) => $n !== null
-        );
+        $bobot = [
+            'nilai_tes_agama_umum' => 0.2,
+            'nilai_tes_inggris_umum' => 0.3,
+            'nilai_tes_bidang_studi' => 0.5,
+        ];
 
-        return count($nilai) ? round(((float) array_sum($nilai)) / count($nilai), 2) : null;
+        $totalBobot = 0;
+        $totalNilai = 0;
+
+        foreach ($bobot as $field => $persentase) {
+            if ($this->$field !== null) {
+                $totalNilai += ((float) $this->$field) * $persentase;
+                $totalBobot += $persentase;
+            }
+        }
+
+        return $totalBobot > 0 ? round($totalNilai / $totalBobot, 2) : null;
     }
 }

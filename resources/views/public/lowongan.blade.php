@@ -1,11 +1,12 @@
 <x-layouts.public :title="'Lowongan Kerja - Rekrutmen YPI Al Azhar'">
     <div class="w-full px-4 sm:px-6 lg:px-10 xl:px-16 py-10"
-         x-data="tableFilter(12, { unit: '', jenjang: '', lokasi: '' }, { terbaru: { field: 'start', dir: 'desc' }, terlama: { field: 'start', dir: 'asc' }, batas_terdekat: { field: 'end', dir: 'asc' } })"
+         x-data="tableFilter(12, { unit: '', jenjang: '', wilayah: '' }, { terbaru: { field: 'start', dir: 'desc' }, terlama: { field: 'start', dir: 'asc' }, batas_terdekat: { field: 'end', dir: 'asc' } })"
          x-init="
             const qs = new URLSearchParams(location.search);
             search = qs.get('q') || '';
             filters.unit = qs.get('unit') || '';
             filters.jenjang = qs.get('jenjang') || '';
+            filters.wilayah = qs.get('wilayah') || '';
             init();
          ">
         <h1 class="text-2xl font-semibold tracking-tight mb-1">Seluruh Lowongan</h1>
@@ -30,10 +31,10 @@
                         @endforeach
                     </x-ui.select>
 
-                    <x-ui.select x-model="filters.lokasi">
-                        <option value="">Semua Lokasi</option>
-                        @foreach ($lokasiOptions as $l)
-                            <option value="{{ $l }}">{{ $l }}</option>
+                    <x-ui.select x-model="filters.wilayah">
+                        <option value="">Semua Wilayah</option>
+                        @foreach ($wilayahOptions as $w)
+                            <option value="{{ $w }}">{{ $w }}</option>
                         @endforeach
                     </x-ui.select>
 
@@ -67,7 +68,7 @@
                        data-search="{{ Str::lower($loker->judul_loker.' '.$loker->deskripsi_loker) }}"
                        data-unit="{{ $loker->kriteria->pluck('id_unit_kerja')->filter()->unique()->implode(' ') }}"
                        data-jenjang="{{ $loker->id_jenjang }}"
-                       data-lokasi="{{ $loker->lokasi }}"
+                       data-wilayah="{{ $loker->wilayah }}"
                        data-start="{{ optional($loker->start_time)->timestamp ?? 0 }}"
                        data-end="{{ optional($loker->end_time)->timestamp ?? PHP_INT_MAX }}"
                        x-show="isVisible($el)">

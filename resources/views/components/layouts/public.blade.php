@@ -26,7 +26,6 @@
                 <nav class="hidden md:flex items-center gap-1">
                     <a href="{{ route('loker.index') }}" class="px-3 py-2 rounded-md text-sm font-semibold transition-colors {{ request()->routeIs('loker.index') ? 'text-foreground' : 'text-muted-foreground hover:text-foreground' }}">Beranda</a>
                     <a href="{{ route('loker.list') }}" class="px-3 py-2 rounded-md text-sm font-semibold transition-colors {{ request()->routeIs('loker.list', 'loker.show') ? 'text-foreground' : 'text-muted-foreground hover:text-foreground' }}">Lowongan</a>
-                    <a href="{{ route('tentang.index') }}" class="px-3 py-2 rounded-md text-sm font-semibold transition-colors {{ request()->routeIs('tentang.index') ? 'text-foreground' : 'text-muted-foreground hover:text-foreground' }}">Tentang Kami</a>
                 </nav>
 
                 <div class="flex items-center gap-2">
@@ -42,7 +41,6 @@
             <nav x-show="mobileNavOpen" x-cloak class="md:hidden pb-4 flex flex-col gap-1">
                 <a href="{{ route('loker.index') }}" class="px-3 py-2 rounded-md text-sm font-semibold {{ request()->routeIs('loker.index') ? 'bg-accent text-foreground' : 'text-muted-foreground' }}">Beranda</a>
                 <a href="{{ route('loker.list') }}" class="px-3 py-2 rounded-md text-sm font-semibold {{ request()->routeIs('loker.list', 'loker.show') ? 'bg-accent text-foreground' : 'text-muted-foreground' }}">Lowongan</a>
-                <a href="{{ route('tentang.index') }}" class="px-3 py-2 rounded-md text-sm font-semibold {{ request()->routeIs('tentang.index') ? 'bg-accent text-foreground' : 'text-muted-foreground' }}">Tentang Kami</a>
             </nav>
         </div>
     </header>
@@ -70,7 +68,6 @@
                     <ul class="space-y-2 text-sm text-muted-foreground">
                         <li><a href="#" class="hover:text-foreground">Panduan Melamar</a></li>
                         <li><a href="#" class="hover:text-foreground">Tahapan Seleksi</a></li>
-                        <li><a href="#" class="hover:text-foreground">Syarat &amp; Ketentuan</a></li>
                         <li><a href="#" class="hover:text-foreground">Pertanyaan Umum</a></li>
                     </ul>
                 </div>
@@ -80,9 +77,6 @@
                     <div class="mt-2 mb-4 border-t"></div>
                     <ul class="space-y-2 text-sm text-muted-foreground">
                         <li><a href="#" class="hover:text-foreground">Unit Pendidikan</a></li>
-                        <li><a href="#" class="hover:text-foreground">Profil Yayasan</a></li>
-                        <li><a href="#" class="hover:text-foreground">Hubungi Kami</a></li>
-                        <li><a href="#" class="hover:text-foreground">Pusat Bantuan</a></li>
                     </ul>
                 </div>
 

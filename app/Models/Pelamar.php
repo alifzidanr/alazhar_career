@@ -33,7 +33,13 @@ class Pelamar extends Model
         'jenis_kepegawaian_al_azhar_lainnya',
         'id_pendidikan_terakhir',
         'institusi',
+        'institusi_s1',
+        'institusi_s2',
+        'institusi_s3',
         'program_studi',
+        'program_studi_s1',
+        'program_studi_s2',
+        'program_studi_s3',
         'kategori_perguruan_tinggi_d3',
         'kategori_perguruan_tinggi_s1',
         'kategori_perguruan_tinggi_s2',
@@ -54,6 +60,9 @@ class Pelamar extends Model
         'ktp_upload',
         'sim_upload',
         'transkrip_nilai_upload',
+        'transkrip_nilai_s1_upload',
+        'transkrip_nilai_s2_upload',
+        'transkrip_nilai_s3_upload',
         'sertifikat_gada_pratama_upload',
         'sertifikat_tambahan_upload',
         'bersedia_ditempatkan',
@@ -141,6 +150,27 @@ class Pelamar extends Model
         return $this->hasMany(Pelamar::class, 'id_pelamar_cadangan_dari');
     }
 
+    /** Final score: tes tulis average 60%, wawancara average 40%. */
+    public function nilaiAkhir(): ?float
+    {
+        $komponen = [
+            [$this->tesTulis?->nilaiRataRata(), 0.6],
+            [$this->wawancara?->nilaiRataRataWawancara(), 0.4],
+        ];
+
+        $totalBobot = 0;
+        $totalNilai = 0;
+
+        foreach ($komponen as [$nilai, $bobot]) {
+            if ($nilai !== null) {
+                $totalNilai += $nilai * $bobot;
+                $totalBobot += $bobot;
+            }
+        }
+
+        return $totalBobot > 0 ? round($totalNilai / $totalBobot, 2) : null;
+    }
+
     public function namaLengkap(): string
     {
         return trim($this->nama.($this->gelar ? ', '.$this->gelar : ''));
@@ -191,6 +221,21 @@ class Pelamar extends Model
     public function transkripUrl(): ?string
     {
         return $this->transkrip_nilai_upload ? Storage::disk('public')->url($this->transkrip_nilai_upload) : null;
+    }
+
+    public function transkripS1Url(): ?string
+    {
+        return $this->transkrip_nilai_s1_upload ? Storage::disk('public')->url($this->transkrip_nilai_s1_upload) : null;
+    }
+
+    public function transkripS2Url(): ?string
+    {
+        return $this->transkrip_nilai_s2_upload ? Storage::disk('public')->url($this->transkrip_nilai_s2_upload) : null;
+    }
+
+    public function transkripS3Url(): ?string
+    {
+        return $this->transkrip_nilai_s3_upload ? Storage::disk('public')->url($this->transkrip_nilai_s3_upload) : null;
     }
 
     public function cvUrl(): ?string

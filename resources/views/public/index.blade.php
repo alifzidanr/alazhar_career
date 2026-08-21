@@ -96,11 +96,11 @@
             x-data="{
                 query: '',
                 open: false,
-                jobs: {{ Illuminate\Support\Js::from($lokerUntukPencarian->map(fn ($j) => ['id' => $j->id_loker, 'judul' => $j->judul_loker, 'lokasi' => $j->lokasi])) }},
+                jobs: {{ Illuminate\Support\Js::from($lokerUntukPencarian->map(fn ($j) => ['id' => $j->id_loker, 'judul' => $j->judul_loker, 'wilayah' => $j->wilayah])) }},
                 get filtered() {
                     if (this.query.trim() === '') return [];
                     const q = this.query.toLowerCase();
-                    return this.jobs.filter((j) => j.judul.toLowerCase().includes(q) || (j.lokasi ?? '').toLowerCase().includes(q));
+                    return this.jobs.filter((j) => j.judul.toLowerCase().includes(q) || (j.wilayah ?? '').toLowerCase().includes(q));
                 },
             }"
         >
@@ -131,18 +131,18 @@
                         <template x-for="job in filtered.slice(0, 8)" :key="job.id">
                             <a :href="'/loker/' + job.id" class="flex items-center justify-between gap-2 px-4 py-2.5 text-sm hover:bg-accent border-b last:border-b-0">
                                 <span class="font-medium" x-text="job.judul"></span>
-                                <span class="text-xs text-muted-foreground shrink-0" x-text="job.lokasi"></span>
+                                <span class="text-xs text-muted-foreground shrink-0" x-text="job.wilayah"></span>
                             </a>
                         </template>
                     </div>
                 </div>
 
                 <div>
-                    <label for="hero-unit" class="block text-xs font-semibold tracking-wide text-muted-foreground uppercase">Unit / Sekolah</label>
-                    <x-ui.select id="hero-unit" name="unit" class="h-11 mt-1.5">
-                        <option value="">Semua Unit</option>
-                        @foreach ($unitOptions as $u)
-                            <option value="{{ $u->id_unit_kerja }}">{{ $u->nama_unit }}</option>
+                    <label for="hero-wilayah" class="block text-xs font-semibold tracking-wide text-muted-foreground uppercase">Wilayah</label>
+                    <x-ui.select id="hero-wilayah" name="wilayah" class="h-11 mt-1.5">
+                        <option value="">Semua Wilayah</option>
+                        @foreach ($wilayahOptions as $w)
+                            <option value="{{ $w }}">{{ $w }}</option>
                         @endforeach
                     </x-ui.select>
                 </div>
