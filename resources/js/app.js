@@ -71,7 +71,17 @@ Alpine.data('tableFilter', (perPage = 15, initialFilters = {}, sortModes = {}) =
     init() {
         this.$watch('search', () => { this.page = 1; });
         this.$watch('filters', () => { this.page = 1; }, { deep: true });
-        this.$watch('sort', () => { this.page = 1; });
+        this.$watch('sort', () => { this.page = 1; this.reorder(); });
+        this.reorder();
+    },
+
+    // x-show only hides non-matching/off-page rows, it never moves them, so
+    // sorting alone wouldn't visibly reorder rows already on the same page.
+    // Physically re-append rows (in sorted order) to make sort visible.
+    reorder() {
+        const tbody = this.$refs.tbody;
+        if (!tbody || !this.sortModes[this.sort]) return;
+        this.matchingRows().forEach((el) => tbody.appendChild(el));
     },
 
     reset() {

@@ -91,6 +91,7 @@
                                 </td>
                                 <td class="px-4 py-3 text-muted-foreground whitespace-nowrap">{{ $p->loker->judul_loker }}</td>
                                 <td class="px-4 py-3 text-muted-foreground whitespace-nowrap">
+                                    <div>{{ $p->institusi_s1 ?? '-' }}</div>
                                     <div>{{ $p->kategori_perguruan_tinggi_s1 ?? '-' }}</div>
                                     <div>{{ $p->program_studi_s1 ?? '-' }}</div>
                                     <div>IPK: {{ $p->ipk_s1 ?? '-' }}</div>
