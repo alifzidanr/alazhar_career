@@ -225,6 +225,127 @@ class PelamarController extends Controller
         return back()->with('status', 'Status pelamar berhasil diperbarui.');
     }
 
+    public function bulkUpdateStatus(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'ids' => ['required', 'array', 'min:1'],
+            'ids.*' => ['integer', 'exists:pelamar,id_pelamar'],
+            'id_status_pelamar' => ['required', 'exists:status_pelamar,id_status_pelamar'],
+        ]);
+
+        $count = DB::transaction(function () use ($data) {
+            $pelamarList = Pelamar::whereIn('id_pelamar', $data['ids'])->get();
+
+            foreach ($pelamarList as $pelamar) {
+                $pelamar->id_status_pelamar = $data['id_status_pelamar'];
+                $pelamar->save();
+
+                RiwayatTahapPelamar::create([
+                    'id_pelamar' => $pelamar->id_pelamar,
+                    'id_tahap_rekrutmen' => $pelamar->id_tahap_rekrutmen,
+                    'id_status_pelamar' => $pelamar->id_status_pelamar,
+                    'catatan' => 'Status diperbarui secara massal.',
+                    'created_by' => auth()->user()->name,
+                ]);
+            }
+
+            return $pelamarList->count();
+        });
+
+        return back()->with('status', $count.' pelamar berhasil diperbarui statusnya.');
+    }
+
+    public function bulkAdvanceTahap(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'ids' => ['required', 'array', 'min:1'],
+            'ids.*' => ['integer', 'exists:pelamar,id_pelamar'],
+        ]);
+
+        [$count, $skipped] = DB::transaction(function () use ($data) {
+            $pelamarList = Pelamar::whereIn('id_pelamar', $data['ids'])->get();
+            $count = 0;
+            $skipped = 0;
+
+            foreach ($pelamarList as $pelamar) {
+                if (in_array($pelamar->id_status_pelamar, [StatusPelamar::MUNDUR, StatusPelamar::DICADANGKAN], true)
+                    || $pelamar->id_tahap_rekrutmen >= TahapRekrutmen::MIGRASI_DATA) {
+                    $skipped++;
+
+                    continue;
+                }
+
+                $pelamar->id_tahap_rekrutmen += 1;
+                $pelamar->id_status_pelamar = TahapRekrutmen::statusAwalUntuk($pelamar->id_tahap_rekrutmen);
+                $pelamar->save();
+
+                RiwayatTahapPelamar::create([
+                    'id_pelamar' => $pelamar->id_pelamar,
+                    'id_tahap_rekrutmen' => $pelamar->id_tahap_rekrutmen,
+                    'id_status_pelamar' => $pelamar->id_status_pelamar,
+                    'catatan' => 'Dilanjutkan ke tahap "'.$pelamar->tahapRekrutmen()->first()->tahap_rekrutmen.'" secara massal.',
+                    'created_by' => auth()->user()->name,
+                ]);
+
+                $count++;
+            }
+
+            return [$count, $skipped];
+        });
+
+        $message = $count.' pelamar berhasil dilanjutkan ke tahap berikutnya.';
+        if ($skipped > 0) {
+            $message .= ' '.$skipped.' pelamar dilewati karena sudah di tahap akhir atau berstatus mundur/dicadangkan.';
+        }
+
+        return back()->with('status', $message);
+    }
+
+    public function bulkRegressTahap(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'ids' => ['required', 'array', 'min:1'],
+            'ids.*' => ['integer', 'exists:pelamar,id_pelamar'],
+        ]);
+
+        [$count, $skipped] = DB::transaction(function () use ($data) {
+            $pelamarList = Pelamar::whereIn('id_pelamar', $data['ids'])->get();
+            $count = 0;
+            $skipped = 0;
+
+            foreach ($pelamarList as $pelamar) {
+                if ($pelamar->id_tahap_rekrutmen <= TahapRekrutmen::SELEKSI_BERKAS) {
+                    $skipped++;
+
+                    continue;
+                }
+
+                $pelamar->id_tahap_rekrutmen -= 1;
+                $pelamar->id_status_pelamar = TahapRekrutmen::statusAwalUntuk($pelamar->id_tahap_rekrutmen);
+                $pelamar->save();
+
+                RiwayatTahapPelamar::create([
+                    'id_pelamar' => $pelamar->id_pelamar,
+                    'id_tahap_rekrutmen' => $pelamar->id_tahap_rekrutmen,
+                    'id_status_pelamar' => $pelamar->id_status_pelamar,
+                    'catatan' => 'Dimundurkan ke tahap "'.$pelamar->tahapRekrutmen()->first()->tahap_rekrutmen.'" secara massal.',
+                    'created_by' => auth()->user()->name,
+                ]);
+
+                $count++;
+            }
+
+            return [$count, $skipped];
+        });
+
+        $message = $count.' pelamar berhasil dimundurkan ke tahap sebelumnya.';
+        if ($skipped > 0) {
+            $message .= ' '.$skipped.' pelamar dilewati karena sudah di tahap paling awal.';
+        }
+
+        return back()->with('status', $message);
+    }
+
     public function advanceTahap(Pelamar $pelamar): RedirectResponse
     {
         if (in_array($pelamar->id_status_pelamar, [StatusPelamar::MUNDUR, StatusPelamar::DICADANGKAN], true)) {

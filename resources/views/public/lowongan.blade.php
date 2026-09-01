@@ -1,6 +1,6 @@
 <x-layouts.public :title="'Lowongan Kerja - Rekrutmen YPI Al Azhar'">
     <div class="w-full px-4 sm:px-6 lg:px-10 xl:px-16 py-10"
-         x-data="tableFilter(12, { unit: '', jenjang: '', wilayah: '' }, { terbaru: { field: 'start', dir: 'desc' }, terlama: { field: 'start', dir: 'asc' }, batas_terdekat: { field: 'end', dir: 'asc' } })"
+         x-data="tableFilter(25, { unit: '', jenjang: '', wilayah: '' }, { terbaru: { field: 'start', dir: 'desc' }, terlama: { field: 'start', dir: 'asc' }, batas_terdekat: { field: 'end', dir: 'asc' } })"
          x-init="
             const qs = new URLSearchParams(location.search);
             search = qs.get('q') || '';

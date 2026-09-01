@@ -67,11 +67,13 @@ Alpine.data('tableFilter', (perPage = 15, initialFilters = {}, sortModes = {}) =
     sortModes,
     page: 1,
     perPage,
+    selectedIds: [],
 
     init() {
         this.$watch('search', () => { this.page = 1; });
         this.$watch('filters', () => { this.page = 1; }, { deep: true });
         this.$watch('sort', () => { this.page = 1; this.reorder(); });
+        this.$watch('perPage', () => { this.page = 1; });
         this.reorder();
     },
 
@@ -89,6 +91,40 @@ Alpine.data('tableFilter', (perPage = 15, initialFilters = {}, sortModes = {}) =
         for (const key in this.filters) this.filters[key] = '';
         this.sort = Object.keys(this.sortModes)[0] || '';
         this.page = 1;
+        this.selectedIds = [];
+    },
+
+    // Rows selectable via a checkbox carry `data-id`. Selection is tracked by
+    // id (not DOM element) so it survives re-sorting/re-filtering.
+    visibleIds() {
+        return this.matchingRows().filter((el) => this.isVisible(el)).map((el) => el.dataset.id).filter(Boolean);
+    },
+
+    isSelected(id) {
+        return this.selectedIds.includes(String(id));
+    },
+
+    toggleSelect(id, checked) {
+        id = String(id);
+        if (checked) {
+            if (!this.selectedIds.includes(id)) this.selectedIds.push(id);
+        } else {
+            this.selectedIds = this.selectedIds.filter((v) => v !== id);
+        }
+    },
+
+    toggleSelectAll(checked) {
+        const visible = this.visibleIds();
+        if (checked) {
+            this.selectedIds = [...new Set([...this.selectedIds, ...visible])];
+        } else {
+            this.selectedIds = this.selectedIds.filter((id) => !visible.includes(id));
+        }
+    },
+
+    get allVisibleSelected() {
+        const visible = this.visibleIds();
+        return visible.length > 0 && visible.every((id) => this.selectedIds.includes(id));
     },
 
     matches(el) {

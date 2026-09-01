@@ -15,7 +15,7 @@
                 <x-input-error :messages="$errors->get('nama_wilayah')" class="mt-2" />
             </x-ui.card>
 
-            <div x-data="tableFilter(15)" x-init="init()" class="space-y-6">
+            <div x-data="tableFilter(25)" x-init="init()" class="space-y-6">
                 <x-ui.card>
                     <div class="flex gap-3">
                         <x-ui.input type="text" x-model="search" placeholder="Cari wilayah..." class="flex-1" />

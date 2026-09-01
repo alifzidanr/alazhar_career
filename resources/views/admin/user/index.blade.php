@@ -34,7 +34,7 @@
                 </form>
             </x-ui.card>
 
-            <div x-data="tableFilter(15)" x-init="init()" class="space-y-6">
+            <div x-data="tableFilter(25)" x-init="init()" class="space-y-6">
                 <x-ui.card>
                     <div class="flex gap-3">
                         <x-ui.input type="text" x-model="search" placeholder="Cari nama atau email..." class="flex-1" />
