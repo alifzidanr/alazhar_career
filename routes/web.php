@@ -36,6 +36,7 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
 
     Route::get('/pelamar', [AdminPelamarController::class, 'index'])->name('pelamar.index');
     Route::get('/pelamar/{pelamar}', [AdminPelamarController::class, 'show'])->name('pelamar.show');
+    Route::get('/pelamar/{pelamar}/download-berkas', [AdminPelamarController::class, 'downloadBerkas'])->name('pelamar.download-berkas');
     Route::patch('/pelamar/{pelamar}/status', [AdminPelamarController::class, 'updateStatus'])->name('pelamar.status');
     Route::patch('/pelamar/{pelamar}/lanjut', [AdminPelamarController::class, 'advanceTahap'])->name('pelamar.lanjut');
     Route::patch('/pelamar/{pelamar}/mundur', [AdminPelamarController::class, 'regressTahap'])->name('pelamar.mundur');

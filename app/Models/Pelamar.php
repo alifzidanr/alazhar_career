@@ -268,21 +268,22 @@ class Pelamar extends Model
         return $this->sertifikat_tambahan_upload ? Storage::disk('public')->url($this->sertifikat_tambahan_upload) : null;
     }
 
-    /** No. HP normalized to a wa.me-compatible international format (62xxx, no symbols). */
-    public function whatsappNumber(): ?string
+    /** All uploaded berkas with their label, URL, and stored path, filtered to only those actually uploaded. */
+    public function berkasList(): \Illuminate\Support\Collection
     {
-        if (! $this->no_hp) {
-            return null;
-        }
-
-        $digits = preg_replace('/\D+/', '', $this->no_hp);
-
-        if (str_starts_with($digits, '0')) {
-            $digits = '62'.substr($digits, 1);
-        } elseif (! str_starts_with($digits, '62')) {
-            $digits = '62'.$digits;
-        }
-
-        return $digits;
+        return collect([
+            ['icon' => '📄', 'label' => 'CV', 'url' => $this->cvUrl(), 'path' => $this->cv_upload],
+            ['icon' => '📷', 'label' => 'Pas Foto', 'url' => $this->pasFotoUrl(), 'path' => $this->pas_foto_upload],
+            ['icon' => '📄', 'label' => 'Ijazah', 'url' => $this->ijazahUrl(), 'path' => $this->ijazah_upload],
+            ['icon' => '🪪', 'label' => 'KTP', 'url' => $this->ktpUrl(), 'path' => $this->ktp_upload],
+            ['icon' => '🪪', 'label' => 'SIM', 'url' => $this->simUrl(), 'path' => $this->sim_upload],
+            ['icon' => '📄', 'label' => 'Transkrip Nilai', 'url' => $this->transkripUrl(), 'path' => $this->transkrip_nilai_upload],
+            ['icon' => '📄', 'label' => 'Transkrip Nilai S1', 'url' => $this->transkripS1Url(), 'path' => $this->transkrip_nilai_s1_upload],
+            ['icon' => '📄', 'label' => 'Transkrip Nilai S2', 'url' => $this->transkripS2Url(), 'path' => $this->transkrip_nilai_s2_upload],
+            ['icon' => '📄', 'label' => 'Transkrip Nilai S3', 'url' => $this->transkripS3Url(), 'path' => $this->transkrip_nilai_s3_upload],
+            ['icon' => '📄', 'label' => 'Surat Lamaran', 'url' => $this->suratLamaranUrl(), 'path' => $this->surat_lamaran_upload],
+            ['icon' => '📄', 'label' => 'Sertifikat Gada Pratama', 'url' => $this->sertifikatGadaPratamaUrl(), 'path' => $this->sertifikat_gada_pratama_upload],
+            ['icon' => '📄', 'label' => 'Sertifikat Tambahan', 'url' => $this->sertifikatTambahanUrl(), 'path' => $this->sertifikat_tambahan_upload],
+        ])->filter(fn ($b) => $b['url']);
     }
 }

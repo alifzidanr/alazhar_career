@@ -124,7 +124,20 @@
                     </x-ui.card>
                 </div>
 
-                <x-ui.card title="Pendidikan & Berkas">
+                <x-ui.card>
+                    <x-slot:header>
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-semibold leading-none tracking-tight">Pendidikan & Berkas</h3>
+                            @if ($pelamar->berkasList()->isNotEmpty())
+                                <a href="{{ route('admin.pelamar.download-berkas', $pelamar) }}" class="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-3.5 w-3.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v12m0 0 4-4m-4 4-4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+                                    </svg>
+                                    Download Semua Berkas
+                                </a>
+                            @endif
+                        </div>
+                    </x-slot:header>
                     @php
                         $pendidikanLabel = $pelamar->pendidikanTerakhir->pendidikan_terakhir;
                         $isSekolahMenengah = in_array($pendidikanLabel, ['SMP', 'SMA'], true);
@@ -165,21 +178,8 @@
                     </dl>
 
                     @php
-                            $berkasList = collect([
-                                ['icon' => '📄', 'label' => 'CV', 'url' => $pelamar->cvUrl(), 'path' => $pelamar->cv_upload],
-                                ['icon' => '📷', 'label' => 'Pas Foto', 'url' => $pelamar->pasFotoUrl(), 'path' => $pelamar->pas_foto_upload],
-                                ['icon' => '📄', 'label' => 'Ijazah', 'url' => $pelamar->ijazahUrl(), 'path' => $pelamar->ijazah_upload],
-                                ['icon' => '🪪', 'label' => 'KTP', 'url' => $pelamar->ktpUrl(), 'path' => $pelamar->ktp_upload],
-                                ['icon' => '🪪', 'label' => 'SIM', 'url' => $pelamar->simUrl(), 'path' => $pelamar->sim_upload],
-                                ['icon' => '📄', 'label' => 'Transkrip Nilai', 'url' => $pelamar->transkripUrl(), 'path' => $pelamar->transkrip_nilai_upload],
-                                ['icon' => '📄', 'label' => 'Transkrip Nilai S1', 'url' => $pelamar->transkripS1Url(), 'path' => $pelamar->transkrip_nilai_s1_upload],
-                                ['icon' => '📄', 'label' => 'Transkrip Nilai S2', 'url' => $pelamar->transkripS2Url(), 'path' => $pelamar->transkrip_nilai_s2_upload],
-                                ['icon' => '📄', 'label' => 'Transkrip Nilai S3', 'url' => $pelamar->transkripS3Url(), 'path' => $pelamar->transkrip_nilai_s3_upload],
-                                ['icon' => '📄', 'label' => 'Surat Lamaran', 'url' => $pelamar->suratLamaranUrl(), 'path' => $pelamar->surat_lamaran_upload],
-                                ['icon' => '📄', 'label' => 'Sertifikat Gada Pratama', 'url' => $pelamar->sertifikatGadaPratamaUrl(), 'path' => $pelamar->sertifikat_gada_pratama_upload],
-                                ['icon' => '📄', 'label' => 'Sertifikat Tambahan', 'url' => $pelamar->sertifikatTambahanUrl(), 'path' => $pelamar->sertifikat_tambahan_upload],
-                            ])->filter(fn ($b) => $b['url']);
-                        @endphp
+                        $berkasList = $pelamar->berkasList();
+                    @endphp
     
                         <div
                             x-data="{
@@ -226,7 +226,7 @@
                                     @click="showBerkas({{ json_encode($berkas['url']) }}, {{ json_encode($berkas['label']) }}, {{ json_encode(strtolower(pathinfo($berkas['path'], PATHINFO_EXTENSION))) }})"
                                 >{{ $berkas['icon'] }} {{ $berkas['label'] }}</x-ui.button>
                             @endforeach
-    
+
                             <div x-show="open" x-cloak class="fixed inset-0 z-[90] flex items-center justify-center p-4">
                                 <div class="absolute inset-0 bg-black/50" @click="open = false"></div>
                                 <div

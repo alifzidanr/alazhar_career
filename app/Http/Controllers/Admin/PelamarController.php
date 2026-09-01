@@ -15,8 +15,12 @@ use App\Models\UnitKerja;
 use App\Models\Wawancara;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
+use setasign\Fpdi\Fpdi;
 
 class PelamarController extends Controller
 {
@@ -99,6 +103,93 @@ class PelamarController extends Controller
         $unitKerjaList = UnitKerja::orderBy('nama_unit')->get();
 
         return view('admin.pelamar.show', compact('pelamar', 'statusOptions', 'unitKerjaList'));
+    }
+
+    /** Merge every uploaded berkas (PDFs and images) into a single downloadable PDF. */
+    public function downloadBerkas(Pelamar $pelamar): Response
+    {
+        $berkasList = $pelamar->berkasList();
+
+        if ($berkasList->isEmpty()) {
+            return back()->withErrors(['berkas' => 'Pelamar ini tidak memiliki berkas yang bisa diunduh.']);
+        }
+
+        $pdf = new Fpdi();
+        $pdf->SetTitle('Berkas '.$pelamar->namaLengkap());
+        $pdf->SetAutoPageBreak(false);
+
+        foreach ($berkasList as $berkas) {
+            $path = Storage::disk('public')->path($berkas['path']);
+
+            if (! is_file($path)) {
+                continue;
+            }
+
+            $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+
+            try {
+                if ($ext === 'pdf') {
+                    $pageCount = $pdf->setSourceFile($path);
+
+                    for ($i = 1; $i <= $pageCount; $i++) {
+                        $templateId = $pdf->importPage($i);
+                        $size = $pdf->getTemplateSize($templateId);
+                        $pdf->AddPage($size['orientation'], [$size['width'], $size['height']]);
+                        $pdf->useTemplate($templateId);
+                        $this->stampBerkasLabel($pdf, $berkas['label']);
+                    }
+                } else {
+                    $dimensions = getimagesize($path);
+
+                    if (! $dimensions) {
+                        throw new \RuntimeException('Berkas gambar tidak dapat dibaca.');
+                    }
+
+                    [$width, $height] = $dimensions;
+                    $pdf->AddPage($width > $height ? 'L' : 'P', 'A4');
+
+                    $margin = 10;
+                    $maxWidth = $pdf->GetPageWidth() - $margin * 2;
+                    $maxHeight = $pdf->GetPageHeight() - $margin * 2;
+                    $ratio = min($maxWidth / $width, $maxHeight / $height);
+                    $w = $width * $ratio;
+                    $h = $height * $ratio;
+
+                    $pdf->Image($path, ($pdf->GetPageWidth() - $w) / 2, ($pdf->GetPageHeight() - $h) / 2, $w, $h);
+                    $this->stampBerkasLabel($pdf, $berkas['label']);
+                }
+            } catch (\Throwable $e) {
+                $this->addUnreadableBerkasNotice($pdf, $berkas['label']);
+            }
+        }
+
+        $filename = 'Berkas-'.Str::slug($pelamar->namaLengkap()).'.pdf';
+
+        return response($pdf->Output('S'), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
+        ]);
+    }
+
+    /** Adds a placeholder page for a berkas that couldn't be merged (e.g. a PDF with a corrupt/non-standard structure). */
+    private function addUnreadableBerkasNotice(Fpdi $pdf, string $label): void
+    {
+        $pdf->AddPage('P', 'A4');
+        $pdf->SetFont('Helvetica', 'B', 12);
+        $pdf->SetTextColor(0, 0, 0);
+        $pdf->SetXY(15, 20);
+        $pdf->Cell(0, 8, $label);
+        $pdf->SetFont('Helvetica', '', 10);
+        $pdf->SetXY(15, 32);
+        $pdf->MultiCell(180, 6, 'Berkas ini tidak dapat digabungkan secara otomatis karena format PDF/gambarnya rusak atau tidak standar. Unduh berkas ini secara terpisah dari halaman detail pelamar.');
+    }
+
+    private function stampBerkasLabel(Fpdi $pdf, string $label): void
+    {
+        $pdf->SetFont('Helvetica', '', 8);
+        $pdf->SetTextColor(120, 120, 120);
+        $pdf->SetXY(5, $pdf->GetPageHeight() - 8);
+        $pdf->Cell(0, 5, $label);
     }
 
     public function updateStatus(Request $request, Pelamar $pelamar): RedirectResponse
