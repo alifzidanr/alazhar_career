@@ -1,5 +1,27 @@
 <x-layouts.public :title="$loker->judul_loker.' - Rekrutmen YPI Al Azhar'">
-  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8" x-data="{ lamaranSuksesOpen: {{ session('lamaran_sukses') ? 'true' : 'false' }} }">
+    @if (session('lamaran_sukses'))
+        <div x-show="lamaranSuksesOpen" x-cloak class="fixed inset-0 z-[90] flex items-center justify-center p-4">
+            <div class="absolute inset-0 bg-black/50"></div>
+            <div
+                x-show="lamaranSuksesOpen"
+                x-transition:enter="transition ease-out duration-200"
+                x-transition:enter-start="opacity-0 scale-95"
+                x-transition:enter-end="opacity-100 scale-100"
+                class="relative w-full max-w-md rounded-lg border bg-background p-6 shadow-lg text-center"
+            >
+                <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-6 w-6 text-emerald-600">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                </div>
+                <h3 class="mt-4 text-base font-semibold">Lamaran Terkirim</h3>
+                <p class="mt-2 text-sm text-muted-foreground leading-relaxed">{{ session('lamaran_sukses') }}</p>
+                <x-ui.button type="button" class="mt-6 w-full" @click="lamaranSuksesOpen = false">OK</x-ui.button>
+            </div>
+        </div>
+    @endif
+
     <a href="{{ route('loker.list') }}" class="text-sm text-muted-foreground hover:text-foreground">&larr; Kembali ke daftar lowongan</a>
 
     @php

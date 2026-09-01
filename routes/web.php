@@ -13,7 +13,6 @@ use App\Http\Controllers\Admin\WilayahController as AdminWilayahController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Public\LamaranController;
 use App\Http\Controllers\Public\LokerController;
-use App\Http\Controllers\Public\StatusLamaranController;
 use Illuminate\Support\Facades\Route;
 
 // Public: landing, job listing + apply
@@ -22,9 +21,6 @@ Route::get('/lowongan', [LokerController::class, 'list'])->name('loker.list');
 Route::get('/loker/{loker}', [LokerController::class, 'show'])->name('loker.show');
 Route::get('/loker/{loker}/cek-nik', [LamaranController::class, 'cekNik'])->name('loker.cek-nik');
 Route::post('/loker/{loker}/lamar', [LamaranController::class, 'store'])->name('loker.lamar');
-
-Route::get('/status-lamaran', [StatusLamaranController::class, 'index'])->name('status.index');
-Route::post('/status-lamaran', [StatusLamaranController::class, 'search'])->name('status.search');
 
 Route::view('/tentang-kami', 'public.tentang')->name('tentang.index');
 

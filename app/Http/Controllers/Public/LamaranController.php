@@ -129,7 +129,7 @@ class LamaranController extends Controller
         });
 
         return redirect()
-            ->route('status.index')
+            ->route('loker.show', $loker)
             ->with('lamaran_sukses', 'Lamaran Anda untuk "'.$loker->judul_loker.'" berhasil dikirim. Tim HR akan menghubungi Anda melalui WhatsApp/email di '.$pelamar->no_hp.' / '.$pelamar->email.' untuk info selanjutnya.');
     }
 }

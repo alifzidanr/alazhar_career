@@ -58,8 +58,10 @@
                         <tr class="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                             <th class="px-4 py-3">Nama</th>
                             <th class="px-4 py-3">Loker</th>
+                            <th class="px-4 py-3">Nama Institusi</th>
+                            <th class="px-4 py-3">Jurusan</th>
                             <th class="px-4 py-3 cursor-pointer select-none whitespace-nowrap" @click="sort = sort === 'ipk_asc' ? 'ipk_desc' : (sort === 'ipk_desc' ? '' : 'ipk_asc')">
-                                Pendidikan S1
+                                IPK
                                 <span x-show="sort === 'ipk_asc'">&uarr;</span>
                                 <span x-show="sort === 'ipk_desc'">&darr;</span>
                             </th>
@@ -90,12 +92,9 @@
                                     <a href="{{ route('admin.pelamar.show', $p) }}" class="hover:underline hover:text-primary">{{ $p->namaLengkap() }}</a>
                                 </td>
                                 <td class="px-4 py-3 text-muted-foreground whitespace-nowrap">{{ $p->loker->judul_loker }}</td>
-                                <td class="px-4 py-3 text-muted-foreground whitespace-nowrap">
-                                    <div>{{ $p->institusi_s1 ?? '-' }}</div>
-                                    <div>{{ $p->kategori_perguruan_tinggi_s1 ?? '-' }}</div>
-                                    <div>{{ $p->program_studi_s1 ?? '-' }}</div>
-                                    <div>IPK: {{ $p->ipk_s1 ?? '-' }}</div>
-                                </td>
+                                <td class="px-4 py-3 text-muted-foreground whitespace-nowrap">{{ $p->institusi_s1 ?? '-' }}</td>
+                                <td class="px-4 py-3 text-muted-foreground whitespace-nowrap">{{ $p->program_studi_s1 ?? '-' }}</td>
+                                <td class="px-4 py-3 text-muted-foreground whitespace-nowrap">{{ $p->ipk_s1 ?? '-' }}</td>
                                 <td class="px-4 py-3 whitespace-nowrap"><x-tahap-badge :tahap="$p->tahapRekrutmen" /></td>
                                 @if ($tesTulisAktif)
                                     <td class="px-4 py-3 text-muted-foreground whitespace-nowrap">{{ $p->tesTulis?->nilai_tes_agama_umum ?? '-' }}</td>
@@ -147,10 +146,10 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="{{ 7 + ($tesTulisAktif ? 4 : 0) + ($wawancaraAktif ? 6 : 0) }}" class="px-4 py-8 text-center text-muted-foreground">Belum ada pelamar pada tahap ini.</td></tr>
+                            <tr><td colspan="{{ 9 + ($tesTulisAktif ? 4 : 0) + ($wawancaraAktif ? 6 : 0) }}" class="px-4 py-8 text-center text-muted-foreground">Belum ada pelamar pada tahap ini.</td></tr>
                         @endforelse
                         @if ($pelamarList->isNotEmpty())
-                            <tr x-show="total === 0"><td colspan="{{ 7 + ($tesTulisAktif ? 4 : 0) + ($wawancaraAktif ? 6 : 0) }}" class="px-4 py-8 text-center text-muted-foreground">Tidak ada pelamar yang cocok dengan pencarian.</td></tr>
+                            <tr x-show="total === 0"><td colspan="{{ 9 + ($tesTulisAktif ? 4 : 0) + ($wawancaraAktif ? 6 : 0) }}" class="px-4 py-8 text-center text-muted-foreground">Tidak ada pelamar yang cocok dengan pencarian.</td></tr>
                         @endif
                     </tbody>
                 </table>
