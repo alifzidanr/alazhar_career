@@ -436,6 +436,10 @@
                         <form method="POST" action="{{ route('admin.pelamar.tes-tulis', $pelamar) }}" class="grid sm:grid-cols-2 gap-4">
                             @csrf
                             @method('PATCH')
+                            <div class="sm:col-span-2 sm:max-w-xs">
+                                <x-ui.label for="tt_tanggal_pelaksanaan">Tanggal &amp; Jam Pelaksanaan</x-ui.label>
+                                <x-ui.input type="datetime-local" id="tt_tanggal_pelaksanaan" name="tanggal_pelaksanaan" step="1800" value="{{ old('tanggal_pelaksanaan', optional($pelamar->tesTulis?->tanggal_pelaksanaan)->format('Y-m-d\TH:i')) }}" />
+                            </div>
                             <div>
                                 <x-ui.label for="nilai_tes_agama_umum">Nilai Tes Agama Umum</x-ui.label>
                                 <x-ui.input type="number" id="nilai_tes_agama_umum" name="nilai_tes_agama_umum" step="0.01" min="0" max="100" value="{{ old('nilai_tes_agama_umum', $pelamar->tesTulis?->nilai_tes_agama_umum) }}" />
@@ -447,10 +451,6 @@
                             <div>
                                 <x-ui.label for="nilai_tes_inggris_umum">Nilai Tes Inggris Umum</x-ui.label>
                                 <x-ui.input type="number" id="nilai_tes_inggris_umum" name="nilai_tes_inggris_umum" step="0.01" min="0" max="100" value="{{ old('nilai_tes_inggris_umum', $pelamar->tesTulis?->nilai_tes_inggris_umum) }}" />
-                            </div>
-                            <div>
-                                <x-ui.label for="tt_tanggal_pelaksanaan">Tanggal &amp; Jam Pelaksanaan</x-ui.label>
-                                <x-ui.input type="datetime-local" id="tt_tanggal_pelaksanaan" name="tanggal_pelaksanaan" value="{{ old('tanggal_pelaksanaan', optional($pelamar->tesTulis?->tanggal_pelaksanaan)->format('Y-m-d\TH:i')) }}" />
                             </div>
                             <div class="sm:col-span-2">
                                 <x-ui.button type="submit" variant="secondary">Simpan Tes Tulis</x-ui.button>
@@ -466,32 +466,48 @@
                             <div><dt class="text-muted-foreground inline">Nilai Rata-rata Wawancara: </dt><dd class="font-medium inline">{{ $pelamar->wawancara?->nilaiRataRataWawancara() ?? '-' }}</dd></div>
                             <div class="sm:col-span-2"><dt class="text-muted-foreground inline">Nilai Akhir (60% Tes Tulis + 40% Wawancara): </dt><dd class="font-semibold inline">{{ $pelamar->nilaiAkhir() ?? '-' }}</dd></div>
                         </div>
-                        <form method="POST" action="{{ route('admin.pelamar.wawancara', $pelamar) }}" class="grid sm:grid-cols-2 gap-4">
+                        <form method="POST" action="{{ route('admin.pelamar.wawancara', $pelamar) }}" class="space-y-4">
                             @csrf
                             @method('PATCH')
-                            <div>
-                                <x-ui.label for="nilai_wawancara_agama">Nilai Wawancara Agama</x-ui.label>
-                                <x-ui.input type="number" id="nilai_wawancara_agama" name="nilai_wawancara_agama" step="0.01" min="0" max="100" value="{{ old('nilai_wawancara_agama', $pelamar->wawancara?->nilai_wawancara_agama) }}" />
-                                <label for="rekomendasi_wawancara_agama" class="mt-2 mb-1 block text-xs text-muted-foreground">Rekomendasi/Catatan</label>
-                                <x-ui.textarea id="rekomendasi_wawancara_agama" name="rekomendasi_wawancara_agama" rows="2" class="text-sm" placeholder="Catatan singkat...">{{ old('rekomendasi_wawancara_agama', $pelamar->wawancara?->rekomendasi_wawancara_agama) }}</x-ui.textarea>
-                            </div>
-                            <div>
-                                <x-ui.label for="nilai_praktik_micro_teaching">Nilai Praktik/Micro Teaching</x-ui.label>
-                                <x-ui.input type="number" id="nilai_praktik_micro_teaching" name="nilai_praktik_micro_teaching" step="0.01" min="0" max="100" value="{{ old('nilai_praktik_micro_teaching', $pelamar->wawancara?->nilai_praktik_micro_teaching) }}" />
-                                <label for="rekomendasi_praktik_micro_teaching" class="mt-2 mb-1 block text-xs text-muted-foreground">Rekomendasi/Catatan</label>
-                                <x-ui.textarea id="rekomendasi_praktik_micro_teaching" name="rekomendasi_praktik_micro_teaching" rows="2" class="text-sm" placeholder="Catatan singkat...">{{ old('rekomendasi_praktik_micro_teaching', $pelamar->wawancara?->rekomendasi_praktik_micro_teaching) }}</x-ui.textarea>
-                            </div>
-                            <div>
-                                <x-ui.label for="nilai_wawancara_umum">Nilai Wawancara Umum</x-ui.label>
-                                <x-ui.input type="number" id="nilai_wawancara_umum" name="nilai_wawancara_umum" step="0.01" min="0" max="100" value="{{ old('nilai_wawancara_umum', $pelamar->wawancara?->nilai_wawancara_umum) }}" />
-                                <label for="rekomendasi_wawancara_umum" class="mt-2 mb-1 block text-xs text-muted-foreground">Rekomendasi/Catatan</label>
-                                <x-ui.textarea id="rekomendasi_wawancara_umum" name="rekomendasi_wawancara_umum" rows="2" class="text-sm" placeholder="Catatan singkat...">{{ old('rekomendasi_wawancara_umum', $pelamar->wawancara?->rekomendasi_wawancara_umum) }}</x-ui.textarea>
-                            </div>
-                            <div>
+                            <div class="sm:max-w-xs">
                                 <x-ui.label for="w_tanggal_pelaksanaan">Tanggal &amp; Jam Pelaksanaan</x-ui.label>
-                                <x-ui.input type="datetime-local" id="w_tanggal_pelaksanaan" name="tanggal_pelaksanaan" value="{{ old('tanggal_pelaksanaan', optional($pelamar->wawancara?->tanggal_pelaksanaan)->format('Y-m-d\TH:i')) }}" />
+                                <x-ui.input type="datetime-local" id="w_tanggal_pelaksanaan" name="tanggal_pelaksanaan" step="1800" value="{{ old('tanggal_pelaksanaan', optional($pelamar->wawancara?->tanggal_pelaksanaan)->format('Y-m-d\TH:i')) }}" />
                             </div>
-                            <div class="sm:col-span-2">
+
+                            <div class="grid sm:grid-cols-[220px_1fr] gap-3 items-start">
+                                <div>
+                                    <x-ui.label for="nilai_wawancara_agama">Nilai Wawancara Agama</x-ui.label>
+                                    <x-ui.input type="number" id="nilai_wawancara_agama" name="nilai_wawancara_agama" step="0.01" min="0" max="100" value="{{ old('nilai_wawancara_agama', $pelamar->wawancara?->nilai_wawancara_agama) }}" />
+                                </div>
+                                <div>
+                                    <label for="rekomendasi_wawancara_agama" class="mb-1.5 block text-xs text-muted-foreground">Rekomendasi Wawancara Agama</label>
+                                    <x-ui.textarea id="rekomendasi_wawancara_agama" name="rekomendasi_wawancara_agama" rows="1" class="!h-9 !py-1.5 text-sm resize-none" placeholder="Catatan singkat...">{{ old('rekomendasi_wawancara_agama', $pelamar->wawancara?->rekomendasi_wawancara_agama) }}</x-ui.textarea>
+                                </div>
+                            </div>
+
+                            <div class="grid sm:grid-cols-[220px_1fr] gap-3 items-start">
+                                <div>
+                                    <x-ui.label for="nilai_praktik_micro_teaching">Nilai Praktik/Micro Teaching</x-ui.label>
+                                    <x-ui.input type="number" id="nilai_praktik_micro_teaching" name="nilai_praktik_micro_teaching" step="0.01" min="0" max="100" value="{{ old('nilai_praktik_micro_teaching', $pelamar->wawancara?->nilai_praktik_micro_teaching) }}" />
+                                </div>
+                                <div>
+                                    <label for="rekomendasi_praktik_micro_teaching" class="mb-1.5 block text-xs text-muted-foreground">Rekomendasi Praktik/Micro Teaching</label>
+                                    <x-ui.textarea id="rekomendasi_praktik_micro_teaching" name="rekomendasi_praktik_micro_teaching" rows="1" class="!h-9 !py-1.5 text-sm resize-none" placeholder="Catatan singkat...">{{ old('rekomendasi_praktik_micro_teaching', $pelamar->wawancara?->rekomendasi_praktik_micro_teaching) }}</x-ui.textarea>
+                                </div>
+                            </div>
+
+                            <div class="grid sm:grid-cols-[220px_1fr] gap-3 items-start">
+                                <div>
+                                    <x-ui.label for="nilai_wawancara_umum">Nilai Wawancara Umum</x-ui.label>
+                                    <x-ui.input type="number" id="nilai_wawancara_umum" name="nilai_wawancara_umum" step="0.01" min="0" max="100" value="{{ old('nilai_wawancara_umum', $pelamar->wawancara?->nilai_wawancara_umum) }}" />
+                                </div>
+                                <div>
+                                    <label for="rekomendasi_wawancara_umum" class="mb-1.5 block text-xs text-muted-foreground">Rekomendasi Wawancara Umum</label>
+                                    <x-ui.textarea id="rekomendasi_wawancara_umum" name="rekomendasi_wawancara_umum" rows="1" class="!h-9 !py-1.5 text-sm resize-none" placeholder="Catatan singkat...">{{ old('rekomendasi_wawancara_umum', $pelamar->wawancara?->rekomendasi_wawancara_umum) }}</x-ui.textarea>
+                                </div>
+                            </div>
+
+                            <div>
                                 <x-ui.button type="submit" variant="secondary">Simpan Wawancara</x-ui.button>
                             </div>
                         </form>
