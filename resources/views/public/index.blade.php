@@ -1,9 +1,40 @@
 <x-layouts.public :title="'Rekrutmen YPI Al Azhar'">
 
     <!-- Hero -->
+    @php
+        $heroImages = collect(range(1, 30))
+            ->map(fn ($n) => asset('images/hero-carousel/hero-'.str_pad($n, 2, '0', STR_PAD_LEFT).'.jpg'))
+            ->all();
+    @endphp
     <section class="relative overflow-hidden" x-data="{ panduanOpen: false }">
-        <div class="absolute inset-0 -z-10">
-            <img src="{{ asset('images/hero-masjid.jpg') }}" alt="Masjid Al Azhar" class="h-full w-full object-cover">
+        <div
+            class="absolute inset-0 -z-10"
+            x-data="{
+                images: @js($heroImages),
+                pos: 0,
+                front: 'a',
+                srcA: null,
+                srcB: null,
+                init() {
+                    this.srcA = this.images[0];
+                    this.srcB = this.images[1 % this.images.length];
+                    setInterval(() => {
+                        this.pos = (this.pos + 1) % this.images.length;
+                        const upcoming = this.images[(this.pos + 1) % this.images.length];
+                        if (this.front === 'a') {
+                            this.srcB = upcoming;
+                            this.front = 'b';
+                        } else {
+                            this.srcA = upcoming;
+                            this.front = 'a';
+                        }
+                    }, 5000);
+                },
+            }"
+            x-init="init()"
+        >
+            <img :src="srcA" class="absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ease-in-out" :class="front === 'a' ? 'opacity-100' : 'opacity-0'" alt="Rekrutmen YPI Al Azhar">
+            <img :src="srcB" class="absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ease-in-out" :class="front === 'b' ? 'opacity-100' : 'opacity-0'" alt="Rekrutmen YPI Al Azhar">
             <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-black/20"></div>
             <div class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/20 to-transparent"></div>
         </div>
