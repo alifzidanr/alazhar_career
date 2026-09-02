@@ -34,6 +34,7 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::post('/pelamar/bulk-status', [AdminPelamarController::class, 'bulkUpdateStatus'])->name('pelamar.bulk-status');
     Route::patch('/pelamar/bulk-lanjut', [AdminPelamarController::class, 'bulkAdvanceTahap'])->name('pelamar.bulk-lanjut');
     Route::patch('/pelamar/bulk-mundur', [AdminPelamarController::class, 'bulkRegressTahap'])->name('pelamar.bulk-mundur');
+    Route::get('/pelamar/export', [AdminPelamarController::class, 'export'])->name('pelamar.export');
     Route::get('/pelamar/{pelamar}', [AdminPelamarController::class, 'show'])->name('pelamar.show');
     Route::get('/pelamar/{pelamar}/download-berkas', [AdminPelamarController::class, 'downloadBerkas'])->name('pelamar.download-berkas');
     Route::patch('/pelamar/{pelamar}/data', [AdminPelamarController::class, 'updateData'])->name('pelamar.data');

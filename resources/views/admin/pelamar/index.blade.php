@@ -50,6 +50,9 @@
             <div class="flex justify-end gap-2">
                 <x-ui.input type="text" x-model="search" placeholder="Cari nama pelamar..." class="w-56" />
                 <x-ui.button type="button" @click="reset()" variant="outline">Reset</x-ui.button>
+                <x-ui.button :href="route('admin.pelamar.export', ['tahap' => $tahapAktif, 'loker' => $lokerAktif, 'kategori' => $kategoriAktif])" variant="outline">
+                    Export XLS
+                </x-ui.button>
             </div>
 
             <div x-show="selectedIds.length > 0" x-cloak class="flex flex-wrap items-center gap-2 rounded-md border bg-muted/30 px-4 py-2.5">

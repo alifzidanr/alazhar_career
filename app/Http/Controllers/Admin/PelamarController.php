@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\PelamarExport;
 use App\Http\Controllers\Controller;
 use App\Models\Loker;
 use App\Models\Orientasi;
@@ -13,6 +14,7 @@ use App\Models\TesTulis;
 use App\Models\TugasSementara;
 use App\Models\UnitKerja;
 use App\Models\Wawancara;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -21,7 +23,9 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
+use Maatwebsite\Excel\Facades\Excel;
 use setasign\Fpdi\Fpdi;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class PelamarController extends Controller
 {
@@ -31,8 +35,39 @@ class PelamarController extends Controller
         $lokerAktif = $request->integer('loker', 0);
         $kategoriAktif = (string) $request->query('kategori', '');
 
-        $query = Pelamar::with(['loker', 'statusPelamar', 'tahapRekrutmen', 'tesTulis', 'wawancara']);
+        $query = $this->filterPelamarQuery(
+            Pelamar::with(['loker', 'statusPelamar', 'tahapRekrutmen', 'tesTulis', 'wawancara']),
+            $tahapAktif,
+            $lokerAktif,
+            $kategoriAktif
+        );
 
+        $pelamarList = $query->orderByDesc('tanggal_apply')->get();
+
+        $tahapOptions = TahapRekrutmen::orderBy('id_tahap_rekrutmen')->get();
+
+        $countsQuery = $this->filterPelamarQuery(
+            Pelamar::selectRaw('id_tahap_rekrutmen, count(*) as total')->groupBy('id_tahap_rekrutmen'),
+            0,
+            $lokerAktif,
+            $kategoriAktif
+        );
+
+        $counts = $countsQuery->pluck('total', 'id_tahap_rekrutmen');
+
+        $totalSemua = $counts->sum();
+
+        $lokerAktifModel = $lokerAktif !== 0 ? Loker::find($lokerAktif) : null;
+
+        $tesTulisAktif = $tahapAktif === TahapRekrutmen::TES_TULIS;
+        $wawancaraAktif = $tahapAktif === TahapRekrutmen::WAWANCARA;
+
+        return view('admin.pelamar.index', compact('pelamarList', 'tahapOptions', 'tahapAktif', 'lokerAktif', 'lokerAktifModel', 'kategoriAktif', 'counts', 'totalSemua', 'tesTulisAktif', 'wawancaraAktif'));
+    }
+
+    /** Applies the same tahap/loker/kategori filters used by the pelamar list to any base query. */
+    private function filterPelamarQuery(Builder $query, int $tahapAktif, int $lokerAktif, string $kategoriAktif): Builder
+    {
         if ($tahapAktif !== 0) {
             $query->where('id_tahap_rekrutmen', $tahapAktif);
         }
@@ -50,35 +85,29 @@ class PelamarController extends Controller
             });
         }
 
-        $pelamarList = $query->orderByDesc('tanggal_apply')->get();
+        return $query;
+    }
 
-        $tahapOptions = TahapRekrutmen::orderBy('id_tahap_rekrutmen')->get();
+    public function export(Request $request): BinaryFileResponse
+    {
+        $tahapAktif = $request->integer('tahap', 0);
+        $lokerAktif = $request->integer('loker', 0);
+        $kategoriAktif = (string) $request->query('kategori', '');
 
-        $countsQuery = Pelamar::selectRaw('id_tahap_rekrutmen, count(*) as total')->groupBy('id_tahap_rekrutmen');
-
-        if ($lokerAktif !== 0) {
-            $countsQuery->where('id_loker', $lokerAktif);
-        }
-
-        if ($kategoriAktif !== '') {
-            $countsQuery->where(function ($q) use ($kategoriAktif) {
-                $q->where('kategori_perguruan_tinggi_d3', $kategoriAktif)
-                    ->orWhere('kategori_perguruan_tinggi_s1', $kategoriAktif)
-                    ->orWhere('kategori_perguruan_tinggi_s2', $kategoriAktif)
-                    ->orWhere('kategori_perguruan_tinggi_s3', $kategoriAktif);
-            });
-        }
-
-        $counts = $countsQuery->pluck('total', 'id_tahap_rekrutmen');
-
-        $totalSemua = $counts->sum();
+        $pelamarList = $this->filterPelamarQuery(
+            Pelamar::with(['pendidikanTerakhir', 'loker']),
+            $tahapAktif,
+            $lokerAktif,
+            $kategoriAktif
+        )->orderByDesc('tanggal_apply')->get();
 
         $lokerAktifModel = $lokerAktif !== 0 ? Loker::find($lokerAktif) : null;
+        $filenameSuffix = $lokerAktifModel ? Str::slug($lokerAktifModel->judul_loker) : 'semua-loker';
 
-        $tesTulisAktif = $tahapAktif === TahapRekrutmen::TES_TULIS;
-        $wawancaraAktif = $tahapAktif === TahapRekrutmen::WAWANCARA;
-
-        return view('admin.pelamar.index', compact('pelamarList', 'tahapOptions', 'tahapAktif', 'lokerAktif', 'lokerAktifModel', 'kategoriAktif', 'counts', 'totalSemua', 'tesTulisAktif', 'wawancaraAktif'));
+        return Excel::download(
+            new PelamarExport($pelamarList),
+            "pelamar-{$filenameSuffix}-".now()->format('Ymd_His').'.xlsx'
+        );
     }
 
     public function show(Pelamar $pelamar): View
