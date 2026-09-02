@@ -50,8 +50,9 @@
         <input type="hidden" name="template" :value="template">
         <input type="hidden" name="subject" :value="subject">
         <input type="hidden" name="body" :value="body">
+        <input type="hidden" name="channel" value="email">
 
-        <x-ui.button type="submit" name="channel" value="email" @click.prevent="$dispatch('confirm-dialog', { title: 'Kirim email ini ke {{ $pelamar->email }}?', form: $el.closest('form') })"
+        <x-ui.button type="submit" @click.prevent="$dispatch('confirm-dialog', { title: 'Kirim email ini ke {{ $pelamar->email }}?', form: $el.closest('form') })"
             class="bg-blue-600 text-white shadow-sm hover:bg-blue-500"
             :disabled="! $pelamar->email">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4"><path d="M2.25 6.75A2.25 2.25 0 0 1 4.5 4.5h15a2.25 2.25 0 0 1 2.25 2.25v10.5A2.25 2.25 0 0 1 19.5 19.5h-15a2.25 2.25 0 0 1-2.25-2.25V6.75Zm2.4-.75 7.35 5.51L19.35 6H4.65Zm15.6 1.29-7.03 5.27a1.5 1.5 0 0 1-1.79 0L4.35 7.29V17.25h15.15V7.29Z"/></svg>
