@@ -1,4 +1,6 @@
 <x-app-layout>
+    <x-slot name="title">{{ $pelamar->namaLengkap() }} - {{ $pelamar->loker->judul_loker }}</x-slot>
+
     <x-slot name="header">
         <div class="flex items-center justify-between gap-3 flex-wrap">
             <h2 class="font-semibold text-lg tracking-tight">

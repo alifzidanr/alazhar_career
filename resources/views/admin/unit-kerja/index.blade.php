@@ -1,4 +1,6 @@
 <x-app-layout>
+    <x-slot name="title">Manajemen Unit Kerja</x-slot>
+
     <x-slot name="header">
         <h2 class="font-semibold text-lg tracking-tight">Manajemen Unit Kerja</h2>
     </x-slot>

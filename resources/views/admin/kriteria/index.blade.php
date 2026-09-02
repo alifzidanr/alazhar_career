@@ -1,4 +1,6 @@
 <x-app-layout>
+    <x-slot name="title">Manajemen Kriteria</x-slot>
+
     <x-slot name="header">
         <h2 class="font-semibold text-lg tracking-tight">Manajemen Kriteria</h2>
     </x-slot>

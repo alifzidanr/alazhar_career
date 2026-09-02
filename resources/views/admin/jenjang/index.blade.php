@@ -1,4 +1,6 @@
 <x-app-layout>
+    <x-slot name="title">Manajemen Jenjang</x-slot>
+
     <x-slot name="header">
         <h2 class="font-semibold text-lg tracking-tight">Manajemen Jenjang</h2>
     </x-slot>

@@ -1,4 +1,6 @@
 <x-app-layout>
+    <x-slot name="title">Dashboard Statistik Pelamar</x-slot>
+
     <x-slot name="header">
         <h2 class="font-semibold text-lg tracking-tight">Dashboard Statistik Pelamar</h2>
     </x-slot>

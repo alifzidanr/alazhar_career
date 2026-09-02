@@ -1,4 +1,6 @@
 <x-guest-layout>
+    <x-slot name="title">Login HR</x-slot>
+
     <div class="mb-6 flex items-start justify-between gap-3">
         <div>
             <h1 class="text-lg font-semibold tracking-tight">Login HR</h1>

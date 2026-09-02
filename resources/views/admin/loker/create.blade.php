@@ -1,4 +1,6 @@
 <x-app-layout>
+    <x-slot name="title">Loker Baru</x-slot>
+
     <x-slot name="header">
         <h2 class="font-semibold text-lg tracking-tight">Loker Baru</h2>
     </x-slot>

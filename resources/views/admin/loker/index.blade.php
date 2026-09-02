@@ -1,4 +1,6 @@
 <x-app-layout>
+    <x-slot name="title">Manajemen Loker</x-slot>
+
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <h2 class="font-semibold text-lg tracking-tight">Manajemen Loker</h2>

@@ -1,4 +1,6 @@
 <x-app-layout>
+    <x-slot name="title">Kelola Loker: {{ $loker->judul_loker }}</x-slot>
+
     <x-slot name="header">
         <h2 class="font-semibold text-lg tracking-tight">Kelola Loker: {{ $loker->judul_loker }}</h2>
     </x-slot>
