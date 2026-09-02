@@ -204,7 +204,7 @@
                 </span>
                 <h2 class="mt-4 text-2xl sm:text-3xl font-bold tracking-tight">Peluang Karir Terbuka</h2>
                 <p class="mt-3 text-sm text-muted-foreground leading-relaxed">
-                    Filter berdasarkan unit, jenis posisi, dan kata kunci. Setiap lowongan menampilkan jadwal penting serta ringkasan fokus peran agar Anda bisa memutuskan dengan cepat.
+                    Cari lowongan sesuai wilayah dan posisi yang cocok untuk Anda.
                 </p>
 
                 <span class="mt-5 inline-flex items-center gap-1.5 rounded-full border bg-white px-4 py-1.5 text-sm font-medium text-brand-navy-600">
