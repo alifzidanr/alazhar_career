@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\PelamarNotifikasi;
 use App\Models\LogNotifikasi;
 use App\Models\Pelamar;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class NotifikasiController extends Controller
 {
@@ -19,25 +21,34 @@ class NotifikasiController extends Controller
             'body' => ['nullable', 'string', 'max:3000'],
         ]);
 
-        $body = $data['body'] ?? '';
-
         if (! $pelamar->email) {
             return back()->withErrors(['channel' => 'Pelamar ini tidak memiliki alamat email.']);
         }
 
         $subject = $data['subject'] ?? '';
+        $body = $data['body'] ?? '';
+
+        try {
+            Mail::to($pelamar->email)->send(new PelamarNotifikasi($subject, $body));
+            $statusKirim = 'terkirim';
+        } catch (\Throwable $e) {
+            report($e);
+            $statusKirim = 'gagal';
+        }
 
         LogNotifikasi::create([
             'id_pelamar' => $pelamar->id_pelamar,
             'channel' => 'email',
             'template' => $data['template'] ?? null,
             'pesan' => $subject !== '' ? "Subject: {$subject}\n\n{$body}" : $body,
-            'status_kirim' => 'terkirim',
+            'status_kirim' => $statusKirim,
             'created_by' => auth()->user()->name,
         ]);
 
-        $mailto = 'mailto:'.$pelamar->email.'?subject='.rawurlencode($subject).'&body='.rawurlencode($body);
+        if ($statusKirim === 'gagal') {
+            return back()->withErrors(['channel' => 'Gagal mengirim email. Periksa konfigurasi SMTP dan coba lagi.']);
+        }
 
-        return redirect()->away($mailto);
+        return back()->with('status', "Email berhasil dikirim ke {$pelamar->email}.");
     }
 }
