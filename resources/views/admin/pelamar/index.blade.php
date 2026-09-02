@@ -4,7 +4,7 @@
     </x-slot>
 
     <div class="py-8">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6" x-data="tableFilter(25, {}, { '': null, ipk_asc: { field: 'ipk_s1', dir: 'asc' }, ipk_desc: { field: 'ipk_s1', dir: 'desc' } })" x-init="init()">
+        <div class="w-full px-4 sm:px-6 lg:px-8 space-y-6" x-data="tableFilter(25, {}, { '': null, ipk_asc: { field: 'ipk_s1', dir: 'asc' }, ipk_desc: { field: 'ipk_s1', dir: 'desc' } })" x-init="init()">
 
             @if ($lokerAktifModel)
                 <x-ui.card>

@@ -4,7 +4,7 @@
     </x-slot>
 
     <div class="py-8" x-data="{ pwModal: { show: false, action: '', nama: '' } }">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-6">
+        <div class="w-full px-4 sm:px-6 lg:px-8 space-y-6">
 
             <x-ui.card title="Tambah Pengguna" description="Pengguna baru akan dapat masuk ke portal admin menggunakan email dan password ini.">
                 <form method="POST" action="{{ route('admin.users.store') }}" class="grid gap-4 sm:grid-cols-2">

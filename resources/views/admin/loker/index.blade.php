@@ -7,7 +7,7 @@
     </x-slot>
 
     <div class="py-8">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6" x-data="tableFilter(25, { wilayah: '', status: '' })" x-init="init()">
+        <div class="w-full px-4 sm:px-6 lg:px-8 space-y-6" x-data="tableFilter(25, { wilayah: '', status: '' })" x-init="init()">
             <x-ui.card>
                 <div class="grid gap-3 sm:grid-cols-5">
                     <x-ui.input type="text" x-model="search" placeholder="Cari judul atau wilayah..." class="sm:col-span-2" />

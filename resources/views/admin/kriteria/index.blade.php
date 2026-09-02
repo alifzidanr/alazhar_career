@@ -4,7 +4,7 @@
     </x-slot>
 
     <div class="py-8">
-        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8 space-y-6">
+        <div class="w-full px-4 sm:px-6 lg:px-8 space-y-6">
 
             <x-ui.card title="Tambah Kriteria" description="Kriteria ini akan tersedia sebagai pilihan dropdown saat menambahkan kriteria pada sebuah loker.">
                 <form method="POST" action="{{ route('admin.kriteria.store') }}" class="flex gap-2">
