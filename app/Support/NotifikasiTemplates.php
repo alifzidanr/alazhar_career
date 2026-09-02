@@ -19,54 +19,54 @@ class NotifikasiTemplates
     {
         return [
             'lolos_seleksi_berkas' => [
-                'label' => 'Lolos Seleksi Berkas',
-                'subject' => 'Info Lamaran :loker - Lolos Seleksi Berkas',
-                'body' => "Yth. :nama,\n\nSelamat, Anda dinyatakan LOLOS seleksi berkas untuk lowongan :loker. Anda berhak mengikuti Tes Tulis. Jadwal akan kami informasikan melalui kontak ini.\n\nTerima kasih,\nHR Al Azhar",
+                'label' => 'Undangan Tes Tulis Online',
+                'subject' => 'Undangan Tes Tulis - :loker',
+                'body' => "Assalamualaikum Wr. Wb.\n\nBerdasarkan hasil seleksi berkas lamaran yang telah dikirimkan,\nDengan ini Bagian Kepegawaian YPI Al Azhar mengundang :nama untuk mengikuti Seleksi Tes Tulis Online untuk posisi :loker pada:\n\nHari/Tanggal : [isi hari, tanggal]\nPukul        : [isi jam] WIB s.d. selesai\nMeeting ID   : [isi meeting ID]\nPasscode     : [isi passcode]\n\nKepala Bagian Kepegawaian YPI Al Azhar\nttd\nNgadiman, M.Pd.\n\nWassalamu'alaikum Wr. Wb.\n\nMohon konfirmasi kehadirannya.\nMohon hadir tepat waktu.\n\nPERATURAN\n1. Materi tes tulis ada 3 soal, yaitu Agama Islam, Bahasa Inggris, dan Bidang Studi. Link soal akan diberikan saat hari ujian via chat zoom.\n2. Tes tulis dilaksanakan melalui zoom. Peserta harus menggunakan dua device: satu untuk mengawasi (zoom aktif), satu untuk mengerjakan soal.\n3. Format display name di zoom menggunakan kode awalan \"P\" kemudian nama, lalu bidang studi. Contoh: P_Nama_BidangStudi. Format yang tidak sesuai akan dinyatakan tidak mengikuti ujian.\n4. Tidak ada toleransi penambahan waktu pengerjaan soal apabila telat bergabung di zoom.\n5. Jadwal tidak bisa direschedule.",
             ],
             'lolos_tes_tulis' => [
-                'label' => 'Lolos Tes Tulis',
-                'subject' => 'Info Lamaran :loker - Lolos Tes Tulis',
-                'body' => "Yth. :nama,\n\nSelamat, Anda dinyatakan LOLOS Tes Tulis untuk lowongan :loker. Anda berhak mengikuti tahap Wawancara. Jadwal akan kami informasikan melalui kontak ini.\n\nTerima kasih,\nHR Al Azhar",
+                'label' => 'Undangan Tes Wawancara',
+                'subject' => 'Undangan Tes Wawancara - :loker',
+                'body' => "Assalamualaikum Wr. Wb.\n\nBerdasarkan hasil seleksi Tes Tulis yang telah :nama ikuti,\nDengan ini Bagian Kepegawaian YPI Al Azhar mengundang :nama untuk mengikuti Seleksi Tes Wawancara dan Microteaching/Praktik (bila berlaku) untuk posisi :loker pada:\n\nHari/Tanggal : [isi hari, tanggal]\nPukul        : [isi jam] WIB s.d. selesai\nMeeting ID   : [isi meeting ID, bila online]\nPasscode     : [isi passcode, bila online]\nTempat       : [isi lokasi, bila offline]\n\nKepala Bagian Kepegawaian YPI Al Azhar\nttd\nNgadiman, M.Pd.\n\nWassalamu'alaikum Wr. Wb.\n\nMohon menyiapkan bahan untuk microteaching (bila berlaku) dan mohon konfirmasi kehadirannya.\n\nPERATURAN\n- Format display name di zoom menggunakan kode awalan \"P\" kemudian nama, lalu bidang studi. Contoh: P_Nama_BidangStudi. Format yang tidak sesuai akan dinyatakan tidak mengikuti ujian. (khusus online)\n- Pakaian rapi sopan, perempuan wajib berhijab, bersepatu. (khusus offline)\n\nnote:\n1. Mohon hadir 10 menit lebih awal dari jadwal yang telah ditentukan.\n2. Tes wawancara terdiri dari beberapa bagian: Wawancara Agama, Wawancara Umum, dan Microteaching/Praktik (bila berlaku).\n3. Masing-masing tes wawancara berbeda penguji.\n4. Mekanisme wawancara online akan diundang di masing-masing breakout room penguji secara bergantian. Bila sudah selesai silakan leave room breakout, bukan leave meeting.\n5. Jadwal tidak dapat direschedule.",
             ],
             'lolos_wawancara' => [
-                'label' => 'Lolos Wawancara',
-                'subject' => 'Info Lamaran :loker - Lolos Wawancara',
-                'body' => "Yth. :nama,\n\nSelamat, Anda dinyatakan LOLOS Wawancara untuk lowongan :loker. Anda berhak mengikuti Masa Orientasi. Informasi lebih lanjut akan kami sampaikan melalui kontak ini.\n\nTerima kasih,\nHR Al Azhar",
+                'label' => 'Info Orientasi',
+                'subject' => 'Info Orientasi - :loker',
+                'body' => "Assalamualaikum bapak/ibu,\n\nDengan ini disampaikan kepada :nama.\n\nBerdasarkan hasil tes, :nama akan menjalani Orientasi di [isi unit kerja/sekolah penempatan]. :nama bisa memulai orientasi pada [isi hari, tanggal]. :nama bisa langsung ke tempat bertugas yang sudah ditentukan, dan di sana bisa langsung menemui Kepala Sekolah/Kepala Unit.\n\nUntuk Surat Orientasi akan menyusul.\n\nMohon hadir jam [isi jam].\n\nTerimakasih.\n\nnote :\n- Orientasi dilaksanakan selama [isi durasi] hari kerja.\n- Orientasi masih termasuk ke dalam tahapan seleksi untuk :loker.",
             ],
             'dicadangkan' => [
-                'label' => 'Dicadangkan (dari Wawancara)',
+                'label' => 'Info Kandidat Cadangan',
                 'subject' => 'Info Lamaran :loker - Kandidat Cadangan',
-                'body' => "Yth. :nama,\n\nTerima kasih telah mengikuti Wawancara untuk lowongan :loker. Saat ini Anda kami tempatkan sebagai KANDIDAT CADANGAN. Kami akan menghubungi kembali apabila dibutuhkan.\n\nTerima kasih,\nHR Al Azhar",
+                'body' => "Assalamu'alaikum Wr. Wb.\n\nDengan ini disampaikan kepada :nama.\n\nBerdasarkan hasil seleksi tes yang telah :nama ikuti sebelumnya, saat ini :nama terdaftar sebagai Kandidat Cadangan untuk :loker. :nama akan dihubungi kembali apabila ada kebutuhan. Kami mengucapkan terima kasih atas kesediaan :nama mengikuti tahapan seleksi yang kami adakan.\n\nTerimakasih.\n\nnote :\nMasa berlaku status cadangan ini sampai [isi bulan, tahun berlaku]. Bila sampai [isi bulan, tahun berlaku] tidak mendapat panggilan, berarti status cadangan ini hangus. Bila ingin melamar kembali dipersilakan.",
             ],
             'lolos_orientasi' => [
                 'label' => 'Lolos Orientasi',
                 'subject' => 'Info Lamaran :loker - Lolos Orientasi',
-                'body' => "Yth. :nama,\n\nSelamat, Anda dinyatakan LOLOS Masa Orientasi untuk lowongan :loker. Anda berhak melanjutkan ke Tugas Sementara.\n\nTerima kasih,\nHR Al Azhar",
+                'body' => "Assalamu'alaikum Wr. Wb.\n\nDengan ini disampaikan kepada :nama.\n\nSelamat, :nama dinyatakan LOLOS Masa Orientasi untuk :loker dan berhak melanjutkan ke tahap Tugas Sementara. Informasi lebih lanjut akan kami sampaikan melalui kontak ini.\n\nTerimakasih.",
             ],
             'lolos_tugas_sementara' => [
                 'label' => 'Lolos Tugas Sementara',
                 'subject' => 'Info Lamaran :loker - Lolos Tugas Sementara',
-                'body' => "Yth. :nama,\n\nSelamat, Anda dinyatakan LOLOS Tugas Sementara untuk lowongan :loker. Proses selanjutnya adalah penerbitan SK dari HR.\n\nTerima kasih,\nHR Al Azhar",
+                'body' => "Assalamu'alaikum Wr. Wb.\n\nDengan ini disampaikan kepada :nama.\n\nSelamat, :nama dinyatakan LOLOS Tugas Sementara untuk :loker. Proses selanjutnya adalah penerbitan SK dari Bagian Kepegawaian.\n\nTerimakasih.",
             ],
             'terima_sk' => [
-                'label' => 'Terima SK dari HR',
+                'label' => 'Terima SK dari Kepegawaian',
                 'subject' => 'Selamat Bergabung - :loker',
-                'body' => "Yth. :nama,\n\nSelamat! Anda dinyatakan DITERIMA untuk lowongan :loker. Surat Keputusan (SK) akan segera kami terbitkan/serahkan. Mohon menghubungi HR untuk proses selanjutnya.\n\nTerima kasih,\nHR Al Azhar",
+                'body' => "Assalamu'alaikum Wr. Wb.\n\nDengan ini disampaikan kepada :nama.\n\nSelamat! :nama dinyatakan DITERIMA untuk :loker. Surat Keputusan (SK) akan segera kami terbitkan/serahkan. Mohon menghubungi Bagian Kepegawaian untuk proses selanjutnya.\n\nTerimakasih.",
             ],
             'tidak_lolos' => [
                 'label' => 'Tidak Lolos Tahap',
                 'subject' => 'Info Lamaran :loker',
-                'body' => "Yth. :nama,\n\nTerima kasih telah mengikuti proses rekrutmen :loker. Mohon maaf, saat ini Anda belum dapat kami lanjutkan pada tahap :tahap. Semoga sukses selalu.\n\nTerima kasih,\nHR Al Azhar",
+                'body' => "Assalamu'alaikum Wr. Wb.\n\nDengan ini disampaikan kepada :nama.\n\nBerdasarkan hasil seleksi tes yang telah :nama ikuti sebelumnya untuk :loker, mohon maaf saat ini hasil tes :nama belum bisa untuk lanjut ke tahap seleksi berikutnya (:tahap). Kami mengucapkan terima kasih atas kesediaan :nama mengikuti tahapan tes yang kami adakan.\n\nTerimakasih.",
             ],
             'ditolak' => [
                 'label' => 'Ditolak',
                 'subject' => 'Info Lamaran :loker',
-                'body' => "Yth. :nama,\n\nTerima kasih telah melamar pada lowongan :loker. Mohon maaf, saat ini kami belum dapat melanjutkan proses lamaran Anda. Semoga sukses selalu.\n\nTerima kasih,\nHR Al Azhar",
+                'body' => "Assalamu'alaikum Wr. Wb.\n\nDengan ini disampaikan kepada :nama.\n\nTerima kasih telah melamar pada lowongan :loker. Mohon maaf, saat ini kami belum dapat melanjutkan proses lamaran :nama pada tahap :tahap. Semoga sukses selalu.\n\nTerimakasih.",
             ],
             'mundur' => [
                 'label' => 'Konfirmasi Mengundurkan Diri',
                 'subject' => 'Konfirmasi Pengunduran Diri - :loker',
-                'body' => "Yth. :nama,\n\nKami telah menerima informasi pengunduran diri Anda dari proses rekrutmen :loker. Terima kasih atas partisipasi Anda.\n\nTerima kasih,\nHR Al Azhar",
+                'body' => "Assalamu'alaikum Wr. Wb.\n\nDengan ini disampaikan kepada :nama.\n\nKami telah menerima informasi pengunduran diri :nama dari proses rekrutmen :loker pada tahap :tahap. Terima kasih atas partisipasi :nama.\n\nTerimakasih.",
             ],
         ];
     }
