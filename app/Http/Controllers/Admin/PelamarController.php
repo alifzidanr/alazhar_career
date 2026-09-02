@@ -141,7 +141,24 @@ class PelamarController extends Controller
             TahapRekrutmen::ORIENTASI,
         ])->orderBy('id_tahap_rekrutmen')->get();
 
-        return view('admin.pelamar.show', compact('pelamar', 'statusOptions', 'unitKerjaList', 'tahapList'));
+        // Same ordering as the "Manajemen Pelamar" list, scoped to this pelamar's loker,
+        // so Sebelumnya/Berikutnya steps through applicants in the order they're listed there.
+        // Tidak Lolos applicants are kept in their own separate navigation lane so they
+        // don't get mixed into the active-applicant flow (and vice versa).
+        $isTidakLolos = $pelamar->id_status_pelamar === StatusPelamar::TIDAK_LOLOS;
+
+        $lokerPelamarIds = Pelamar::where('id_loker', $pelamar->id_loker)
+            ->where('id_status_pelamar', $isTidakLolos ? '=' : '!=', StatusPelamar::TIDAK_LOLOS)
+            ->orderByDesc('tanggal_apply')
+            ->orderByDesc('id_pelamar')
+            ->pluck('id_pelamar');
+
+        $currentIndex = $lokerPelamarIds->search($pelamar->id_pelamar);
+
+        $prevPelamarId = $currentIndex !== false ? $lokerPelamarIds->get($currentIndex - 1) : null;
+        $nextPelamarId = $currentIndex !== false ? $lokerPelamarIds->get($currentIndex + 1) : null;
+
+        return view('admin.pelamar.show', compact('pelamar', 'statusOptions', 'unitKerjaList', 'tahapList', 'prevPelamarId', 'nextPelamarId'));
     }
 
     public function updateData(Request $request, Pelamar $pelamar): RedirectResponse

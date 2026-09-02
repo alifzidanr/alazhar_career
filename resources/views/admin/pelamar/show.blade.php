@@ -1,8 +1,14 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <h2 class="font-semibold text-lg tracking-tight">{{ $pelamar->namaLengkap() }}</h2>
-            <x-ui.button :href="url()->previous()" variant="ghost" size="sm">&larr; Kembali</x-ui.button>
+        <div class="flex items-center justify-between gap-3 flex-wrap">
+            <h2 class="font-semibold text-lg tracking-tight">
+                {{ $pelamar->namaLengkap() }}<span class="hidden sm:inline"> &mdash; {{ $pelamar->loker->judul_loker }}</span>
+            </h2>
+            <div class="flex items-center gap-2">
+                <x-ui.button :href="$prevPelamarId ? route('admin.pelamar.show', $prevPelamarId) : null" :disabled="! $prevPelamarId" variant="outline" size="sm" title="Sebelumnya">&larr;<span class="hidden sm:inline"> Sebelumnya</span></x-ui.button>
+                <x-ui.button :href="$nextPelamarId ? route('admin.pelamar.show', $nextPelamarId) : null" :disabled="! $nextPelamarId" variant="outline" size="sm" title="Berikutnya"><span class="hidden sm:inline">Berikutnya </span>&rarr;</x-ui.button>
+                <x-ui.button :href="route('admin.pelamar.index', ['loker' => $pelamar->id_loker])" variant="ghost" size="sm">Kembali</x-ui.button>
+            </div>
         </div>
     </x-slot>
 

@@ -1,7 +1,10 @@
 <x-guest-layout>
-    <div class="mb-6">
-        <h1 class="text-lg font-semibold tracking-tight">Login HR</h1>
-        <p class="text-sm text-muted-foreground mt-1">Masuk untuk mengelola lamaran dan lowongan.</p>
+    <div class="mb-6 flex items-start justify-between gap-3">
+        <div>
+            <h1 class="text-lg font-semibold tracking-tight">Login HR</h1>
+            <p class="text-sm text-muted-foreground mt-1">Masuk untuk mengelola lamaran dan lowongan.</p>
+        </div>
+        <x-ui.button :href="route('loker.index')" variant="outline" size="sm" class="shrink-0">Lihat Portal Publik</x-ui.button>
     </div>
 
     <!-- Session Status -->

@@ -139,7 +139,9 @@
                                 <td class="px-4 py-3 font-medium whitespace-nowrap">
                                     <a href="{{ route('admin.pelamar.show', $p) }}" class="hover:underline hover:text-primary">{{ $p->namaLengkap() }}</a>
                                 </td>
-                                <td class="px-4 py-3 text-muted-foreground whitespace-nowrap">{{ $p->loker->judul_loker }}</td>
+                                <td class="px-4 py-3 text-muted-foreground whitespace-nowrap">
+                                    <a href="{{ route('admin.pelamar.index', ['loker' => $p->id_loker, 'tahap' => $tahapAktif, 'kategori' => $kategoriAktif]) }}" class="hover:underline hover:text-primary">{{ $p->loker->judul_loker }}</a>
+                                </td>
                                 <td class="px-4 py-3 text-muted-foreground whitespace-nowrap">{{ $p->institusi_s1 ?? '-' }}</td>
                                 <td class="px-4 py-3 text-muted-foreground whitespace-nowrap">{{ $p->program_studi_s1 ?? '-' }}</td>
                                 <td class="px-4 py-3 text-muted-foreground whitespace-nowrap">{{ $p->ipk_s1 ?? '-' }}</td>
