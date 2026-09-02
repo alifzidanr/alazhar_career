@@ -585,6 +585,25 @@
             </div>
         </div>
 
+        <!-- NIK length alert -->
+        <div x-show="nikLengthAlertOpen" x-cloak class="fixed inset-0 z-[90] flex items-center justify-center p-4">
+            <div class="absolute inset-0 bg-black/50" @click="nikLengthAlertOpen = false"></div>
+            <div
+                x-show="nikLengthAlertOpen"
+                x-transition:enter="transition ease-out duration-200"
+                x-transition:enter-start="opacity-0 scale-95"
+                x-transition:enter-end="opacity-100 scale-100"
+                class="relative w-full max-w-md rounded-lg border bg-background p-6 shadow-lg"
+            >
+                <h3 class="text-base font-semibold">NIK Belum Lengkap</h3>
+                <p class="mt-1.5 text-sm text-muted-foreground">NIK harus diisi tepat 16 digit angka sesuai KTP. Mohon periksa dan lengkapi kembali NIK Anda sebelum melanjutkan.</p>
+
+                <div class="mt-5 flex justify-end gap-2">
+                    <x-ui.button type="button" @click="nikLengthAlertOpen = false">Mengerti</x-ui.button>
+                </div>
+            </div>
+        </div>
+
         <!-- NIK duplicate alert -->
         <div x-show="nikDuplicateAlertOpen" x-cloak class="fixed inset-0 z-[90] flex items-center justify-center p-4">
             <div class="absolute inset-0 bg-black/50" @click="nikDuplicateAlertOpen = false"></div>
@@ -657,6 +676,7 @@
                         nikChecking: false,
                         nikIsDuplicate: false,
                         nikDuplicateAlertOpen: false,
+                        nikLengthAlertOpen: false,
                         draftKey: 'lamaran_draft_' + lokerId,
                         pendidikanLabels: pendidikanLabels ?? {},
                         fields: {
@@ -746,6 +766,10 @@
 
                             this.$watch('fields', () => this.saveDraft(), { deep: true });
                             this.$watch('step', () => this.saveDraft());
+                            this.$watch('fields.nik', (value) => {
+                                const digitsOnly = (value || '').replace(/\D/g, '').slice(0, 16);
+                                if (digitsOnly !== value) this.fields.nik = digitsOnly;
+                            });
                         },
 
                         saveDraft() {
@@ -836,6 +860,10 @@
                             if (!this.validateStep(this.step)) return;
                             if (this.step === 1 && this.usia !== null && (this.usia < 18 || this.usia > 35)) {
                                 this.ageAlertOpen = true;
+                                return;
+                            }
+                            if (this.step === 1 && !/^\d{16}$/.test(this.fields.nik)) {
+                                this.nikLengthAlertOpen = true;
                                 return;
                             }
                             if (this.step === 1 && this.nikIsDuplicate) {

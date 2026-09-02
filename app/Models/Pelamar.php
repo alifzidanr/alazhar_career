@@ -272,16 +272,16 @@ class Pelamar extends Model
     public function berkasList(): \Illuminate\Support\Collection
     {
         return collect([
+            ['icon' => '📄', 'label' => 'Surat Lamaran', 'url' => $this->suratLamaranUrl(), 'path' => $this->surat_lamaran_upload],
             ['icon' => '📄', 'label' => 'CV', 'url' => $this->cvUrl(), 'path' => $this->cv_upload],
-            ['icon' => '📷', 'label' => 'Pas Foto', 'url' => $this->pasFotoUrl(), 'path' => $this->pas_foto_upload],
             ['icon' => '📄', 'label' => 'Ijazah', 'url' => $this->ijazahUrl(), 'path' => $this->ijazah_upload],
-            ['icon' => '🪪', 'label' => 'KTP', 'url' => $this->ktpUrl(), 'path' => $this->ktp_upload],
-            ['icon' => '🪪', 'label' => 'SIM', 'url' => $this->simUrl(), 'path' => $this->sim_upload],
             ['icon' => '📄', 'label' => 'Transkrip Nilai', 'url' => $this->transkripUrl(), 'path' => $this->transkrip_nilai_upload],
             ['icon' => '📄', 'label' => 'Transkrip Nilai S1', 'url' => $this->transkripS1Url(), 'path' => $this->transkrip_nilai_s1_upload],
             ['icon' => '📄', 'label' => 'Transkrip Nilai S2', 'url' => $this->transkripS2Url(), 'path' => $this->transkrip_nilai_s2_upload],
             ['icon' => '📄', 'label' => 'Transkrip Nilai S3', 'url' => $this->transkripS3Url(), 'path' => $this->transkrip_nilai_s3_upload],
-            ['icon' => '📄', 'label' => 'Surat Lamaran', 'url' => $this->suratLamaranUrl(), 'path' => $this->surat_lamaran_upload],
+            ['icon' => '📷', 'label' => 'Pas Foto', 'url' => $this->pasFotoUrl(), 'path' => $this->pas_foto_upload],
+            ['icon' => '🪪', 'label' => 'KTP', 'url' => $this->ktpUrl(), 'path' => $this->ktp_upload],
+            ['icon' => '🪪', 'label' => 'SIM', 'url' => $this->simUrl(), 'path' => $this->sim_upload],
             ['icon' => '📄', 'label' => 'Sertifikat Gada Pratama', 'url' => $this->sertifikatGadaPratamaUrl(), 'path' => $this->sertifikat_gada_pratama_upload],
             ['icon' => '📄', 'label' => 'Sertifikat Tambahan', 'url' => $this->sertifikatTambahanUrl(), 'path' => $this->sertifikat_tambahan_upload],
         ])->filter(fn ($b) => $b['url']);
