@@ -39,8 +39,20 @@
             <div class="space-y-6">
 
                 <div class="grid md:grid-cols-2 gap-6">
-                    <x-ui.card title="Data Pelamar">
-                        <dl class="space-y-4 text-sm">
+                    <x-ui.card x-data="{
+                            editing: {{ $errors->hasAny(['nama', 'nik', 'tanggal_lahir', 'jenis_kelamin', 'gelar', 'no_hp', 'email', 'alamat', 'pernah_rekrutmen_sebelumnya', 'bulan_rekrutmen_sebelumnya', 'tahun_rekrutmen_sebelumnya', 'id_tahap_rekrutmen_sebelumnya', 'pernah_bekerja_di_al_azhar', 'lokasi_kerja_al_azhar_sebelumnya', 'bulan_kerja_al_azhar_sebelumnya', 'tahun_kerja_al_azhar_sebelumnya', 'jenis_kepegawaian_al_azhar_sebelumnya', 'jenis_kepegawaian_al_azhar_lainnya']) ? 'true' : 'false' }},
+                            pernahRekrutmen: '{{ old('pernah_rekrutmen_sebelumnya', $pelamar->pernah_rekrutmen_sebelumnya) }}',
+                            pernahKerja: '{{ old('pernah_bekerja_di_al_azhar', $pelamar->pernah_bekerja_di_al_azhar) }}',
+                            jenisKepegawaian: '{{ old('jenis_kepegawaian_al_azhar_sebelumnya', $pelamar->jenis_kepegawaian_al_azhar_sebelumnya) }}',
+                        }">
+                        <x-slot:header>
+                            <div class="flex items-center justify-between">
+                                <h3 class="font-semibold leading-none tracking-tight">Data Pelamar</h3>
+                                <x-ui.button variant="outline" size="sm" @click="editing = !editing" x-text="editing ? 'Batal' : 'Edit'"></x-ui.button>
+                            </div>
+                        </x-slot:header>
+
+                        <dl class="space-y-4 text-sm" x-show="!editing">
                             <div><dt class="text-muted-foreground">Nama</dt><dd class="font-medium">{{ $pelamar->namaLengkap() }}</dd></div>
                             <div><dt class="text-muted-foreground">NIK</dt><dd class="font-medium">{{ $pelamar->nik ?: '-' }}</dd></div>
                             <div><dt class="text-muted-foreground">Tanggal Apply</dt><dd class="font-medium">{{ $pelamar->tanggal_apply->translatedFormat('d M Y') }}</dd></div>
@@ -64,6 +76,158 @@
                                 <div><dt class="text-muted-foreground">Sebagai Apa</dt><dd class="font-medium">{{ $pelamar->jenisKepegawaianAlAzharLabel() ?? '-' }}</dd></div>
                             @endif
                         </dl>
+
+                        <form method="POST" action="{{ route('admin.pelamar.data', $pelamar) }}" class="space-y-4" x-show="editing" x-cloak>
+                            @csrf
+                            @method('PATCH')
+
+                            <div class="grid sm:grid-cols-2 gap-4">
+                                <div>
+                                    <x-ui.label for="nama">Nama</x-ui.label>
+                                    <x-ui.input type="text" id="nama" name="nama" value="{{ old('nama', $pelamar->nama) }}" required />
+                                    <x-input-error :messages="$errors->get('nama')" class="mt-2" />
+                                </div>
+                                <div>
+                                    <x-ui.label for="gelar">Gelar</x-ui.label>
+                                    <x-ui.input type="text" id="gelar" name="gelar" value="{{ old('gelar', $pelamar->gelar) }}" />
+                                    <x-input-error :messages="$errors->get('gelar')" class="mt-2" />
+                                </div>
+                                <div>
+                                    <x-ui.label for="nik">NIK</x-ui.label>
+                                    <x-ui.input type="text" id="nik" name="nik" value="{{ old('nik', $pelamar->nik) }}" maxlength="16" inputmode="numeric" required />
+                                    <x-input-error :messages="$errors->get('nik')" class="mt-2" />
+                                </div>
+                                <div>
+                                    <x-ui.label for="tanggal_lahir">Tanggal Lahir</x-ui.label>
+                                    <x-ui.input type="date" id="tanggal_lahir" name="tanggal_lahir" value="{{ old('tanggal_lahir', optional($pelamar->tanggal_lahir)->format('Y-m-d')) }}" required />
+                                    <x-input-error :messages="$errors->get('tanggal_lahir')" class="mt-2" />
+                                </div>
+                                <div>
+                                    <x-ui.label for="jenis_kelamin">Jenis Kelamin</x-ui.label>
+                                    <x-ui.select id="jenis_kelamin" name="jenis_kelamin" required>
+                                        <option value="L" @selected(old('jenis_kelamin', $pelamar->jenis_kelamin) === 'L')>Laki-laki</option>
+                                        <option value="P" @selected(old('jenis_kelamin', $pelamar->jenis_kelamin) === 'P')>Perempuan</option>
+                                    </x-ui.select>
+                                    <x-input-error :messages="$errors->get('jenis_kelamin')" class="mt-2" />
+                                </div>
+                                <div>
+                                    <x-ui.label for="email">Email</x-ui.label>
+                                    <x-ui.input type="email" id="email" name="email" value="{{ old('email', $pelamar->email) }}" required />
+                                    <x-input-error :messages="$errors->get('email')" class="mt-2" />
+                                </div>
+                                <div>
+                                    <x-ui.label for="no_hp">No. WhatsApp</x-ui.label>
+                                    <x-ui.input type="text" id="no_hp" name="no_hp" value="{{ old('no_hp', $pelamar->no_hp) }}" required />
+                                    <x-input-error :messages="$errors->get('no_hp')" class="mt-2" />
+                                </div>
+                                <div class="sm:col-span-2">
+                                    <x-ui.label for="alamat">Alamat</x-ui.label>
+                                    <x-ui.textarea id="alamat" name="alamat" rows="3" required>{{ old('alamat', $pelamar->alamat) }}</x-ui.textarea>
+                                    <x-input-error :messages="$errors->get('alamat')" class="mt-2" />
+                                </div>
+                            </div>
+
+                            <div class="pt-4 border-t space-y-4">
+                                <div>
+                                    <x-ui.label for="pernah_rekrutmen_sebelumnya">Pernah Mengikuti Rekrutmen Sebelumnya</x-ui.label>
+                                    <x-ui.select id="pernah_rekrutmen_sebelumnya" name="pernah_rekrutmen_sebelumnya" x-model="pernahRekrutmen" required>
+                                        <option value="Ya">Ya</option>
+                                        <option value="Tidak">Tidak</option>
+                                    </x-ui.select>
+                                    <x-input-error :messages="$errors->get('pernah_rekrutmen_sebelumnya')" class="mt-2" />
+                                </div>
+                                <div class="grid sm:grid-cols-3 gap-4" x-show="pernahRekrutmen === 'Ya'" x-cloak>
+                                    <div>
+                                        <x-ui.label for="bulan_rekrutmen_sebelumnya">Bulan</x-ui.label>
+                                        <x-ui.select id="bulan_rekrutmen_sebelumnya" name="bulan_rekrutmen_sebelumnya" x-bind:required="pernahRekrutmen === 'Ya'">
+                                            <option value="">-- Bulan --</option>
+                                            @foreach (['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'] as $i => $bulanNama)
+                                                <option value="{{ $i + 1 }}" @selected((string) old('bulan_rekrutmen_sebelumnya', $pelamar->bulan_rekrutmen_sebelumnya) === (string) ($i + 1))>{{ $bulanNama }}</option>
+                                            @endforeach
+                                        </x-ui.select>
+                                        <x-input-error :messages="$errors->get('bulan_rekrutmen_sebelumnya')" class="mt-2" />
+                                    </div>
+                                    <div>
+                                        <x-ui.label for="tahun_rekrutmen_sebelumnya">Tahun</x-ui.label>
+                                        <x-ui.select id="tahun_rekrutmen_sebelumnya" name="tahun_rekrutmen_sebelumnya" x-bind:required="pernahRekrutmen === 'Ya'">
+                                            <option value="">-- Tahun --</option>
+                                            @for ($tahun = 2020; $tahun <= 2030; $tahun++)
+                                                <option value="{{ $tahun }}" @selected((string) old('tahun_rekrutmen_sebelumnya', $pelamar->tahun_rekrutmen_sebelumnya) === (string) $tahun)>{{ $tahun }}</option>
+                                            @endfor
+                                        </x-ui.select>
+                                        <x-input-error :messages="$errors->get('tahun_rekrutmen_sebelumnya')" class="mt-2" />
+                                    </div>
+                                    <div>
+                                        <x-ui.label for="id_tahap_rekrutmen_sebelumnya">Sampai Tahap</x-ui.label>
+                                        <x-ui.select id="id_tahap_rekrutmen_sebelumnya" name="id_tahap_rekrutmen_sebelumnya" x-bind:required="pernahRekrutmen === 'Ya'">
+                                            <option value="">-- Pilih --</option>
+                                            @foreach ($tahapList as $t)
+                                                <option value="{{ $t->id_tahap_rekrutmen }}" @selected((string) old('id_tahap_rekrutmen_sebelumnya', $pelamar->id_tahap_rekrutmen_sebelumnya) === (string) $t->id_tahap_rekrutmen)>{{ $t->tahap_rekrutmen }}</option>
+                                            @endforeach
+                                        </x-ui.select>
+                                        <x-input-error :messages="$errors->get('id_tahap_rekrutmen_sebelumnya')" class="mt-2" />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <x-ui.label for="pernah_bekerja_di_al_azhar">Pernah Bekerja di Al Azhar</x-ui.label>
+                                    <x-ui.select id="pernah_bekerja_di_al_azhar" name="pernah_bekerja_di_al_azhar" x-model="pernahKerja" required>
+                                        <option value="Ya">Ya</option>
+                                        <option value="Tidak">Tidak</option>
+                                    </x-ui.select>
+                                    <x-input-error :messages="$errors->get('pernah_bekerja_di_al_azhar')" class="mt-2" />
+                                </div>
+                                <div class="grid sm:grid-cols-2 gap-4" x-show="pernahKerja === 'Ya'" x-cloak>
+                                    <div>
+                                        <x-ui.label for="lokasi_kerja_al_azhar_sebelumnya">Lokasi Bekerja Sebelumnya</x-ui.label>
+                                        <x-ui.input type="text" id="lokasi_kerja_al_azhar_sebelumnya" name="lokasi_kerja_al_azhar_sebelumnya" value="{{ old('lokasi_kerja_al_azhar_sebelumnya', $pelamar->lokasi_kerja_al_azhar_sebelumnya) }}" x-bind:required="pernahKerja === 'Ya'" />
+                                        <x-input-error :messages="$errors->get('lokasi_kerja_al_azhar_sebelumnya')" class="mt-2" />
+                                    </div>
+                                    <div>
+                                        <x-ui.label for="jenis_kepegawaian_al_azhar_sebelumnya">Sebagai Apa</x-ui.label>
+                                        <x-ui.select id="jenis_kepegawaian_al_azhar_sebelumnya" name="jenis_kepegawaian_al_azhar_sebelumnya" x-model="jenisKepegawaian" x-bind:required="pernahKerja === 'Ya'">
+                                            <option value="">-- Pilih --</option>
+                                            <option value="Pegawai Honor">Pegawai Honor</option>
+                                            <option value="Pegawai Tetap">Pegawai Tetap</option>
+                                            <option value="Pegawai Inval">Pegawai Inval</option>
+                                            <option value="Pegawai Ekskul">Pegawai Ekskul</option>
+                                            <option value="Lain-lain">Lain-lain</option>
+                                        </x-ui.select>
+                                        <x-input-error :messages="$errors->get('jenis_kepegawaian_al_azhar_sebelumnya')" class="mt-2" />
+                                    </div>
+                                    <div x-show="jenisKepegawaian === 'Lain-lain'" x-cloak>
+                                        <x-ui.label for="jenis_kepegawaian_al_azhar_lainnya">Sebutkan</x-ui.label>
+                                        <x-ui.input type="text" id="jenis_kepegawaian_al_azhar_lainnya" name="jenis_kepegawaian_al_azhar_lainnya" value="{{ old('jenis_kepegawaian_al_azhar_lainnya', $pelamar->jenis_kepegawaian_al_azhar_lainnya) }}" x-bind:required="pernahKerja === 'Ya' && jenisKepegawaian === 'Lain-lain'" />
+                                        <x-input-error :messages="$errors->get('jenis_kepegawaian_al_azhar_lainnya')" class="mt-2" />
+                                    </div>
+                                    <div>
+                                        <x-ui.label for="bulan_kerja_al_azhar_sebelumnya">Bulan Mulai</x-ui.label>
+                                        <x-ui.select id="bulan_kerja_al_azhar_sebelumnya" name="bulan_kerja_al_azhar_sebelumnya" x-bind:required="pernahKerja === 'Ya'">
+                                            <option value="">-- Bulan --</option>
+                                            @foreach (['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'] as $i => $bulanNama)
+                                                <option value="{{ $i + 1 }}" @selected((string) old('bulan_kerja_al_azhar_sebelumnya', $pelamar->bulan_kerja_al_azhar_sebelumnya) === (string) ($i + 1))>{{ $bulanNama }}</option>
+                                            @endforeach
+                                        </x-ui.select>
+                                        <x-input-error :messages="$errors->get('bulan_kerja_al_azhar_sebelumnya')" class="mt-2" />
+                                    </div>
+                                    <div>
+                                        <x-ui.label for="tahun_kerja_al_azhar_sebelumnya">Tahun</x-ui.label>
+                                        <x-ui.select id="tahun_kerja_al_azhar_sebelumnya" name="tahun_kerja_al_azhar_sebelumnya" x-bind:required="pernahKerja === 'Ya'">
+                                            <option value="">-- Tahun --</option>
+                                            @for ($tahun = 2000; $tahun <= 2030; $tahun++)
+                                                <option value="{{ $tahun }}" @selected((string) old('tahun_kerja_al_azhar_sebelumnya', $pelamar->tahun_kerja_al_azhar_sebelumnya) === (string) $tahun)>{{ $tahun }}</option>
+                                            @endfor
+                                        </x-ui.select>
+                                        <x-input-error :messages="$errors->get('tahun_kerja_al_azhar_sebelumnya')" class="mt-2" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-2 pt-2">
+                                <x-ui.button type="submit">Simpan</x-ui.button>
+                                <x-ui.button type="button" variant="outline" @click="editing = false">Batal</x-ui.button>
+                            </div>
+                        </form>
                     </x-ui.card>
 
                     <x-ui.card title="Ubah Status">
@@ -308,14 +472,20 @@
                             <div>
                                 <x-ui.label for="nilai_wawancara_agama">Nilai Wawancara Agama</x-ui.label>
                                 <x-ui.input type="number" id="nilai_wawancara_agama" name="nilai_wawancara_agama" step="0.01" min="0" max="100" value="{{ old('nilai_wawancara_agama', $pelamar->wawancara?->nilai_wawancara_agama) }}" />
+                                <label for="rekomendasi_wawancara_agama" class="mt-2 mb-1 block text-xs text-muted-foreground">Rekomendasi/Catatan</label>
+                                <x-ui.textarea id="rekomendasi_wawancara_agama" name="rekomendasi_wawancara_agama" rows="2" class="text-sm" placeholder="Catatan singkat...">{{ old('rekomendasi_wawancara_agama', $pelamar->wawancara?->rekomendasi_wawancara_agama) }}</x-ui.textarea>
                             </div>
                             <div>
                                 <x-ui.label for="nilai_praktik_micro_teaching">Nilai Praktik/Micro Teaching</x-ui.label>
                                 <x-ui.input type="number" id="nilai_praktik_micro_teaching" name="nilai_praktik_micro_teaching" step="0.01" min="0" max="100" value="{{ old('nilai_praktik_micro_teaching', $pelamar->wawancara?->nilai_praktik_micro_teaching) }}" />
+                                <label for="rekomendasi_praktik_micro_teaching" class="mt-2 mb-1 block text-xs text-muted-foreground">Rekomendasi/Catatan</label>
+                                <x-ui.textarea id="rekomendasi_praktik_micro_teaching" name="rekomendasi_praktik_micro_teaching" rows="2" class="text-sm" placeholder="Catatan singkat...">{{ old('rekomendasi_praktik_micro_teaching', $pelamar->wawancara?->rekomendasi_praktik_micro_teaching) }}</x-ui.textarea>
                             </div>
                             <div>
                                 <x-ui.label for="nilai_wawancara_umum">Nilai Wawancara Umum</x-ui.label>
                                 <x-ui.input type="number" id="nilai_wawancara_umum" name="nilai_wawancara_umum" step="0.01" min="0" max="100" value="{{ old('nilai_wawancara_umum', $pelamar->wawancara?->nilai_wawancara_umum) }}" />
+                                <label for="rekomendasi_wawancara_umum" class="mt-2 mb-1 block text-xs text-muted-foreground">Rekomendasi/Catatan</label>
+                                <x-ui.textarea id="rekomendasi_wawancara_umum" name="rekomendasi_wawancara_umum" rows="2" class="text-sm" placeholder="Catatan singkat...">{{ old('rekomendasi_wawancara_umum', $pelamar->wawancara?->rekomendasi_wawancara_umum) }}</x-ui.textarea>
                             </div>
                             <div>
                                 <x-ui.label for="w_tanggal_pelaksanaan">Tanggal &amp; Jam Pelaksanaan</x-ui.label>

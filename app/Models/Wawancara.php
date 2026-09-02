@@ -13,8 +13,11 @@ class Wawancara extends Model
     protected $fillable = [
         'id_pelamar',
         'nilai_wawancara_agama',
+        'rekomendasi_wawancara_agama',
         'nilai_praktik_micro_teaching',
+        'rekomendasi_praktik_micro_teaching',
         'nilai_wawancara_umum',
+        'rekomendasi_wawancara_umum',
         'tanggal_pelaksanaan',
     ];
 

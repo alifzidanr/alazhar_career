@@ -19,6 +19,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use setasign\Fpdi\Fpdi;
 
@@ -102,7 +103,77 @@ class PelamarController extends Controller
         $statusOptions = StatusPelamar::orderBy('id_status_pelamar')->get();
         $unitKerjaList = UnitKerja::orderBy('nama_unit')->get();
 
-        return view('admin.pelamar.show', compact('pelamar', 'statusOptions', 'unitKerjaList'));
+        // "Sampai tahap apa" only offers the first 4 stages (Tugas Sementara, Terima SK,
+        // and Migrasi Data are excluded since a past applicant wouldn't self-report those).
+        $tahapList = TahapRekrutmen::whereIn('id_tahap_rekrutmen', [
+            TahapRekrutmen::SELEKSI_BERKAS,
+            TahapRekrutmen::TES_TULIS,
+            TahapRekrutmen::WAWANCARA,
+            TahapRekrutmen::ORIENTASI,
+        ])->orderBy('id_tahap_rekrutmen')->get();
+
+        return view('admin.pelamar.show', compact('pelamar', 'statusOptions', 'unitKerjaList', 'tahapList'));
+    }
+
+    public function updateData(Request $request, Pelamar $pelamar): RedirectResponse
+    {
+        $data = $request->validate([
+            'nama' => ['required', 'string', 'max:150'],
+            'nik' => [
+                'required',
+                'digits:16',
+                Rule::unique('pelamar', 'nik')
+                    ->where(fn ($query) => $query->where('id_loker', $pelamar->id_loker))
+                    ->ignore($pelamar->id_pelamar, 'id_pelamar'),
+            ],
+            'tanggal_lahir' => ['required', 'date', 'before:today'],
+            'jenis_kelamin' => ['required', 'in:L,P'],
+            'gelar' => ['nullable', 'string', 'max:50'],
+            'no_hp' => ['required', 'string', 'max:20'],
+            'email' => ['required', 'email', 'max:150'],
+            'alamat' => ['required', 'string', 'max:1000'],
+            'pernah_rekrutmen_sebelumnya' => ['required', 'in:Ya,Tidak'],
+            'bulan_rekrutmen_sebelumnya' => ['nullable', 'integer', 'between:1,12', Rule::requiredIf(fn () => $request->input('pernah_rekrutmen_sebelumnya') === 'Ya')],
+            'tahun_rekrutmen_sebelumnya' => ['nullable', 'integer', 'between:2020,2030', Rule::requiredIf(fn () => $request->input('pernah_rekrutmen_sebelumnya') === 'Ya')],
+            'id_tahap_rekrutmen_sebelumnya' => [
+                'nullable',
+                Rule::in([TahapRekrutmen::SELEKSI_BERKAS, TahapRekrutmen::TES_TULIS, TahapRekrutmen::WAWANCARA, TahapRekrutmen::ORIENTASI]),
+                Rule::requiredIf(fn () => $request->input('pernah_rekrutmen_sebelumnya') === 'Ya'),
+            ],
+            'pernah_bekerja_di_al_azhar' => ['required', 'in:Ya,Tidak'],
+            'lokasi_kerja_al_azhar_sebelumnya' => ['nullable', 'string', 'max:255', Rule::requiredIf(fn () => $request->input('pernah_bekerja_di_al_azhar') === 'Ya')],
+            'bulan_kerja_al_azhar_sebelumnya' => ['nullable', 'integer', 'between:1,12', Rule::requiredIf(fn () => $request->input('pernah_bekerja_di_al_azhar') === 'Ya')],
+            'tahun_kerja_al_azhar_sebelumnya' => ['nullable', 'integer', 'between:2000,2030', Rule::requiredIf(fn () => $request->input('pernah_bekerja_di_al_azhar') === 'Ya')],
+            'jenis_kepegawaian_al_azhar_sebelumnya' => [
+                'nullable',
+                'in:Pegawai Honor,Pegawai Tetap,Pegawai Inval,Pegawai Ekskul,Lain-lain',
+                Rule::requiredIf(fn () => $request->input('pernah_bekerja_di_al_azhar') === 'Ya'),
+            ],
+            'jenis_kepegawaian_al_azhar_lainnya' => [
+                'nullable', 'string', 'max:255',
+                Rule::requiredIf(fn () => $request->input('pernah_bekerja_di_al_azhar') === 'Ya' && $request->input('jenis_kepegawaian_al_azhar_sebelumnya') === 'Lain-lain'),
+            ],
+        ]);
+
+        if ($data['pernah_rekrutmen_sebelumnya'] === 'Tidak') {
+            $data['bulan_rekrutmen_sebelumnya'] = null;
+            $data['tahun_rekrutmen_sebelumnya'] = null;
+            $data['id_tahap_rekrutmen_sebelumnya'] = null;
+        }
+
+        if ($data['pernah_bekerja_di_al_azhar'] === 'Tidak') {
+            $data['lokasi_kerja_al_azhar_sebelumnya'] = null;
+            $data['bulan_kerja_al_azhar_sebelumnya'] = null;
+            $data['tahun_kerja_al_azhar_sebelumnya'] = null;
+            $data['jenis_kepegawaian_al_azhar_sebelumnya'] = null;
+            $data['jenis_kepegawaian_al_azhar_lainnya'] = null;
+        } elseif ($data['jenis_kepegawaian_al_azhar_sebelumnya'] !== 'Lain-lain') {
+            $data['jenis_kepegawaian_al_azhar_lainnya'] = null;
+        }
+
+        $pelamar->update($data);
+
+        return back()->with('status', 'Data Pelamar berhasil disimpan.');
     }
 
     /** Merge every uploaded berkas (PDFs and images) into a single downloadable PDF. */
@@ -436,8 +507,11 @@ class PelamarController extends Controller
     {
         $data = $request->validate([
             'nilai_wawancara_agama' => ['nullable', 'numeric', 'between:0,100'],
+            'rekomendasi_wawancara_agama' => ['nullable', 'string', 'max:1000'],
             'nilai_praktik_micro_teaching' => ['nullable', 'numeric', 'between:0,100'],
+            'rekomendasi_praktik_micro_teaching' => ['nullable', 'string', 'max:1000'],
             'nilai_wawancara_umum' => ['nullable', 'numeric', 'between:0,100'],
+            'rekomendasi_wawancara_umum' => ['nullable', 'string', 'max:1000'],
             'tanggal_pelaksanaan' => ['nullable', 'date'],
         ]);
 
