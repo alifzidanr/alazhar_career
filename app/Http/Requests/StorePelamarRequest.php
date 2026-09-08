@@ -41,10 +41,10 @@ class StorePelamarRequest extends FormRequest
             'pernah_rekrutmen_sebelumnya' => ['required', 'in:Ya,Tidak'],
             'bulan_rekrutmen_sebelumnya' => ['nullable', 'integer', 'between:1,12', Rule::requiredIf(fn () => $this->input('pernah_rekrutmen_sebelumnya') === 'Ya')],
             'tahun_rekrutmen_sebelumnya' => ['nullable', 'integer', 'between:2020,2030', Rule::requiredIf(fn () => $this->input('pernah_rekrutmen_sebelumnya') === 'Ya')],
-            // Only the first 4 stages are offered as "sampai tahap apa" options.
+            // Seleksi Berkas is excluded from "sampai tahap apa" options (see LokerController@show).
             'id_tahap_rekrutmen_sebelumnya' => [
                 'nullable',
-                Rule::in([TahapRekrutmen::SELEKSI_BERKAS, TahapRekrutmen::TES_TULIS, TahapRekrutmen::WAWANCARA, TahapRekrutmen::ORIENTASI]),
+                Rule::in([TahapRekrutmen::TES_TULIS, TahapRekrutmen::WAWANCARA, TahapRekrutmen::ORIENTASI]),
                 Rule::requiredIf(fn () => $this->input('pernah_rekrutmen_sebelumnya') === 'Ya'),
             ],
             'pernah_bekerja_di_al_azhar' => ['required', 'in:Ya,Tidak'],
@@ -61,7 +61,22 @@ class StorePelamarRequest extends FormRequest
             ],
 
             // Step 2: Pendidikan
-            'id_pendidikan_terakhir' => ['required', 'exists:pendidikan_terakhir,id_pendidikan_terakhir'],
+            'id_pendidikan_terakhir' => [
+                'required',
+                'exists:pendidikan_terakhir,id_pendidikan_terakhir',
+                function ($attribute, $value, $fail) {
+                    if ($this->pendidikanLabel() === 'D3') {
+                        $fail('D3 tidak tersedia sebagai pilihan pendidikan terakhir.');
+
+                        return;
+                    }
+
+                    $minimum = $this->route('loker')?->jenjang?->id_pendidikan_minimum;
+                    if ($minimum && (int) $value < $minimum) {
+                        $fail('Pendidikan terakhir yang dipilih tidak memenuhi syarat minimum untuk lowongan ini.');
+                    }
+                },
+            ],
             // Institusi only applies to non-tertiary levels (SD through D3); S1/S2/S3 record
             // institusi per degree below since an S2/S3 applicant has more than one.
             'institusi' => ['nullable', 'string', 'max:150', Rule::requiredIf(fn () => ! in_array($this->pendidikanLabel(), ['S1', 'S2', 'S3'], true))],

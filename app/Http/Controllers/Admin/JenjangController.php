@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Jenjang;
+use App\Models\PendidikanTerakhir;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -13,14 +14,16 @@ class JenjangController extends Controller
     public function index(): View
     {
         $jenjangList = Jenjang::withCount('loker')->orderBy('nama_jenjang')->get();
+        $pendidikanList = PendidikanTerakhir::orderBy('id_pendidikan_terakhir')->get();
 
-        return view('admin.jenjang.index', compact('jenjangList'));
+        return view('admin.jenjang.index', compact('jenjangList', 'pendidikanList'));
     }
 
     public function store(Request $request): RedirectResponse
     {
         $data = $request->validate([
             'nama_jenjang' => ['required', 'string', 'max:100', 'unique:jenjang,nama_jenjang'],
+            'id_pendidikan_minimum' => ['required', 'exists:pendidikan_terakhir,id_pendidikan_terakhir'],
         ]);
 
         Jenjang::create($data);
@@ -32,6 +35,7 @@ class JenjangController extends Controller
     {
         $data = $request->validate([
             'nama_jenjang' => ['required', 'string', 'max:100', 'unique:jenjang,nama_jenjang,'.$jenjang->id_jenjang.',id_jenjang'],
+            'id_pendidikan_minimum' => ['required', 'exists:pendidikan_terakhir,id_pendidikan_terakhir'],
         ]);
 
         $jenjang->update($data);

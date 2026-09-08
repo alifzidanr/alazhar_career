@@ -142,13 +142,9 @@ class PelamarController extends Controller
         ])->orderBy('id_tahap_rekrutmen')->get();
 
         // Same ordering as the "Manajemen Pelamar" list, scoped to this pelamar's loker,
-        // so Sebelumnya/Berikutnya steps through applicants in the order they're listed there.
-        // Tidak Lolos applicants are kept in their own separate navigation lane so they
-        // don't get mixed into the active-applicant flow (and vice versa).
-        $isTidakLolos = $pelamar->id_status_pelamar === StatusPelamar::TIDAK_LOLOS;
-
+        // so Sebelumnya/Berikutnya steps through applicants in the order they're listed there
+        // (Tidak Lolos applicants included, same as that list).
         $lokerPelamarIds = Pelamar::where('id_loker', $pelamar->id_loker)
-            ->where('id_status_pelamar', $isTidakLolos ? '=' : '!=', StatusPelamar::TIDAK_LOLOS)
             ->orderByDesc('tanggal_apply')
             ->orderByDesc('id_pelamar')
             ->pluck('id_pelamar');

@@ -8,13 +8,20 @@
     <div class="py-8">
         <div class="w-full px-4 sm:px-6 lg:px-8 space-y-6">
 
-            <x-ui.card title="Tambah Jenjang" description="Jenjang ini akan tersedia sebagai pilihan dropdown saat membuat/mengubah loker.">
+            <x-ui.card title="Tambah Jenjang" description="Jenjang ini akan tersedia sebagai pilihan dropdown saat membuat/mengubah loker. Pendidikan minimum menentukan pilihan pendidikan terakhir yang bisa dipilih pelamar pada formulir lamaran untuk loker dengan jenjang ini.">
                 <form method="POST" action="{{ route('admin.jenjang.store') }}" class="flex gap-2">
                     @csrf
                     <x-ui.input type="text" name="nama_jenjang" placeholder="cth. Guru SD" value="{{ old('nama_jenjang') }}" required class="flex-1" />
+                    <x-ui.select name="id_pendidikan_minimum" required class="w-48">
+                        <option value="">-- Pendidikan Minimum --</option>
+                        @foreach ($pendidikanList as $p)
+                            <option value="{{ $p->id_pendidikan_terakhir }}" @selected((string) old('id_pendidikan_minimum') === (string) $p->id_pendidikan_terakhir)>{{ $p->pendidikan_terakhir }}</option>
+                        @endforeach
+                    </x-ui.select>
                     <x-ui.button type="submit">Tambah</x-ui.button>
                 </form>
                 <x-input-error :messages="$errors->get('nama_jenjang')" class="mt-2" />
+                <x-input-error :messages="$errors->get('id_pendidikan_minimum')" class="mt-2" />
             </x-ui.card>
 
             <div x-data="tableFilter(25)" x-init="init()" class="space-y-6">
@@ -30,33 +37,45 @@
                         <thead class="bg-muted/50">
                             <tr class="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                                 <th class="px-4 py-3">Jenjang</th>
+                                <th class="px-4 py-3">Pendidikan Minimum</th>
                                 <th class="px-4 py-3">Dipakai</th>
                                 <th class="px-4 py-3"></th>
                             </tr>
                         </thead>
                         <tbody class="divide-y" x-ref="tbody">
                             @forelse ($jenjangList as $j)
+                                @php($formId = 'jenjang-form-'.$j->id_jenjang)
                                 <tr class="hover:bg-muted/30" data-row data-search="{{ Str::lower($j->nama_jenjang) }}" x-show="isVisible($el)">
                                     <td class="px-4 py-3">
-                                        <form method="POST" action="{{ route('admin.jenjang.update', $j) }}" class="flex items-center gap-2">
+                                        <form id="{{ $formId }}" method="POST" action="{{ route('admin.jenjang.update', $j) }}">
                                             @csrf @method('PATCH')
-                                            <x-ui.input type="text" name="nama_jenjang" value="{{ $j->nama_jenjang }}" class="h-8 text-sm" />
-                                            <x-ui.button type="submit" variant="outline" size="sm">Simpan</x-ui.button>
                                         </form>
+                                        <x-ui.input form="{{ $formId }}" type="text" name="nama_jenjang" value="{{ $j->nama_jenjang }}" class="h-8 text-sm" />
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <x-ui.select form="{{ $formId }}" name="id_pendidikan_minimum" class="h-8 text-sm">
+                                            <option value="">-- Pendidikan Minimum --</option>
+                                            @foreach ($pendidikanList as $p)
+                                                <option value="{{ $p->id_pendidikan_terakhir }}" @selected((string) $j->id_pendidikan_minimum === (string) $p->id_pendidikan_terakhir)>{{ $p->pendidikan_terakhir }}</option>
+                                            @endforeach
+                                        </x-ui.select>
                                     </td>
                                     <td class="px-4 py-3 text-muted-foreground">{{ $j->loker_count }}x</td>
                                     <td class="px-4 py-3 text-right">
-                                        <form method="POST" action="{{ route('admin.jenjang.destroy', $j) }}" x-data @submit.prevent="$dispatch('confirm-dialog', { title: 'Hapus jenjang ini?', destructive: true, confirmText: 'Hapus', form: $el })">
-                                            @csrf @method('DELETE')
-                                            <x-ui.button type="submit" variant="ghost" size="sm" class="text-destructive hover:text-destructive">Hapus</x-ui.button>
-                                        </form>
+                                        <div class="flex items-center justify-end gap-2">
+                                            <x-ui.button form="{{ $formId }}" type="submit" variant="outline" size="sm">Simpan</x-ui.button>
+                                            <form method="POST" action="{{ route('admin.jenjang.destroy', $j) }}" x-data @submit.prevent="$dispatch('confirm-dialog', { title: 'Hapus jenjang ini?', destructive: true, confirmText: 'Hapus', form: $el })">
+                                                @csrf @method('DELETE')
+                                                <x-ui.button type="submit" variant="ghost" size="sm" class="text-destructive hover:text-destructive">Hapus</x-ui.button>
+                                            </form>
+                                        </div>
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="3" class="px-4 py-8 text-center text-muted-foreground">Belum ada jenjang.</td></tr>
+                                <tr><td colspan="4" class="px-4 py-8 text-center text-muted-foreground">Belum ada jenjang.</td></tr>
                             @endforelse
                             @if ($jenjangList->isNotEmpty())
-                                <tr x-show="total === 0"><td colspan="3" class="px-4 py-8 text-center text-muted-foreground">Tidak ada jenjang yang cocok.</td></tr>
+                                <tr x-show="total === 0"><td colspan="4" class="px-4 py-8 text-center text-muted-foreground">Tidak ada jenjang yang cocok.</td></tr>
                             @endif
                         </tbody>
                     </table>

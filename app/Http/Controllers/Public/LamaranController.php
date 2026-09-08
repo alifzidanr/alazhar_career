@@ -4,15 +4,19 @@ namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePelamarRequest;
+use App\Mail\PelamarNotifikasi;
 use App\Models\Loker;
+use App\Models\LogNotifikasi;
 use App\Models\Pelamar;
 use App\Models\RiwayatTahapPelamar;
 use App\Models\StatusPelamar;
 use App\Models\TahapRekrutmen;
+use App\Support\NotifikasiTemplates;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class LamaranController extends Controller
 {
@@ -127,6 +131,27 @@ class LamaranController extends Controller
 
             return $pelamar;
         });
+
+        // Sent outside the transaction so a slow/failed SMTP call never rolls
+        // back the application itself; a failure here is only logged.
+        ['subject' => $subject, 'body' => $body] = NotifikasiTemplates::render('konfirmasi_lamaran', $pelamar);
+
+        try {
+            Mail::to($pelamar->email)->send(new PelamarNotifikasi($subject, $body));
+            $statusKirim = 'terkirim';
+        } catch (\Throwable $e) {
+            report($e);
+            $statusKirim = 'gagal';
+        }
+
+        LogNotifikasi::create([
+            'id_pelamar' => $pelamar->id_pelamar,
+            'channel' => 'email',
+            'template' => 'konfirmasi_lamaran',
+            'pesan' => "Subject: {$subject}\n\n{$body}",
+            'status_kirim' => $statusKirim,
+            'created_by' => null,
+        ]);
 
         return redirect()
             ->route('loker.show', $loker)

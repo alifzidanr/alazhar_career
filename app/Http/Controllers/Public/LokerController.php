@@ -41,12 +41,18 @@ class LokerController extends Controller
 
         $kriteriaByBobot = $loker->kriteria->groupBy('bobot');
 
-        $pendidikanList = PendidikanTerakhir::orderBy('id_pendidikan_terakhir')->get();
+        // Only offer pendidikan levels at or above the loker's jenjang minimum,
+        // so an applicant can't select an education level the job doesn't allow.
+        // D3 is excluded as a selectable option on the application form entirely.
+        $pendidikanList = PendidikanTerakhir::orderBy('id_pendidikan_terakhir')
+            ->where('pendidikan_terakhir', '!=', 'D3')
+            ->when($loker->jenjang?->id_pendidikan_minimum, fn ($query, $minimum) => $query->where('id_pendidikan_terakhir', '>=', $minimum))
+            ->get();
 
-        // "Sampai tahap apa" only offers the first 4 stages (Tugas Sementara, Terima SK,
-        // and Migrasi Data are excluded since a past applicant wouldn't self-report those).
+        // "Sampai tahap apa" excludes Seleksi Berkas (every applicant clears that stage just
+        // by applying, so it's not a meaningful self-reported answer) as well as Tugas
+        // Sementara, Terima SK, and Migrasi Data (a past applicant wouldn't self-report those).
         $tahapList = TahapRekrutmen::whereIn('id_tahap_rekrutmen', [
-            TahapRekrutmen::SELEKSI_BERKAS,
             TahapRekrutmen::TES_TULIS,
             TahapRekrutmen::WAWANCARA,
             TahapRekrutmen::ORIENTASI,

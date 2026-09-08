@@ -18,6 +18,10 @@
         },
         confirm() {
             this.show = false;
+            // form.submit() never fires a native 'submit' event, so listeners that
+            // want to react to an actually-confirmed submission (e.g. to show a
+            // loading state) need this explicit signal instead.
+            this._form?.dispatchEvent(new CustomEvent('confirmed-submit', { bubbles: true }));
             this._form?.submit();
         },
     }"

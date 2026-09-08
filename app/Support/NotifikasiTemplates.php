@@ -18,6 +18,11 @@ class NotifikasiTemplates
     public static function all(): array
     {
         return [
+            'konfirmasi_lamaran' => [
+                'label' => 'Konfirmasi Lamaran Diterima',
+                'subject' => 'Konfirmasi Lamaran - :loker',
+                'body' => "Assalamualaikum Wr. Wb.\n\nDengan ini disampaikan kepada bapak/ibu :nama,\n\nTerima kasih telah mengirimkan lamaran untuk posisi :loker melalui Portal Karir YPI Al Azhar. Lamaran bapak/ibu telah kami terima dan akan segera memasuki tahap Seleksi Berkas.\n\nTim Kepegawaian YPI Al Azhar akan menghubungi bapak/ibu melalui WhatsApp/email apabila lamaran dinyatakan lolos ke tahap seleksi berikutnya. Mohon untuk memantau email dan WhatsApp secara berkala.\n\nTerima kasih atas kesediaan bapak/ibu melamar di YPI Al Azhar.\n\nWassalamu'alaikum Wr. Wb.\n\nKepala Bagian Kepegawaian YPI Al Azhar",
+            ],
             'lolos_seleksi_berkas' => [
                 'label' => 'Undangan Tes Tulis Online',
                 'subject' => 'Undangan Tes Tulis - :loker',
@@ -41,17 +46,17 @@ class NotifikasiTemplates
             'lolos_orientasi' => [
                 'label' => 'Lolos Orientasi',
                 'subject' => 'Info Lamaran :loker - Lolos Orientasi',
-                'body' => "Assalamu'alaikum Wr. Wb.\n\nDengan ini disampaikan kepada :nama.\n\nSelamat, :nama dinyatakan LOLOS Masa Orientasi untuk :loker dan berhak melanjutkan ke tahap Tugas Sementara. Informasi lebih lanjut akan kami sampaikan melalui kontak ini.\n\nTerimakasih.",
+                'body' => "Assalamu'alaikum Wr. Wb.\n\nDengan ini disampaikan kepada bapak/ibu :nama.\n\nSelamat, :nama dinyatakan LOLOS Masa Orientasi untuk :loker dan berhak melanjutkan ke tahap Tugas Sementara. Informasi lebih lanjut akan kami sampaikan melalui kontak ini.\n\nTerimakasih.",
             ],
             'lolos_tugas_sementara' => [
                 'label' => 'Lolos Tugas Sementara',
                 'subject' => 'Info Lamaran :loker - Lolos Tugas Sementara',
-                'body' => "Assalamu'alaikum Wr. Wb.\n\nDengan ini disampaikan kepada :nama.\n\nSelamat, :nama dinyatakan LOLOS Tugas Sementara untuk :loker. Proses selanjutnya adalah penerbitan SK dari Bagian Kepegawaian.\n\nTerimakasih.",
+                'body' => "Assalamu'alaikum Wr. Wb.\n\nDengan ini disampaikan kepada bapak/ibu :nama.\n\nSelamat, :nama dinyatakan LOLOS Tugas Sementara untuk :loker. Proses selanjutnya adalah penerbitan SK dari Bagian Kepegawaian.\n\nTerimakasih.",
             ],
             'terima_sk' => [
                 'label' => 'Terima SK dari Kepegawaian',
                 'subject' => 'Selamat Bergabung - :loker',
-                'body' => "Assalamu'alaikum Wr. Wb.\n\nDengan ini disampaikan kepada :nama.\n\nSelamat! :nama dinyatakan DITERIMA untuk :loker. Surat Keputusan (SK) akan segera kami terbitkan/serahkan. Mohon menghubungi Bagian Kepegawaian untuk proses selanjutnya.\n\nTerimakasih.",
+                'body' => "Assalamu'alaikum Wr. Wb.\n\nDengan ini disampaikan kepada bapak/ibu :nama.\n\nSelamat! :nama dinyatakan DITERIMA untuk :loker. Surat Keputusan (SK) akan segera kami terbitkan/serahkan. Mohon menghubungi Bagian Kepegawaian untuk proses selanjutnya.\n\nTerimakasih.",
             ],
             'tidak_lolos' => [
                 'label' => 'Tidak Lolos Tahap',
@@ -61,12 +66,12 @@ class NotifikasiTemplates
             'ditolak' => [
                 'label' => 'Ditolak',
                 'subject' => 'Info Lamaran :loker',
-                'body' => "Assalamu'alaikum Wr. Wb.\n\nDengan ini disampaikan kepada :nama.\n\nTerima kasih telah melamar pada lowongan :loker. Mohon maaf, saat ini kami belum dapat melanjutkan proses lamaran :nama pada tahap :tahap. Semoga sukses selalu.\n\nTerimakasih.",
+                'body' => "Assalamu'alaikum Wr. Wb.\n\nDengan ini disampaikan kepada bapak/ibu :nama.\n\nTerima kasih telah melamar pada lowongan :loker. Mohon maaf, saat ini kami belum dapat melanjutkan proses lamaran :nama pada tahap :tahap. Semoga sukses selalu.\n\nTerimakasih.",
             ],
             'mundur' => [
                 'label' => 'Konfirmasi Mengundurkan Diri',
                 'subject' => 'Konfirmasi Pengunduran Diri - :loker',
-                'body' => "Assalamu'alaikum Wr. Wb.\n\nDengan ini disampaikan kepada :nama.\n\nKami telah menerima informasi pengunduran diri :nama dari proses rekrutmen :loker pada tahap :tahap. Terima kasih atas partisipasi :nama.\n\nTerimakasih.",
+                'body' => "Assalamu'alaikum Wr. Wb.\n\nDengan ini disampaikan kepada bapak/ibu :nama.\n\nKami telah menerima informasi pengunduran diri :nama dari proses rekrutmen :loker pada tahap :tahap. Terima kasih atas partisipasi :nama.\n\nTerimakasih.",
             ],
         ];
     }
@@ -119,15 +124,22 @@ class NotifikasiTemplates
     {
         $template = self::all()[$key] ?? ['subject' => '', 'body' => ''];
 
-        $replacements = [
+        return [
+            'subject' => self::renderText($template['subject'], $pelamar),
+            'body' => self::renderText($template['body'], $pelamar),
+        ];
+    }
+
+    /**
+     * Substitutes :nama/:loker/:tahap in arbitrary text (e.g. a manually edited
+     * or bulk-send subject/body) with this pelamar's own data.
+     */
+    public static function renderText(string $text, Pelamar $pelamar): string
+    {
+        return strtr($text, [
             ':nama' => $pelamar->namaLengkap(),
             ':loker' => $pelamar->loker->judul_loker ?? '-',
             ':tahap' => $pelamar->tahapRekrutmen->tahap_rekrutmen ?? '-',
-        ];
-
-        return [
-            'subject' => strtr($template['subject'], $replacements),
-            'body' => strtr($template['body'], $replacements),
-        ];
+        ]);
     }
 }

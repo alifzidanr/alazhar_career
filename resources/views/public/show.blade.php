@@ -96,7 +96,7 @@
     @endphp
 
     <x-ui.card title="Formulir Lamaran" class="mt-6">
-      <div x-data="applyWizard({{ $loker->id_loker }}, @js(old()), @js($errorStep), @js($pendidikanList->pluck('pendidikan_terakhir', 'id_pendidikan_terakhir')))" x-init="init()">
+      <div x-data="applyWizard({{ $loker->id_loker }}, @js(old()), @js($errorStep), @js($pendidikanList->pluck('pendidikan_terakhir', 'id_pendidikan_terakhir')), @js((bool) session('lamaran_sukses')))" x-init="init()">
 
         <!-- Stepper -->
         <div class="flex items-center mb-8">
@@ -457,77 +457,77 @@
                 <div class="grid sm:grid-cols-2 gap-5">
                     <div>
                         <x-ui.label for="cv_upload">Curriculum Vitae <span class="text-destructive">*</span></x-ui.label>
-                        <input type="file" id="cv_upload" name="cv_upload" required accept=".pdf" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
+                        <input type="file" id="cv_upload" name="cv_upload" required accept=".pdf" @change="onFileSelected($event, 'Curriculum Vitae')" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
                         <p class="text-xs text-muted-foreground mt-1">Format PDF, maksimal 5MB.</p>
                         <x-input-error :messages="$errors->get('cv_upload')" class="mt-2" />
                     </div>
                     <div>
                         <x-ui.label for="pas_foto_upload">Pas Foto 3x4 <span class="text-destructive">*</span></x-ui.label>
-                        <input type="file" id="pas_foto_upload" name="pas_foto_upload" required accept=".jpg,.jpeg,.png" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
+                        <input type="file" id="pas_foto_upload" name="pas_foto_upload" required accept=".jpg,.jpeg,.png" @change="onFileSelected($event, 'Pas Foto 3x4')" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
                         <p class="text-xs text-muted-foreground mt-1">Format JPG/PNG, maksimal 5MB.</p>
                         <x-input-error :messages="$errors->get('pas_foto_upload')" class="mt-2" />
                     </div>
                     <div>
                         <x-ui.label for="ktp_upload">KTP <span class="text-destructive">*</span></x-ui.label>
-                        <input type="file" id="ktp_upload" name="ktp_upload" required accept=".jpg,.jpeg,.png" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
+                        <input type="file" id="ktp_upload" name="ktp_upload" required accept=".jpg,.jpeg,.png" @change="onFileSelected($event, 'KTP')" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
                         <p class="text-xs text-muted-foreground mt-1">Format JPG/PNG, maksimal 5MB.</p>
                         <x-input-error :messages="$errors->get('ktp_upload')" class="mt-2" />
                     </div>
                     @if ($loker->jenjang?->nama_jenjang === 'Driver')
                         <div>
                             <x-ui.label for="sim_upload">SIM <span class="text-destructive">*</span></x-ui.label>
-                            <input type="file" id="sim_upload" name="sim_upload" required accept=".jpg,.jpeg,.png" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
+                            <input type="file" id="sim_upload" name="sim_upload" required accept=".jpg,.jpeg,.png" @change="onFileSelected($event, 'SIM')" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
                             <p class="text-xs text-muted-foreground mt-1">Format JPG/PNG, maksimal 5MB.</p>
                             <x-input-error :messages="$errors->get('sim_upload')" class="mt-2" />
                         </div>
                     @endif
                     <div>
                         <x-ui.label for="ijazah_upload">Ijazah SD - Pendidikan Terakhir <span class="text-destructive">*</span></x-ui.label>
-                        <input type="file" id="ijazah_upload" name="ijazah_upload" required accept=".pdf" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
+                        <input type="file" id="ijazah_upload" name="ijazah_upload" required accept=".pdf" @change="onFileSelected($event, 'Ijazah')" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
                         <p class="text-xs text-muted-foreground mt-1">Format PDF, maksimal 5MB. Sertakan ijazah dari jenjang pendidikan awal hingga pendidikan terakhir (dapat digabungkan dalam satu file PDF).</p>
                         <x-input-error :messages="$errors->get('ijazah_upload')" class="mt-2" />
                     </div>
                     <div x-show="!isS1 && !isS2 && !isS3" x-cloak>
                         <x-ui.label for="transkrip_nilai_upload">Transkrip Nilai <span class="text-destructive">*</span></x-ui.label>
-                        <input type="file" id="transkrip_nilai_upload" name="transkrip_nilai_upload" x-bind:required="!isS1 && !isS2 && !isS3" accept=".pdf" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
+                        <input type="file" id="transkrip_nilai_upload" name="transkrip_nilai_upload" x-bind:required="!isS1 && !isS2 && !isS3" accept=".pdf" @change="onFileSelected($event, 'Transkrip Nilai')" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
                         <p class="text-xs text-muted-foreground mt-1">Format PDF, maksimal 5MB.</p>
                         <x-input-error :messages="$errors->get('transkrip_nilai_upload')" class="mt-2" />
                     </div>
                     <div x-show="isS1 || isS2 || isS3" x-cloak>
                         <x-ui.label for="transkrip_nilai_s1_upload">Transkrip Nilai S1 <span class="text-destructive">*</span></x-ui.label>
-                        <input type="file" id="transkrip_nilai_s1_upload" name="transkrip_nilai_s1_upload" x-bind:required="isS1 || isS2 || isS3" accept=".pdf" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
+                        <input type="file" id="transkrip_nilai_s1_upload" name="transkrip_nilai_s1_upload" x-bind:required="isS1 || isS2 || isS3" accept=".pdf" @change="onFileSelected($event, 'Transkrip Nilai S1')" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
                         <p class="text-xs text-muted-foreground mt-1">Format PDF, maksimal 5MB.</p>
                         <x-input-error :messages="$errors->get('transkrip_nilai_s1_upload')" class="mt-2" />
                     </div>
                     <div x-show="isS2 || isS3" x-cloak>
                         <x-ui.label for="transkrip_nilai_s2_upload">Transkrip Nilai S2 <span class="text-destructive">*</span></x-ui.label>
-                        <input type="file" id="transkrip_nilai_s2_upload" name="transkrip_nilai_s2_upload" x-bind:required="isS2 || isS3" accept=".pdf" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
+                        <input type="file" id="transkrip_nilai_s2_upload" name="transkrip_nilai_s2_upload" x-bind:required="isS2 || isS3" accept=".pdf" @change="onFileSelected($event, 'Transkrip Nilai S2')" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
                         <p class="text-xs text-muted-foreground mt-1">Format PDF, maksimal 5MB.</p>
                         <x-input-error :messages="$errors->get('transkrip_nilai_s2_upload')" class="mt-2" />
                     </div>
                     <div x-show="isS3" x-cloak>
                         <x-ui.label for="transkrip_nilai_s3_upload">Transkrip Nilai S3 <span class="text-destructive">*</span></x-ui.label>
-                        <input type="file" id="transkrip_nilai_s3_upload" name="transkrip_nilai_s3_upload" x-bind:required="isS3" accept=".pdf" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
+                        <input type="file" id="transkrip_nilai_s3_upload" name="transkrip_nilai_s3_upload" x-bind:required="isS3" accept=".pdf" @change="onFileSelected($event, 'Transkrip Nilai S3')" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
                         <p class="text-xs text-muted-foreground mt-1">Format PDF, maksimal 5MB.</p>
                         <x-input-error :messages="$errors->get('transkrip_nilai_s3_upload')" class="mt-2" />
                     </div>
                     <div>
                         <x-ui.label for="surat_lamaran_upload">Surat Lamaran <span class="text-destructive">*</span></x-ui.label>
-                        <input type="file" id="surat_lamaran_upload" name="surat_lamaran_upload" required accept=".pdf" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
+                        <input type="file" id="surat_lamaran_upload" name="surat_lamaran_upload" required accept=".pdf" @change="onFileSelected($event, 'Surat Lamaran')" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
                         <p class="text-xs text-muted-foreground mt-1">Format PDF, maksimal 5MB.</p>
                         <x-input-error :messages="$errors->get('surat_lamaran_upload')" class="mt-2" />
                     </div>
                     @if ($loker->jenjang?->nama_jenjang === 'Satpam')
                         <div>
                             <x-ui.label for="sertifikat_gada_pratama_upload">Sertifikat Gada Pratama <span class="text-destructive">*</span></x-ui.label>
-                            <input type="file" id="sertifikat_gada_pratama_upload" name="sertifikat_gada_pratama_upload" required accept=".pdf" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
+                            <input type="file" id="sertifikat_gada_pratama_upload" name="sertifikat_gada_pratama_upload" required accept=".pdf" @change="onFileSelected($event, 'Sertifikat Gada Pratama')" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
                             <p class="text-xs text-muted-foreground mt-1">Format PDF, maksimal 5MB.</p>
                             <x-input-error :messages="$errors->get('sertifikat_gada_pratama_upload')" class="mt-2" />
                         </div>
                     @endif
                     <div>
                         <x-ui.label for="sertifikat_tambahan_upload">Sertifikat Tambahan (opsional)</x-ui.label>
-                        <input type="file" id="sertifikat_tambahan_upload" name="sertifikat_tambahan_upload" accept=".pdf" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
+                        <input type="file" id="sertifikat_tambahan_upload" name="sertifikat_tambahan_upload" accept=".pdf" @change="onFileSelected($event, 'Sertifikat Tambahan')" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
                         <p class="text-xs text-muted-foreground mt-1">Format PDF, maksimal 5MB.</p>
                         <x-input-error :messages="$errors->get('sertifikat_tambahan_upload')" class="mt-2" />
                     </div>
@@ -660,6 +660,25 @@
                 </div>
             </div>
         </div>
+
+        <!-- File too large alert -->
+        <div x-show="fileTooLargeAlertOpen" x-cloak class="fixed inset-0 z-[90] flex items-center justify-center p-4">
+            <div class="absolute inset-0 bg-black/50" @click="fileTooLargeAlertOpen = false"></div>
+            <div
+                x-show="fileTooLargeAlertOpen"
+                x-transition:enter="transition ease-out duration-200"
+                x-transition:enter-start="opacity-0 scale-95"
+                x-transition:enter-end="opacity-100 scale-100"
+                class="relative w-full max-w-md rounded-lg border bg-background p-6 shadow-lg"
+            >
+                <h3 class="text-base font-semibold">Ukuran File Terlalu Besar</h3>
+                <p class="mt-1.5 text-sm text-muted-foreground" x-text="fileTooLargeAlertMessage"></p>
+
+                <div class="mt-5 flex justify-end gap-2">
+                    <x-ui.button type="button" @click="fileTooLargeAlertOpen = false">Mengerti</x-ui.button>
+                </div>
+            </div>
+        </div>
       </div>
     </x-ui.card>
   </div>
@@ -667,8 +686,80 @@
     @once
         @push('scripts')
             <script>
+                // Uploaded files can't be restored into a file input from localStorage (browsers
+                // won't let JS set input.files from arbitrary data), so the actual File/Blob
+                // objects are kept in IndexedDB, keyed per loker + field, and reattached via the
+                // DataTransfer API on page load. This survives refreshes/back-navigation until the
+                // application is actually submitted successfully.
+                const LAMARAN_FILES_DB = 'lamaran_uploads';
+                const LAMARAN_FILES_STORE = 'files';
+                const LAMARAN_FILE_FIELDS = [
+                    'cv_upload', 'pas_foto_upload', 'ktp_upload', 'sim_upload', 'ijazah_upload',
+                    'transkrip_nilai_upload', 'transkrip_nilai_s1_upload', 'transkrip_nilai_s2_upload', 'transkrip_nilai_s3_upload',
+                    'surat_lamaran_upload', 'sertifikat_gada_pratama_upload', 'sertifikat_tambahan_upload',
+                ];
+
+                function openFilesDb() {
+                    return new Promise((resolve, reject) => {
+                        const req = indexedDB.open(LAMARAN_FILES_DB, 1);
+                        req.onupgradeneeded = () => {
+                            req.result.createObjectStore(LAMARAN_FILES_STORE, { keyPath: 'key' });
+                        };
+                        req.onsuccess = () => resolve(req.result);
+                        req.onerror = () => reject(req.error);
+                    });
+                }
+
+                async function putStoredFile(lokerId, field, file) {
+                    const db = await openFilesDb();
+                    return new Promise((resolve, reject) => {
+                        const tx = db.transaction(LAMARAN_FILES_STORE, 'readwrite');
+                        tx.objectStore(LAMARAN_FILES_STORE).put({
+                            key: `${lokerId}::${field}`, lokerId, field,
+                            name: file.name, type: file.type, blob: file,
+                        });
+                        tx.oncomplete = () => resolve();
+                        tx.onerror = () => reject(tx.error);
+                    });
+                }
+
+                async function getStoredFile(lokerId, field) {
+                    const db = await openFilesDb();
+                    return new Promise((resolve, reject) => {
+                        const req = db.transaction(LAMARAN_FILES_STORE, 'readonly').objectStore(LAMARAN_FILES_STORE).get(`${lokerId}::${field}`);
+                        req.onsuccess = () => resolve(req.result || null);
+                        req.onerror = () => reject(req.error);
+                    });
+                }
+
+                async function deleteStoredFile(lokerId, field) {
+                    const db = await openFilesDb();
+                    return new Promise((resolve, reject) => {
+                        const tx = db.transaction(LAMARAN_FILES_STORE, 'readwrite');
+                        tx.objectStore(LAMARAN_FILES_STORE).delete(`${lokerId}::${field}`);
+                        tx.oncomplete = () => resolve();
+                        tx.onerror = () => reject(tx.error);
+                    });
+                }
+
+                async function clearStoredFiles(lokerId) {
+                    const db = await openFilesDb();
+                    return new Promise((resolve, reject) => {
+                        const tx = db.transaction(LAMARAN_FILES_STORE, 'readwrite');
+                        const req = tx.objectStore(LAMARAN_FILES_STORE).openCursor();
+                        req.onsuccess = () => {
+                            const cursor = req.result;
+                            if (!cursor) return;
+                            if (cursor.value.lokerId === lokerId) cursor.delete();
+                            cursor.continue();
+                        };
+                        tx.oncomplete = () => resolve();
+                        tx.onerror = () => reject(tx.error);
+                    });
+                }
+
                 document.addEventListener('alpine:init', () => {
-                    Alpine.data('applyWizard', (lokerId, oldInput, errorStep, pendidikanLabels) => ({
+                    Alpine.data('applyWizard', (lokerId, oldInput, errorStep, pendidikanLabels, hasSuccess) => ({
                         step: 1,
                         confirmOpen: false,
                         ageAlertOpen: false,
@@ -677,6 +768,8 @@
                         nikIsDuplicate: false,
                         nikDuplicateAlertOpen: false,
                         nikLengthAlertOpen: false,
+                        fileTooLargeAlertOpen: false,
+                        fileTooLargeAlertMessage: '',
                         draftKey: 'lamaran_draft_' + lokerId,
                         pendidikanLabels: pendidikanLabels ?? {},
                         fields: {
@@ -770,6 +863,8 @@
                                 const digitsOnly = (value || '').replace(/\D/g, '').slice(0, 16);
                                 if (digitsOnly !== value) this.fields.nik = digitsOnly;
                             });
+
+                            this.restoreFiles();
                         },
 
                         saveDraft() {
@@ -778,6 +873,56 @@
 
                         clearDraft() {
                             localStorage.removeItem(this.draftKey);
+                        },
+
+                        async restoreFiles() {
+                            // A successful submission means the files were already sent to the
+                            // server; nothing left to restore, so clear the stash instead.
+                            if (hasSuccess) {
+                                try { await clearStoredFiles(lokerId); } catch (e) { /* IndexedDB unavailable */ }
+                                return;
+                            }
+
+                            for (const field of LAMARAN_FILE_FIELDS) {
+                                const input = document.getElementById(field);
+                                if (!input) continue;
+                                try {
+                                    const record = await getStoredFile(lokerId, field);
+                                    if (record && record.blob) {
+                                        const file = new File([record.blob], record.name, { type: record.type });
+                                        const dt = new DataTransfer();
+                                        dt.items.add(file);
+                                        input.files = dt.files;
+                                    }
+                                } catch (e) {
+                                    // IndexedDB unavailable: skip restoring, user re-attaches manually.
+                                }
+                            }
+                        },
+
+                        async onFileSelected(event, label, maxMb = 5) {
+                            const input = event.target;
+                            const file = input.files && input.files[0];
+
+                            if (!file) {
+                                try { await deleteStoredFile(lokerId, input.name); } catch (e) { /* ignore */ }
+                                return;
+                            }
+
+                            if (file.size > maxMb * 1024 * 1024) {
+                                input.value = '';
+                                this.fileTooLargeAlertMessage = `Ukuran file ${label} maksimal ${maxMb}MB. Silakan pilih file lain yang lebih kecil.`;
+                                this.fileTooLargeAlertOpen = true;
+                                try { await deleteStoredFile(lokerId, input.name); } catch (e) { /* ignore */ }
+                                return;
+                            }
+
+                            try {
+                                await putStoredFile(lokerId, input.name, file);
+                            } catch (e) {
+                                // IndexedDB unavailable/full: the file still submits normally,
+                                // it just won't survive a refresh.
+                            }
                         },
 
                         validateStep(n) {

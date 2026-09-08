@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Mail\PelamarNotifikasi;
 use App\Models\LogNotifikasi;
 use App\Models\Pelamar;
+use App\Support\NotifikasiTemplates;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -50,5 +51,65 @@ class NotifikasiController extends Controller
         }
 
         return back()->with('status', "Email berhasil dikirim ke {$pelamar->email}.");
+    }
+
+    public function bulkSend(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'ids' => ['required', 'array', 'min:1'],
+            'ids.*' => ['integer', 'exists:pelamar,id_pelamar'],
+            'channel' => ['required', 'in:email'],
+            'template' => ['nullable', 'string', 'max:100'],
+            'subject' => ['required', 'string', 'max:255'],
+            'body' => ['required', 'string', 'max:3000'],
+        ]);
+
+        $pelamarList = Pelamar::with(['loker', 'tahapRekrutmen'])->whereIn('id_pelamar', $data['ids'])->get();
+
+        $terkirim = 0;
+        $gagal = 0;
+        $tanpaEmail = 0;
+
+        foreach ($pelamarList as $pelamar) {
+            if (! $pelamar->email) {
+                $tanpaEmail++;
+
+                continue;
+            }
+
+            // Each recipient gets their own :nama/:loker/:tahap substitution,
+            // whether the subject/body came from a template or a manual message.
+            $subject = NotifikasiTemplates::renderText($data['subject'], $pelamar);
+            $body = NotifikasiTemplates::renderText($data['body'], $pelamar);
+
+            try {
+                Mail::to($pelamar->email)->send(new PelamarNotifikasi($subject, $body));
+                $statusKirim = 'terkirim';
+                $terkirim++;
+            } catch (\Throwable $e) {
+                report($e);
+                $statusKirim = 'gagal';
+                $gagal++;
+            }
+
+            LogNotifikasi::create([
+                'id_pelamar' => $pelamar->id_pelamar,
+                'channel' => 'email',
+                'template' => $data['template'] ?? null,
+                'pesan' => "Subject: {$subject}\n\n{$body}",
+                'status_kirim' => $statusKirim,
+                'created_by' => auth()->user()->name,
+            ]);
+        }
+
+        $message = "{$terkirim} email berhasil dikirim.";
+        if ($gagal > 0) {
+            $message .= " {$gagal} gagal terkirim.";
+        }
+        if ($tanpaEmail > 0) {
+            $message .= " {$tanpaEmail} pelamar dilewati karena tidak memiliki alamat email.";
+        }
+
+        return back()->with('status', $message);
     }
 }

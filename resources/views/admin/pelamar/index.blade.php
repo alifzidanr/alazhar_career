@@ -93,6 +93,88 @@
                     <x-ui.button type="submit" size="sm" variant="outline">Lanjutkan &rarr;</x-ui.button>
                 </form>
 
+                <div x-data="{
+                        emailOpen: false,
+                        sending: false,
+                        template: '',
+                        subject: '',
+                        body: '',
+                        templates: @js(\App\Support\NotifikasiTemplates::all()),
+                        applyTemplate() {
+                            if (this.template && this.templates[this.template]) {
+                                this.subject = this.templates[this.template].subject;
+                                this.body = this.templates[this.template].body;
+                            } else {
+                                this.subject = '';
+                                this.body = '';
+                            }
+                        },
+                    }" class="contents">
+                    <x-ui.button type="button" size="sm" variant="outline" @click="emailOpen = true; applyTemplate()">Kirim Email</x-ui.button>
+
+                    <div x-show="emailOpen" x-cloak class="fixed inset-0 z-[90] flex items-center justify-center p-4">
+                        <div class="absolute inset-0 bg-black/50" @click="if (! sending) emailOpen = false"></div>
+                        <div
+                            x-show="emailOpen"
+                            x-transition:enter="transition ease-out duration-200"
+                            x-transition:enter-start="opacity-0 scale-95"
+                            x-transition:enter-end="opacity-100 scale-100"
+                            class="relative w-full max-w-2xl rounded-lg border bg-background p-6 shadow-lg"
+                            @keydown.escape.window="if (! sending) emailOpen = false"
+                        >
+                            <!-- Sending overlay -->
+                            <div x-show="sending" x-cloak x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" class="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 rounded-lg bg-background/90 backdrop-blur-sm">
+                                <svg class="h-8 w-8 animate-spin text-primary" viewBox="0 0 24 24" fill="none">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 0 1 8-8V0C5.373 0 0 5.373 0 12h4Z"></path>
+                                </svg>
+                                <p class="text-sm font-medium">Mengirim email ke <span x-text="selectedIds.length"></span> pelamar&hellip;</p>
+                                <p class="text-xs text-muted-foreground">Mohon tunggu, jangan tutup atau muat ulang halaman ini.</p>
+                            </div>
+
+                            <h3 class="text-base font-semibold">Kirim Email ke <span x-text="selectedIds.length"></span> Pelamar</h3>
+                            <p class="mt-1 text-xs text-muted-foreground">Gunakan <code>:nama</code>, <code>:loker</code>, dan <code>:tahap</code> pada subjek/isi pesan &mdash; otomatis diganti sesuai data masing-masing pelamar saat dikirim.</p>
+
+                            <div class="mt-4 space-y-3">
+                                <div>
+                                    <x-ui.label for="bulk-notify-template">Template Pesan</x-ui.label>
+                                    <x-ui.select id="bulk-notify-template" x-model="template" @change="applyTemplate()" x-bind:disabled="sending">
+                                        <option value="">-- Kosong / Tulis Manual --</option>
+                                        @foreach (\App\Support\NotifikasiTemplates::all() as $key => $t)
+                                            <option value="{{ $key }}">{{ $t['label'] }}</option>
+                                        @endforeach
+                                    </x-ui.select>
+                                </div>
+                                <div>
+                                    <x-ui.label for="bulk-notify-subject">Subjek (email)</x-ui.label>
+                                    <x-ui.input id="bulk-notify-subject" type="text" x-model="subject" x-bind:disabled="sending" />
+                                </div>
+                                <div>
+                                    <x-ui.label for="bulk-notify-body">Isi Pesan (preview)</x-ui.label>
+                                    <x-ui.textarea id="bulk-notify-body" x-model="body" rows="8" x-bind:disabled="sending"></x-ui.textarea>
+                                </div>
+                            </div>
+
+                            <form method="POST" action="{{ route('admin.pelamar.bulk-notify') }}" @submit.prevent="$dispatch('confirm-dialog', { title: `Kirim email ke ${selectedIds.length} pelamar?`, form: $el })" @confirmed-submit="sending = true" class="mt-5 flex justify-end gap-2">
+                                @csrf
+                                <input type="hidden" name="channel" value="email">
+                                <input type="hidden" name="template" :value="template">
+                                <input type="hidden" name="subject" :value="subject">
+                                <input type="hidden" name="body" :value="body">
+                                <template x-for="id in selectedIds" :key="id"><input type="hidden" name="ids[]" :value="id"></template>
+                                <x-ui.button type="button" variant="outline" @click="emailOpen = false" x-bind:disabled="sending">Batal</x-ui.button>
+                                <x-ui.button type="submit" class="bg-blue-600 text-white shadow-sm hover:bg-blue-500 inline-flex items-center gap-2" x-bind:disabled="! subject || ! body || sending">
+                                    <svg x-show="sending" x-cloak class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 0 1 8-8V0C5.373 0 0 5.373 0 12h4Z"></path>
+                                    </svg>
+                                    <span x-text="sending ? 'Mengirim...' : 'Kirim'"></span>
+                                </x-ui.button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
                 <x-ui.button type="button" size="sm" variant="ghost" @click="selectedIds = []">Batal Pilih</x-ui.button>
             </div>
 
