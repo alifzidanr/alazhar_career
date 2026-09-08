@@ -19,6 +19,7 @@ class Orientasi extends Model
         'tanggal_mulai',
         'tanggal_selesai',
         'sk_orientasi_upload',
+        'catatan',
     ];
 
     protected function casts(): array

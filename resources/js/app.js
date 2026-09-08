@@ -145,9 +145,12 @@ Alpine.data('tableFilter', (perPage = 15, initialFilters = {}, sortModes = {}) =
         const mode = this.sortModes[this.sort];
         if (mode) {
             rows.sort((a, b) => {
-                const av = Number(a.dataset[mode.field] ?? 0);
-                const bv = Number(b.dataset[mode.field] ?? 0);
-                return mode.dir === 'asc' ? av - bv : bv - av;
+                const av = a.dataset[mode.field] ?? '';
+                const bv = b.dataset[mode.field] ?? '';
+                const cmp = mode.type === 'string'
+                    ? av.localeCompare(bv, undefined, { sensitivity: 'base' })
+                    : Number(av || 0) - Number(bv || 0);
+                return mode.dir === 'asc' ? cmp : -cmp;
             });
         }
 

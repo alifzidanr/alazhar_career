@@ -6,7 +6,15 @@
     </x-slot>
 
     <div class="py-8">
-        <div class="w-full px-4 sm:px-6 lg:px-8 space-y-6" x-data="tableFilter(25, {}, { '': null, ipk_asc: { field: 'ipk_s1', dir: 'asc' }, ipk_desc: { field: 'ipk_s1', dir: 'desc' } })" x-init="init()">
+        <div class="w-full px-4 sm:px-6 lg:px-8 space-y-6" x-data="tableFilter(25, {}, {
+                '': null,
+                ipk_asc: { field: 'ipk_s1', dir: 'asc' },
+                ipk_desc: { field: 'ipk_s1', dir: 'desc' },
+                institusi_asc: { field: 'institusi_s1', dir: 'asc', type: 'string' },
+                institusi_desc: { field: 'institusi_s1', dir: 'desc', type: 'string' },
+                loker_asc: { field: 'loker', dir: 'asc', type: 'string' },
+                loker_desc: { field: 'loker', dir: 'desc', type: 'string' },
+            })" x-init="init()">
 
             @if ($lokerAktifModel)
                 <x-ui.card>
@@ -186,8 +194,16 @@
                                 <input type="checkbox" class="rounded border-input" :checked="allVisibleSelected" @change="toggleSelectAll($event.target.checked)" title="Pilih semua yang tampil">
                             </th>
                             <th class="px-4 py-3">Nama</th>
-                            <th class="px-4 py-3">Loker</th>
-                            <th class="px-4 py-3">Nama Institusi</th>
+                            <th class="px-4 py-3 cursor-pointer select-none whitespace-nowrap" @click="sort = sort === 'loker_asc' ? 'loker_desc' : (sort === 'loker_desc' ? '' : 'loker_asc')">
+                                Loker
+                                <span x-show="sort === 'loker_asc'">&uarr;</span>
+                                <span x-show="sort === 'loker_desc'">&darr;</span>
+                            </th>
+                            <th class="px-4 py-3 cursor-pointer select-none whitespace-nowrap" @click="sort = sort === 'institusi_asc' ? 'institusi_desc' : (sort === 'institusi_desc' ? '' : 'institusi_asc')">
+                                Nama Institusi
+                                <span x-show="sort === 'institusi_asc'">&uarr;</span>
+                                <span x-show="sort === 'institusi_desc'">&darr;</span>
+                            </th>
                             <th class="px-4 py-3">Jurusan</th>
                             <th class="px-4 py-3 cursor-pointer select-none whitespace-nowrap" @click="sort = sort === 'ipk_asc' ? 'ipk_desc' : (sort === 'ipk_desc' ? '' : 'ipk_asc')">
                                 IPK
@@ -216,12 +232,30 @@
                     </thead>
                     <tbody class="divide-y" x-ref="tbody">
                         @forelse ($pelamarList as $p)
-                            <tr class="hover:bg-muted/30" data-row data-id="{{ $p->id_pelamar }}" data-search="{{ Str::lower($p->namaLengkap()) }}" data-ipk_s1="{{ $p->ipk_s1 ?? '' }}" x-show="isVisible($el)">
+                            <tr class="hover:bg-muted/30" data-row data-id="{{ $p->id_pelamar }}" data-search="{{ Str::lower($p->namaLengkap()) }}" data-ipk_s1="{{ $p->ipk_s1 ?? '' }}" data-institusi_s1="{{ Str::lower($p->institusi_s1 ?? '') }}" data-loker="{{ Str::lower($p->loker->judul_loker ?? '') }}" x-show="isVisible($el)">
                                 <td class="px-4 py-3">
                                     <input type="checkbox" class="rounded border-input" :checked="isSelected({{ $p->id_pelamar }})" @change="toggleSelect({{ $p->id_pelamar }}, $event.target.checked)">
                                 </td>
                                 <td class="px-4 py-3 font-medium whitespace-nowrap">
-                                    <a href="{{ route('admin.pelamar.show', $p) }}" class="hover:underline hover:text-primary">{{ $p->namaLengkap() }}</a>
+                                    @php
+                                        $lamaranLain = $p->riwayatLamaranLain->sortByDesc('tanggal_apply')->first();
+                                    @endphp
+                                    <span class="relative inline-block {{ $lamaranLain ? 'group' : '' }}">
+                                        <a href="{{ route('admin.pelamar.show', $p) }}"
+                                            class="hover:underline {{ $p->pernahOrientasi ? 'text-red-600 hover:text-red-700' : 'hover:text-primary' }}"
+                                        >{{ $p->namaLengkap() }}</a>
+
+                                        @if ($lamaranLain)
+                                            <div class="pointer-events-none absolute top-full left-1/2 z-50 mt-1.5 w-64 -translate-x-1/2 scale-95 whitespace-normal rounded-md border bg-popover px-3 py-1.5 text-xs text-popover-foreground opacity-0 shadow-md transition-all duration-150 group-hover:scale-100 group-hover:opacity-100">
+                                                <p class="text-muted-foreground">Pernah melamar sebagai</p>
+                                                <p class="font-medium">{{ $lamaranLain->loker?->judul_loker }}</p>
+                                                <p class="text-muted-foreground">{{ $lamaranLain->loker?->wilayah ?: '-' }}</p>
+                                                <p class="mt-1">Apply: {{ optional($lamaranLain->tanggal_apply)->translatedFormat('d M Y') }}</p>
+                                                <p>Tahap: {{ $lamaranLain->tahapRekrutmen?->tahap_rekrutmen }}</p>
+                                                <p>Status: {{ ucfirst($lamaranLain->statusPelamar?->status_pelamar ?? '-') }}</p>
+                                            </div>
+                                        @endif
+                                    </span>
                                 </td>
                                 <td class="px-4 py-3 text-muted-foreground whitespace-nowrap">
                                     <a href="{{ route('admin.pelamar.index', ['loker' => $p->id_loker, 'tahap' => $tahapAktif, 'kategori' => $kategoriAktif]) }}" class="hover:underline hover:text-primary">{{ $p->loker->judul_loker }}</a>

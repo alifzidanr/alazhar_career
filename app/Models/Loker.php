@@ -49,8 +49,24 @@ class Loker extends Model
         return $this->belongsTo(Jenjang::class, 'id_jenjang');
     }
 
+    /** Open lokers whose Berlaku Sampai (end_time) date, if set, hasn't passed yet. */
     public function scopeDibuka($query)
     {
-        return $query->where('status_loker', 'dibuka');
+        return $query->where('status_loker', 'dibuka')
+            ->where(function ($q) {
+                $q->whereNull('end_time')->orWhere('end_time', '>=', now()->startOfDay());
+            });
+    }
+
+    /** True once the Berlaku Sampai (end_time) date has passed. Null end_time never expires. */
+    public function isExpired(): bool
+    {
+        return $this->end_time !== null && now()->startOfDay()->gt($this->end_time->copy()->startOfDay());
+    }
+
+    /** Effective open state: manually opened AND not past its Berlaku Sampai date. */
+    public function isBuka(): bool
+    {
+        return $this->status_loker === 'dibuka' && ! $this->isExpired();
     }
 }

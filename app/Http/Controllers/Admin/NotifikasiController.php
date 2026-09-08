@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Mail\PelamarNotifikasi;
+use App\Mail\SkOrientasiMail;
 use App\Models\LogNotifikasi;
 use App\Models\Pelamar;
 use App\Support\NotifikasiTemplates;
@@ -13,6 +14,50 @@ use Illuminate\Support\Facades\Mail;
 
 class NotifikasiController extends Controller
 {
+    public function sendSkOrientasi(Pelamar $pelamar): RedirectResponse
+    {
+        $orientasi = $pelamar->orientasi;
+
+        if (! $orientasi?->sk_orientasi_upload) {
+            return back()->withErrors(['channel' => 'SK Orientasi belum diunggah.']);
+        }
+
+        if (! $pelamar->email) {
+            return back()->withErrors(['channel' => 'Pelamar ini tidak memiliki alamat email.']);
+        }
+
+        $subject = 'SK Orientasi - '.$pelamar->loker?->judul_loker;
+        $body = "Assalamualaikum Wr. Wb.\n\nDengan ini disampaikan kepada bapak/ibu {$pelamar->nama},\n\nTerlampir Surat Keputusan (SK) Orientasi untuk posisi {$pelamar->loker?->judul_loker}. Mohon untuk dipelajari dan dipersiapkan.\n\nTerimakasih.\n\nKepala Bagian Kepegawaian YPI Al Azhar";
+
+        try {
+            Mail::to($pelamar->email)->send(new SkOrientasiMail(
+                $subject,
+                $body,
+                $orientasi->sk_orientasi_upload,
+                'SK Orientasi - '.$pelamar->namaLengkap().'.pdf',
+            ));
+            $statusKirim = 'terkirim';
+        } catch (\Throwable $e) {
+            report($e);
+            $statusKirim = 'gagal';
+        }
+
+        LogNotifikasi::create([
+            'id_pelamar' => $pelamar->id_pelamar,
+            'channel' => 'email',
+            'template' => 'sk_orientasi',
+            'pesan' => "Subject: {$subject}\n\n{$body}",
+            'status_kirim' => $statusKirim,
+            'created_by' => auth()->user()->name,
+        ]);
+
+        if ($statusKirim === 'gagal') {
+            return back()->withErrors(['channel' => 'Gagal mengirim email. Periksa konfigurasi SMTP dan coba lagi.']);
+        }
+
+        return back()->with('status', "SK Orientasi berhasil dikirim ke {$pelamar->email}.");
+    }
+
     public function send(Request $request, Pelamar $pelamar): RedirectResponse
     {
         $data = $request->validate([

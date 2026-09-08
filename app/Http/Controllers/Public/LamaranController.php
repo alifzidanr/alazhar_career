@@ -37,7 +37,7 @@ class LamaranController extends Controller
 
     public function store(StorePelamarRequest $request, Loker $loker): RedirectResponse
     {
-        if ($loker->status_loker !== 'dibuka') {
+        if (! $loker->isBuka()) {
             return back()->withErrors(['loker' => 'Lowongan ini sudah ditutup dan tidak menerima lamaran baru.']);
         }
 

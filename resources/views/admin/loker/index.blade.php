@@ -48,7 +48,7 @@
                             <tr class="hover:bg-muted/30" data-row
                                 data-search="{{ Str::lower($loker->judul_loker.' '.$loker->wilayah) }}"
                                 data-wilayah="{{ $loker->wilayah }}"
-                                data-status="{{ $loker->status_loker }}"
+                                data-status="{{ $loker->isBuka() ? 'dibuka' : 'ditutup' }}"
                                 x-show="isVisible($el)">
                                 <td class="px-4 py-3 font-medium">
                                     <a href="{{ route('admin.pelamar.index', ['loker' => $loker->id_loker]) }}" class="hover:underline hover:text-primary">
@@ -57,8 +57,8 @@
                                 </td>
                                 <td class="px-4 py-3 text-muted-foreground">{{ $loker->wilayah ?: '-' }}</td>
                                 <td class="px-4 py-3">
-                                    <x-ui.badge :variant="$loker->status_loker === 'dibuka' ? 'success' : 'muted'">
-                                        {{ ucfirst($loker->status_loker) }}
+                                    <x-ui.badge :variant="$loker->isBuka() ? 'success' : 'muted'">
+                                        {{ $loker->isBuka() ? 'Dibuka' : ($loker->isExpired() ? 'Ditutup (Kadaluarsa)' : 'Ditutup') }}
                                     </x-ui.badge>
                                 </td>
                                 <td class="px-4 py-3 text-muted-foreground">{{ $loker->pelamar_count }}</td>

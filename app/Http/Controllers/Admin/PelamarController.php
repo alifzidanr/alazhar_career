@@ -44,6 +44,8 @@ class PelamarController extends Controller
 
         $pelamarList = $query->orderByDesc('tanggal_apply')->get();
 
+        $this->attachRiwayatLamaranLain($pelamarList);
+
         $tahapOptions = TahapRekrutmen::orderBy('id_tahap_rekrutmen')->get();
 
         $countsQuery = $this->filterPelamarQuery(
@@ -86,6 +88,41 @@ class PelamarController extends Controller
         }
 
         return $query;
+    }
+
+    /**
+     * For each pelamar in the list, attach every other application filed under the same NIK
+     * (riwayatLamaranLain, newest first) and whether this row is flagged with an Orientasi-
+     * stage history (pernahOrientasi). Only the newest application for a NIK can be flagged,
+     * and only when an OLDER application (at another loker) reached the Orientasi stage,
+     * regardless of that older application's status - the older Orientasi record itself
+     * isn't flagged, since it's the history, not the one being reviewed against it.
+     */
+    private function attachRiwayatLamaranLain(\Illuminate\Support\Collection $pelamarList): void
+    {
+        $niks = $pelamarList->pluck('nik')->filter()->unique();
+
+        $semuaByNik = Pelamar::whereIn('nik', $niks)
+            ->with(['loker', 'tahapRekrutmen', 'statusPelamar'])
+            ->orderByDesc('tanggal_apply')
+            ->orderByDesc('id_pelamar')
+            ->get()
+            ->groupBy('nik');
+
+        foreach ($pelamarList as $p) {
+            $semuaLamaran = $semuaByNik->get($p->nik, collect());
+
+            $p->riwayatLamaranLain = $semuaLamaran
+                ->reject(fn ($s) => $s->id_pelamar === $p->id_pelamar)
+                ->values();
+
+            // $semuaLamaran is newest-first: the first entry is the newest application,
+            // everything after it is "before the newest one".
+            $p->pernahOrientasi = $semuaLamaran->first()?->id_pelamar === $p->id_pelamar
+                && $semuaLamaran->slice(1)->contains(
+                    fn ($s) => $s->id_tahap_rekrutmen >= TahapRekrutmen::ORIENTASI
+                );
+        }
     }
 
     public function export(Request $request): BinaryFileResponse
@@ -132,6 +169,13 @@ class PelamarController extends Controller
         $statusOptions = StatusPelamar::orderBy('id_status_pelamar')->get();
         $unitKerjaList = UnitKerja::orderBy('nama_unit')->get();
 
+        // Other applications filed under the same NIK, for the "Riwayat Lamaran Lain" panel.
+        $riwayatLamaranLain = Pelamar::where('nik', $pelamar->nik)
+            ->where('id_pelamar', '!=', $pelamar->id_pelamar)
+            ->with(['loker', 'tahapRekrutmen', 'statusPelamar'])
+            ->orderByDesc('tanggal_apply')
+            ->get();
+
         // "Sampai tahap apa" only offers the first 4 stages (Tugas Sementara, Terima SK,
         // and Migrasi Data are excluded since a past applicant wouldn't self-report those).
         $tahapList = TahapRekrutmen::whereIn('id_tahap_rekrutmen', [
@@ -154,7 +198,7 @@ class PelamarController extends Controller
         $prevPelamarId = $currentIndex !== false ? $lokerPelamarIds->get($currentIndex - 1) : null;
         $nextPelamarId = $currentIndex !== false ? $lokerPelamarIds->get($currentIndex + 1) : null;
 
-        return view('admin.pelamar.show', compact('pelamar', 'statusOptions', 'unitKerjaList', 'tahapList', 'prevPelamarId', 'nextPelamarId'));
+        return view('admin.pelamar.show', compact('pelamar', 'statusOptions', 'unitKerjaList', 'tahapList', 'prevPelamarId', 'nextPelamarId', 'riwayatLamaranLain'));
     }
 
     public function updateData(Request $request, Pelamar $pelamar): RedirectResponse
@@ -571,6 +615,7 @@ class PelamarController extends Controller
             'tanggal_mulai' => ['nullable', 'date'],
             'tanggal_selesai' => ['nullable', 'date', 'after_or_equal:tanggal_mulai'],
             'sk_orientasi_upload' => ['nullable', 'file', 'mimes:pdf', 'max:5120'],
+            'catatan' => ['nullable', 'string'],
         ]);
 
         $orientasi = Orientasi::firstOrNew(['id_pelamar' => $pelamar->id_pelamar]);

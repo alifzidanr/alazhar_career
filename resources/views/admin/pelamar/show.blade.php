@@ -44,6 +44,30 @@
                 </x-ui.alert>
             @endif
 
+            @if ($riwayatLamaranLain->isNotEmpty())
+                <x-ui.card title="Riwayat Lamaran Lain">
+                    <ul class="divide-y">
+                        @foreach ($riwayatLamaranLain as $r)
+                            <li class="py-2.5 first:pt-0 last:pb-0 flex flex-wrap items-center justify-between gap-2">
+                                <div>
+                                    <a href="{{ route('admin.pelamar.show', $r) }}" class="font-medium hover:underline hover:text-primary">
+                                        {{ $r->loker?->judul_loker }}
+                                    </a>
+                                    <span class="text-muted-foreground"> &mdash; {{ $r->loker?->wilayah ?: '-' }}</span>
+                                    <p class="text-xs text-muted-foreground mt-0.5">
+                                        Apply: {{ optional($r->tanggal_apply)->translatedFormat('d M Y') }}
+                                    </p>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <x-tahap-badge :tahap="$r->tahapRekrutmen" />
+                                    <x-status-badge :status="$r->statusPelamar" />
+                                </div>
+                            </li>
+                        @endforeach
+                    </ul>
+                </x-ui.card>
+            @endif
+
             <div class="space-y-6">
 
                 <div class="grid md:grid-cols-2 gap-6">
@@ -536,7 +560,10 @@
                                     @endforeach
                                 </x-ui.select>
                             </div>
-                            <div></div>
+                            <div>
+                                <x-ui.label for="orientasi_catatan">Catatan</x-ui.label>
+                                <x-ui.textarea id="orientasi_catatan" name="catatan" rows="1" class="!h-9 !py-1.5 resize-none" placeholder="Tulis catatan...">{{ old('catatan', $pelamar->orientasi?->catatan) }}</x-ui.textarea>
+                            </div>
                             @php
                                 $formatRibuan = fn ($v) => is_numeric($v) ? number_format((float) $v, 0, ',', '.') : $v;
                             @endphp
@@ -556,16 +583,31 @@
                                 <x-ui.label for="tanggal_selesai">Tanggal Selesai</x-ui.label>
                                 <x-ui.input type="date" id="tanggal_selesai" name="tanggal_selesai" value="{{ old('tanggal_selesai', optional($pelamar->orientasi?->tanggal_selesai)->format('Y-m-d')) }}" />
                             </div>
-                            <div class="sm:col-span-2">
-                                <x-ui.label for="sk_orientasi_upload">SK Orientasi (PDF)</x-ui.label>
-                                <input type="file" id="sk_orientasi_upload" name="sk_orientasi_upload" accept=".pdf" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
-                                @if ($pelamar->orientasi?->skOrientasiUrl())
-                                    <a href="{{ $pelamar->orientasi->skOrientasiUrl() }}" target="_blank" class="text-xs text-muted-foreground hover:text-foreground underline mt-1 inline-block">Lihat berkas saat ini</a>
-                                @endif
+                            <div class="sm:col-span-2 flex flex-col sm:flex-row sm:items-end gap-3">
+                                <div class="flex-1">
+                                    <x-ui.label for="sk_orientasi_upload">SK Orientasi (PDF)</x-ui.label>
+                                    <input type="file" id="sk_orientasi_upload" name="sk_orientasi_upload" accept=".pdf" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
+                                    @if ($pelamar->orientasi?->skOrientasiUrl())
+                                        <a href="{{ $pelamar->orientasi->skOrientasiUrl() }}" target="_blank" class="text-xs text-muted-foreground hover:text-foreground underline mt-1 inline-block">Lihat berkas saat ini</a>
+                                    @endif
+                                </div>
+                                <x-ui.button type="submit" form="kirim-sk-orientasi"
+                                    class="shrink-0 bg-blue-600 text-white shadow-sm hover:bg-blue-500"
+                                    :disabled="! $pelamar->email || ! $pelamar->orientasi?->sk_orientasi_upload">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4"><path d="M2.25 6.75A2.25 2.25 0 0 1 4.5 4.5h15a2.25 2.25 0 0 1 2.25 2.25v10.5A2.25 2.25 0 0 1 19.5 19.5h-15a2.25 2.25 0 0 1-2.25-2.25V6.75Zm2.4-.75 7.35 5.51L19.35 6H4.65Zm15.6 1.29-7.03 5.27a1.5 1.5 0 0 1-1.79 0L4.35 7.29V17.25h15.15V7.29Z"/></svg>
+                                    Kirim SK Orientasi via Email
+                                </x-ui.button>
                             </div>
+                            @unless ($pelamar->orientasi?->sk_orientasi_upload)
+                                <p class="sm:col-span-2 -mt-2 text-xs text-muted-foreground">Unggah SK Orientasi terlebih dahulu untuk mengirim email.</p>
+                            @endunless
                             <div class="sm:col-span-2">
                                 <x-ui.button type="submit" variant="secondary">Simpan Orientasi</x-ui.button>
                             </div>
+                        </form>
+
+                        <form id="kirim-sk-orientasi" method="POST" action="{{ route('admin.pelamar.orientasi.kirim-sk', $pelamar) }}" x-data @submit.prevent="$dispatch('confirm-dialog', { title: 'Kirim SK Orientasi ke {{ $pelamar->email }}?', form: $el })">
+                            @csrf
                         </form>
                     </x-ui.card>
                 @endif

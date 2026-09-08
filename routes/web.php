@@ -49,6 +49,7 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::patch('/pelamar/{pelamar}/tugas-sementara', [AdminPelamarController::class, 'updateTugasSementara'])->name('pelamar.tugas-sementara');
 
     Route::post('/pelamar/{pelamar}/notify', [NotifikasiController::class, 'send'])->name('pelamar.notify');
+    Route::post('/pelamar/{pelamar}/orientasi/kirim-sk', [NotifikasiController::class, 'sendSkOrientasi'])->name('pelamar.orientasi.kirim-sk');
 
     Route::resource('/loker', AdminLokerController::class)->except(['show']);
     Route::post('/loker/{loker}/kriteria', [KriteriaLokerController::class, 'store'])->name('loker.kriteria.store');

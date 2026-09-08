@@ -31,7 +31,9 @@
     <x-ui.card class="mt-4">
         <div class="flex items-start justify-between gap-2">
             <h1 class="text-xl font-semibold tracking-tight">{{ $loker->judul_loker }}</h1>
-            @if ($daysLeft === null)
+            @if (! $loker->isBuka())
+                <x-ui.badge variant="muted" class="shrink-0">Ditutup</x-ui.badge>
+            @elseif ($daysLeft === null)
                 <x-ui.badge variant="success" class="shrink-0">Dibuka</x-ui.badge>
             @elseif ($daysLeft <= 0)
                 <x-ui.badge variant="destructive" class="shrink-0">Hari Terakhir</x-ui.badge>
@@ -95,6 +97,13 @@
         }
     @endphp
 
+    @if (! $loker->isBuka())
+        <x-ui.card class="mt-6 text-center">
+            <p class="font-medium">Lowongan ini sudah ditutup.</p>
+            <p class="mt-1 text-sm text-muted-foreground">Lowongan ini tidak lagi menerima lamaran baru. Silakan lihat lowongan lain yang masih dibuka.</p>
+            <x-ui.button :href="route('loker.list')" class="mt-4">Lihat Lowongan Lain</x-ui.button>
+        </x-ui.card>
+    @else
     <x-ui.card title="Formulir Lamaran" class="mt-6">
       <div x-data="applyWizard({{ $loker->id_loker }}, @js(old()), @js($errorStep), @js($pendidikanList->pluck('pendidikan_terakhir', 'id_pendidikan_terakhir')), @js((bool) session('lamaran_sukses')))" x-init="init()">
 
@@ -681,6 +690,7 @@
         </div>
       </div>
     </x-ui.card>
+    @endif
   </div>
 
     @once
