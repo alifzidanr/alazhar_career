@@ -237,9 +237,9 @@
         <div class="rounded-2xl bg-brand-navy-50 px-6 py-6 sm:px-10 sm:py-8">
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-6 text-center sm:text-left sm:divide-x divide-brand-navy-100">
                 @foreach ([
-                    ['value' => '40+', 'label' => 'Unit pendidikan'],
-                    ['value' => '60+', 'label' => 'Tahun pengabdian'],
-                    ['value' => '1.200+', 'label' => 'Tenaga pendidik'],
+                    ['value' => '228', 'label' => 'Unit pendidikan'],
+                    ['value' => '74', 'label' => 'Tahun pengabdian'],
+                    ['value' => '3.000+', 'label' => 'Tenaga pendidik'],
                     ['value' => 'Nasional', 'label' => 'Jaringan yayasan'],
                 ] as $stat)
                     <div class="sm:pl-6 sm:first:pl-0">
@@ -294,8 +294,6 @@
         <p class="mt-6 text-sm text-muted-foreground">
             Butuh bantuan teknis lamaran?
             <a href="mailto:karir@al-azhar.or.id" class="font-medium text-brand-navy-600 hover:underline">karir@al-azhar.or.id</a>
-            &middot;
-            <a href="tel:+622172783683" class="font-medium text-brand-navy-600 hover:underline">(021) 72783683</a>
         </p>
     </section>
 
