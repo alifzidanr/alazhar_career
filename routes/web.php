@@ -47,6 +47,7 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::patch('/pelamar/{pelamar}/wawancara', [AdminPelamarController::class, 'updateWawancara'])->name('pelamar.wawancara');
     Route::patch('/pelamar/{pelamar}/orientasi', [AdminPelamarController::class, 'updateOrientasi'])->name('pelamar.orientasi');
     Route::patch('/pelamar/{pelamar}/tugas-sementara', [AdminPelamarController::class, 'updateTugasSementara'])->name('pelamar.tugas-sementara');
+    Route::patch('/pelamar/{pelamar}/migrasi-data', [AdminPelamarController::class, 'updateMigrasiData'])->name('pelamar.migrasi-data');
 
     Route::post('/pelamar/{pelamar}/notify', [NotifikasiController::class, 'send'])->name('pelamar.notify');
     Route::post('/pelamar/{pelamar}/orientasi/kirim-sk', [NotifikasiController::class, 'sendSkOrientasi'])->name('pelamar.orientasi.kirim-sk');

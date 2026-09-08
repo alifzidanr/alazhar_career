@@ -638,6 +638,188 @@
                     </x-ui.card>
                 @endif
 
+                @if ($pelamar->id_tahap_rekrutmen >= \App\Models\TahapRekrutmen::MIGRASI_DATA)
+                    @php
+                        $migrasi = $pelamar->migrasiData;
+                        $defaultJenisKelamin = match ($pelamar->jenis_kelamin) {
+                            'L' => 'Laki-laki',
+                            'P' => 'Perempuan',
+                            default => null,
+                        };
+                    @endphp
+                    <x-ui.card title="Migrasi Data (HRIS)">
+                        <p class="text-xs text-muted-foreground -mt-1 mb-4">
+                            Data untuk diserahkan ke HRIS (simpeg). Beberapa field sudah terisi dari data lamaran - lengkapi sisanya sebelum diserahkan ke Bagian Kepegawaian.
+                        </p>
+                        <form method="POST" action="{{ route('admin.pelamar.migrasi-data', $pelamar) }}" class="grid sm:grid-cols-2 gap-4">
+                            @csrf
+                            @method('PATCH')
+
+                            <div class="sm:col-span-2">
+                                <h4 class="text-sm font-semibold text-foreground">Data Kepegawaian</h4>
+                            </div>
+                            <div>
+                                <x-ui.label for="nip">NIP <span class="text-destructive">*</span></x-ui.label>
+                                <x-ui.input type="text" id="nip" name="nip" value="{{ old('nip', $migrasi?->nip) }}" required />
+                            </div>
+                            <div>
+                                <x-ui.label for="nomor_faceid">Nomor Face ID <span class="text-destructive">*</span></x-ui.label>
+                                <x-ui.input type="text" id="nomor_faceid" name="nomor_faceid" value="{{ old('nomor_faceid', $migrasi?->nomor_faceid) }}" required />
+                            </div>
+                            <div>
+                                <x-ui.label for="tgl_masuk">Tanggal Masuk <span class="text-destructive">*</span></x-ui.label>
+                                <x-ui.input type="date" id="tgl_masuk" name="tgl_masuk" value="{{ old('tgl_masuk', optional($migrasi?->tgl_masuk)->format('Y-m-d')) }}" required />
+                            </div>
+                            <div>
+                                <x-ui.label for="id_regional">Regional (ID HRIS) <span class="text-destructive">*</span></x-ui.label>
+                                <x-ui.input type="number" min="1" id="id_regional" name="id_regional" value="{{ old('id_regional', $migrasi?->id_regional) }}" placeholder="Isi sesuai ID Regional/Wilayah pada HRIS" required />
+                            </div>
+                            <div>
+                                <x-ui.label for="id_status_kepegawaian">Status Kepegawaian <span class="text-destructive">*</span></x-ui.label>
+                                <x-ui.select id="id_status_kepegawaian" name="id_status_kepegawaian" required>
+                                    <option value="">-- Pilih --</option>
+                                    @foreach ($hrisStatusKepegawaianList as $s)
+                                        <option value="{{ $s->id_status_kepegawaian }}" @selected((string) old('id_status_kepegawaian', $migrasi?->id_status_kepegawaian) === (string) $s->id_status_kepegawaian)>{{ $s->status }} ({{ $s->kode }})</option>
+                                    @endforeach
+                                </x-ui.select>
+                            </div>
+                            <div>
+                                <x-ui.label for="id_status_keaktifan">Status Keaktifan <span class="text-destructive">*</span></x-ui.label>
+                                <x-ui.select id="id_status_keaktifan" name="id_status_keaktifan" required>
+                                    <option value="">-- Pilih --</option>
+                                    @foreach ($hrisStatusKeaktifanList as $s)
+                                        <option value="{{ $s->id_status_keaktifan }}" @selected((string) old('id_status_keaktifan', $migrasi?->id_status_keaktifan ?? 1) === (string) $s->id_status_keaktifan)>{{ $s->status_keaktifan }}</option>
+                                    @endforeach
+                                </x-ui.select>
+                            </div>
+                            <div>
+                                <x-ui.label for="id_bidang_diampu">Bidang Diampu <span class="text-destructive">*</span></x-ui.label>
+                                <x-ui.select id="id_bidang_diampu" name="id_bidang_diampu" required>
+                                    <option value="">-- Pilih --</option>
+                                    @foreach ($hrisBidangDiampuList as $s)
+                                        <option value="{{ $s->id_bidang_diampu }}" @selected((string) old('id_bidang_diampu', $migrasi?->id_bidang_diampu) === (string) $s->id_bidang_diampu)>{{ $s->nama_bidang }}</option>
+                                    @endforeach
+                                </x-ui.select>
+                            </div>
+
+                            <div class="sm:col-span-2">
+                                <h4 class="text-sm font-semibold text-foreground border-t pt-4">Data Pribadi</h4>
+                            </div>
+                            <div class="sm:col-span-2">
+                                <x-ui.label for="nama_lengkap">Nama Lengkap <span class="text-destructive">*</span></x-ui.label>
+                                <x-ui.input type="text" id="nama_lengkap" name="nama_lengkap" value="{{ old('nama_lengkap', $migrasi?->nama_lengkap ?? $pelamar->nama) }}" required />
+                            </div>
+                            <div>
+                                <x-ui.label for="gelar_depan">Gelar Depan</x-ui.label>
+                                <x-ui.input type="text" id="gelar_depan" name="gelar_depan" value="{{ old('gelar_depan', $migrasi?->gelar_depan) }}" />
+                            </div>
+                            <div>
+                                <x-ui.label for="gelar_belakang">Gelar Belakang</x-ui.label>
+                                <x-ui.input type="text" id="gelar_belakang" name="gelar_belakang" value="{{ old('gelar_belakang', $migrasi?->gelar_belakang ?? $pelamar->gelar) }}" />
+                            </div>
+                            <div>
+                                <x-ui.label for="no_ktp">No. KTP</x-ui.label>
+                                <x-ui.input type="text" id="no_ktp" name="no_ktp" value="{{ old('no_ktp', $migrasi?->no_ktp ?? $pelamar->nik) }}" />
+                            </div>
+                            <div>
+                                <x-ui.label for="npwp">NPWP</x-ui.label>
+                                <x-ui.input type="text" id="npwp" name="npwp" value="{{ old('npwp', $migrasi?->npwp) }}" />
+                            </div>
+                            <div>
+                                <x-ui.label for="no_rekening">No. Rekening</x-ui.label>
+                                <x-ui.input type="text" id="no_rekening" name="no_rekening" value="{{ old('no_rekening', $migrasi?->no_rekening) }}" />
+                            </div>
+                            <div>
+                                <x-ui.label for="tempat_lahir">Tempat Lahir</x-ui.label>
+                                <x-ui.input type="text" id="tempat_lahir" name="tempat_lahir" value="{{ old('tempat_lahir', $migrasi?->tempat_lahir) }}" />
+                            </div>
+                            <div>
+                                <x-ui.label for="tgl_lahir">Tanggal Lahir <span class="text-destructive">*</span></x-ui.label>
+                                <x-ui.input type="date" id="tgl_lahir" name="tgl_lahir" value="{{ old('tgl_lahir', optional($migrasi?->tgl_lahir ?? $pelamar->tanggal_lahir)->format('Y-m-d')) }}" required />
+                            </div>
+                            <div>
+                                <x-ui.label for="jenis_kelamin">Jenis Kelamin <span class="text-destructive">*</span></x-ui.label>
+                                <x-ui.select id="jenis_kelamin" name="jenis_kelamin" required>
+                                    <option value="">-- Pilih --</option>
+                                    @foreach (['Laki-laki', 'Perempuan'] as $jk)
+                                        <option value="{{ $jk }}" @selected(old('jenis_kelamin', $migrasi?->jenis_kelamin ?? $defaultJenisKelamin) === $jk)>{{ $jk }}</option>
+                                    @endforeach
+                                </x-ui.select>
+                            </div>
+                            <div>
+                                <x-ui.label for="id_status_nikah">Status Nikah <span class="text-destructive">*</span></x-ui.label>
+                                <x-ui.select id="id_status_nikah" name="id_status_nikah" required>
+                                    <option value="">-- Pilih --</option>
+                                    @foreach ($hrisStatusNikahList as $s)
+                                        <option value="{{ $s->id_status_nikah }}" @selected((string) old('id_status_nikah', $migrasi?->id_status_nikah) === (string) $s->id_status_nikah)>{{ $s->status_nikah }}</option>
+                                    @endforeach
+                                </x-ui.select>
+                            </div>
+                            <div>
+                                <x-ui.label for="golongan_darah">Golongan Darah</x-ui.label>
+                                <x-ui.select id="golongan_darah" name="golongan_darah">
+                                    <option value="">-- Pilih --</option>
+                                    @foreach (['A', 'AB', 'B', 'O'] as $gd)
+                                        <option value="{{ $gd }}" @selected(old('golongan_darah', $migrasi?->golongan_darah) === $gd)>{{ $gd }}</option>
+                                    @endforeach
+                                </x-ui.select>
+                            </div>
+                            <div>
+                                <x-ui.label for="usia_purnabakti">Usia Purnabakti</x-ui.label>
+                                <x-ui.input type="number" min="0" id="usia_purnabakti" name="usia_purnabakti" value="{{ old('usia_purnabakti', $migrasi?->usia_purnabakti) }}" />
+                            </div>
+
+                            <div class="sm:col-span-2">
+                                <h4 class="text-sm font-semibold text-foreground border-t pt-4">Alamat & Kontak</h4>
+                            </div>
+                            <div class="sm:col-span-2">
+                                <x-ui.label for="alamat">Alamat</x-ui.label>
+                                <x-ui.textarea id="alamat" name="alamat" rows="2">{{ old('alamat', $migrasi?->alamat ?? $pelamar->alamat) }}</x-ui.textarea>
+                            </div>
+                            <div>
+                                <x-ui.label for="kota">Kota</x-ui.label>
+                                <x-ui.input type="text" id="kota" name="kota" value="{{ old('kota', $migrasi?->kota) }}" />
+                            </div>
+                            <div>
+                                <x-ui.label for="propinsi">Provinsi</x-ui.label>
+                                <x-ui.input type="text" id="propinsi" name="propinsi" value="{{ old('propinsi', $migrasi?->propinsi) }}" />
+                            </div>
+                            <div>
+                                <x-ui.label for="kode_pos">Kode Pos</x-ui.label>
+                                <x-ui.input type="text" id="kode_pos" name="kode_pos" value="{{ old('kode_pos', $migrasi?->kode_pos) }}" />
+                            </div>
+                            <div>
+                                <x-ui.label for="no_telepon">No. Telepon</x-ui.label>
+                                <x-ui.input type="text" id="no_telepon" name="no_telepon" value="{{ old('no_telepon', $migrasi?->no_telepon) }}" />
+                            </div>
+                            <div>
+                                <x-ui.label for="no_hp">No. HP</x-ui.label>
+                                <x-ui.input type="text" id="no_hp" name="no_hp" value="{{ old('no_hp', $migrasi?->no_hp ?? $pelamar->no_hp) }}" />
+                            </div>
+                            <div>
+                                <x-ui.label for="email">Email</x-ui.label>
+                                <x-ui.input type="email" id="email" name="email" value="{{ old('email', $migrasi?->email ?? $pelamar->email) }}" />
+                            </div>
+
+                            <div class="sm:col-span-2">
+                                <h4 class="text-sm font-semibold text-foreground border-t pt-4">Data Orang Tua</h4>
+                            </div>
+                            <div>
+                                <x-ui.label for="ayah_kandung">Ayah Kandung</x-ui.label>
+                                <x-ui.input type="text" id="ayah_kandung" name="ayah_kandung" value="{{ old('ayah_kandung', $migrasi?->ayah_kandung) }}" />
+                            </div>
+                            <div>
+                                <x-ui.label for="ibu_kandung">Ibu Kandung</x-ui.label>
+                                <x-ui.input type="text" id="ibu_kandung" name="ibu_kandung" value="{{ old('ibu_kandung', $migrasi?->ibu_kandung) }}" />
+                            </div>
+
+                            <div class="sm:col-span-2 border-t pt-4">
+                                <x-ui.button type="submit" variant="secondary">Simpan Data Migrasi</x-ui.button>
+                            </div>
+                        </form>
+                    </x-ui.card>
+                @endif
+
                 <x-ui.card title="Riwayat Tahap">
                     <ol class="space-y-3 max-h-96 overflow-y-auto pr-1">
                         @forelse ($pelamar->riwayat as $r)

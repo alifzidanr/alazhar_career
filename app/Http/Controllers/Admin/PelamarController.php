@@ -4,7 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Exports\PelamarExport;
 use App\Http\Controllers\Controller;
+use App\Models\HrisBidangDiampu;
+use App\Models\HrisStatusKeaktifan;
+use App\Models\HrisStatusKepegawaian;
+use App\Models\HrisStatusNikah;
 use App\Models\Loker;
+use App\Models\MigrasiDataPegawai;
 use App\Models\Orientasi;
 use App\Models\Pelamar;
 use App\Models\RiwayatTahapPelamar;
@@ -164,10 +169,15 @@ class PelamarController extends Controller
             'wawancara',
             'orientasi.unitKerja',
             'tugasSementara',
+            'migrasiData',
         ]);
 
         $statusOptions = StatusPelamar::orderBy('id_status_pelamar')->get();
         $unitKerjaList = UnitKerja::orderBy('nama_unit')->get();
+        $hrisStatusKepegawaianList = HrisStatusKepegawaian::orderBy('status')->get();
+        $hrisStatusKeaktifanList = HrisStatusKeaktifan::orderBy('id_status_keaktifan')->get();
+        $hrisBidangDiampuList = HrisBidangDiampu::orderBy('nama_bidang')->get();
+        $hrisStatusNikahList = HrisStatusNikah::orderBy('id_status_nikah')->get();
 
         // Other applications filed under the same NIK, for the "Riwayat Lamaran Lain" panel.
         $riwayatLamaranLain = Pelamar::where('nik', $pelamar->nik)
@@ -198,7 +208,10 @@ class PelamarController extends Controller
         $prevPelamarId = $currentIndex !== false ? $lokerPelamarIds->get($currentIndex - 1) : null;
         $nextPelamarId = $currentIndex !== false ? $lokerPelamarIds->get($currentIndex + 1) : null;
 
-        return view('admin.pelamar.show', compact('pelamar', 'statusOptions', 'unitKerjaList', 'tahapList', 'prevPelamarId', 'nextPelamarId', 'riwayatLamaranLain'));
+        return view('admin.pelamar.show', compact(
+            'pelamar', 'statusOptions', 'unitKerjaList', 'tahapList', 'prevPelamarId', 'nextPelamarId', 'riwayatLamaranLain',
+            'hrisStatusKepegawaianList', 'hrisStatusKeaktifanList', 'hrisBidangDiampuList', 'hrisStatusNikahList'
+        ));
     }
 
     public function updateData(Request $request, Pelamar $pelamar): RedirectResponse
@@ -650,5 +663,54 @@ class PelamarController extends Controller
         $tugasSementara->save();
 
         return back()->with('status', 'Data Tugas Sementara berhasil disimpan.');
+    }
+
+    /**
+     * Saves the "Migrasi Data" (HRIS handoff) form. Mirrors simpeg-proto's own
+     * Tambah Pegawai validation rules (required/nullable per field) so the
+     * data is HRIS-ready, but is stored in career's own database for now -
+     * there is no cross-database write to HRIS yet.
+     */
+    public function updateMigrasiData(Request $request, Pelamar $pelamar): RedirectResponse
+    {
+        $data = $request->validate([
+            'nip' => [
+                'required', 'string', 'max:50',
+                Rule::unique('migrasi_data_pegawai', 'nip')->ignore($pelamar->migrasiData?->id_migrasi, 'id_migrasi'),
+            ],
+            'nomor_faceid' => ['required', 'string', 'max:100'],
+            'nama_lengkap' => ['required', 'string', 'max:255'],
+            'tgl_masuk' => ['required', 'date'],
+            'id_status_kepegawaian' => ['required', 'exists:hris_status_kepegawaian,id_status_kepegawaian'],
+            'id_status_keaktifan' => ['required', 'exists:hris_status_keaktifan,id_status_keaktifan'],
+            'id_bidang_diampu' => ['required', 'exists:hris_bidang_diampu,id_bidang_diampu'],
+            'tgl_lahir' => ['required', 'date'],
+            'jenis_kelamin' => ['required', 'in:Laki-laki,Perempuan'],
+            'id_status_nikah' => ['required', 'exists:hris_status_nikah,id_status_nikah'],
+            'id_regional' => ['required', 'integer', 'min:1'],
+            'gelar_depan' => ['nullable', 'string', 'max:50'],
+            'gelar_belakang' => ['nullable', 'string', 'max:50'],
+            'no_ktp' => ['nullable', 'string', 'max:50'],
+            'npwp' => ['nullable', 'string', 'max:50'],
+            'no_rekening' => ['nullable', 'string', 'max:20'],
+            'tempat_lahir' => ['nullable', 'string', 'max:100'],
+            'golongan_darah' => ['nullable', 'in:A,AB,B,O'],
+            'alamat' => ['nullable', 'string', 'max:255'],
+            'usia_purnabakti' => ['nullable', 'integer', 'min:0'],
+            'kota' => ['nullable', 'string', 'max:100'],
+            'propinsi' => ['nullable', 'string', 'max:100'],
+            'kode_pos' => ['nullable', 'string', 'max:10'],
+            'no_telepon' => ['nullable', 'string', 'max:20'],
+            'no_hp' => ['nullable', 'string', 'max:20'],
+            'email' => ['nullable', 'email', 'max:100'],
+            'ayah_kandung' => ['nullable', 'string', 'max:100'],
+            'ibu_kandung' => ['nullable', 'string', 'max:100'],
+        ]);
+
+        $migrasi = MigrasiDataPegawai::firstOrNew(['id_pelamar' => $pelamar->id_pelamar]);
+        $migrasi->fill($data);
+        $migrasi->save();
+
+        return back()->with('status', 'Data Migrasi berhasil disimpan.');
     }
 }

@@ -138,6 +138,11 @@ class Pelamar extends Model
         return $this->hasOne(TugasSementara::class, 'id_pelamar');
     }
 
+    public function migrasiData()
+    {
+        return $this->hasOne(MigrasiDataPegawai::class, 'id_pelamar');
+    }
+
     /** The primary candidate this pelamar is a backup for, if any. */
     public function cadanganDari()
     {
