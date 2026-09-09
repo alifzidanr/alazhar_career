@@ -232,7 +232,7 @@
                     </thead>
                     <tbody class="divide-y" x-ref="tbody">
                         @forelse ($pelamarList as $p)
-                            <tr class="isolate hover:bg-muted/30" data-row data-id="{{ $p->id_pelamar }}" data-search="{{ Str::lower($p->namaLengkap()) }}" data-ipk_s1="{{ $p->ipk_s1 ?? '' }}" data-institusi_s1="{{ Str::lower($p->institusi_s1 ?? '') }}" data-loker="{{ Str::lower($p->loker->judul_loker ?? '') }}" x-show="isVisible($el)">
+                            <tr class="hover:bg-muted/30" data-row data-id="{{ $p->id_pelamar }}" data-search="{{ Str::lower($p->namaLengkap()) }}" data-ipk_s1="{{ $p->ipk_s1 ?? '' }}" data-institusi_s1="{{ Str::lower($p->institusi_s1 ?? '') }}" data-loker="{{ Str::lower($p->loker->judul_loker ?? '') }}" x-show="isVisible($el)">
                                 <td class="px-4 py-3">
                                     <input type="checkbox" class="rounded border-input" :checked="isSelected({{ $p->id_pelamar }})" @change="toggleSelect({{ $p->id_pelamar }}, $event.target.checked)">
                                 </td>
