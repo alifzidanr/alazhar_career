@@ -246,7 +246,7 @@
                                         >{{ $p->namaLengkap() }}</a>
 
                                         @if ($lamaranLain)
-                                            <div class="pointer-events-none absolute top-full left-1/2 z-50 mt-1.5 w-64 -translate-x-1/2 scale-95 whitespace-normal rounded-md border bg-popover px-3 py-1.5 text-xs text-popover-foreground opacity-0 shadow-md transition-all duration-150 group-hover:scale-100 group-hover:opacity-100">
+                                            <div class="pointer-events-none absolute top-full left-0 z-50 mt-1.5 w-64 scale-95 whitespace-normal rounded-md border bg-popover px-3 py-1.5 text-xs text-popover-foreground opacity-0 shadow-md transition-all duration-150 group-hover:scale-100 group-hover:opacity-100">
                                                 <p class="text-muted-foreground">Pernah melamar sebagai</p>
                                                 <p class="font-medium">{{ $lamaranLain->loker?->judul_loker }}</p>
                                                 <p class="text-muted-foreground">{{ $lamaranLain->loker?->wilayah ?: '-' }}</p>
