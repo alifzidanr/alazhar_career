@@ -223,6 +223,7 @@
                                             <option value="Pegawai Tetap">Pegawai Tetap</option>
                                             <option value="Pegawai Inval">Pegawai Inval</option>
                                             <option value="Pegawai Ekskul">Pegawai Ekskul</option>
+                                            <option value="Pegawai Capeg">Pegawai Capeg</option>
                                             <option value="Lain-lain">Lain-lain</option>
                                         </x-ui.select>
                                         <x-input-error :messages="$errors->get('jenis_kepegawaian_al_azhar_sebelumnya')" class="mt-2" />

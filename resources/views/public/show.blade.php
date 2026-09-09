@@ -239,6 +239,7 @@
                                 <option value="Pegawai Tetap" @selected(old('jenis_kepegawaian_al_azhar_sebelumnya') === 'Pegawai Tetap')>Pegawai Tetap</option>
                                 <option value="Pegawai Inval" @selected(old('jenis_kepegawaian_al_azhar_sebelumnya') === 'Pegawai Inval')>Pegawai Inval</option>
                                 <option value="Pegawai Ekskul" @selected(old('jenis_kepegawaian_al_azhar_sebelumnya') === 'Pegawai Ekskul')>Pegawai Ekskul</option>
+                                <option value="Pegawai Capeg" @selected(old('jenis_kepegawaian_al_azhar_sebelumnya') === 'Pegawai Capeg')>Pegawai Capeg</option>
                                 <option value="Lain-lain" @selected(old('jenis_kepegawaian_al_azhar_sebelumnya') === 'Lain-lain')>Lain-lain</option>
                             </x-ui.select>
                             <x-input-error :messages="$errors->get('jenis_kepegawaian_al_azhar_sebelumnya')" class="mt-2" />

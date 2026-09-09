@@ -52,7 +52,7 @@ class StorePelamarRequest extends FormRequest
             'kerja_al_azhar_periode' => ['nullable', 'date_format:Y-m', Rule::requiredIf(fn () => $this->input('pernah_bekerja_di_al_azhar') === 'Ya')],
             'jenis_kepegawaian_al_azhar_sebelumnya' => [
                 'nullable',
-                'in:Pegawai Honor,Pegawai Tetap,Pegawai Inval,Pegawai Ekskul,Lain-lain',
+                'in:Pegawai Honor,Pegawai Tetap,Pegawai Inval,Pegawai Ekskul,Pegawai Capeg,Lain-lain',
                 Rule::requiredIf(fn () => $this->input('pernah_bekerja_di_al_azhar') === 'Ya'),
             ],
             'jenis_kepegawaian_al_azhar_lainnya' => [
