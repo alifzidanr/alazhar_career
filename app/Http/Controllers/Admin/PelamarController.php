@@ -97,18 +97,20 @@ class PelamarController extends Controller
 
     /**
      * For each pelamar in the list, attach every other application filed under the same NIK
-     * (riwayatLamaranLain, newest first) and whether this row is flagged with an Orientasi-
-     * stage history (pernahOrientasi). Only the newest application for a NIK can be flagged,
-     * and only when an OLDER application (at another loker) reached the Orientasi stage,
-     * regardless of that older application's status - the older Orientasi record itself
-     * isn't flagged, since it's the history, not the one being reviewed against it.
+     * (riwayatLamaranLain, newest first) and whether this person has ever reached the
+     * Orientasi stage and then withdrawn (pernahOrientasi / riwayatOrientasiMundur).
+     *
+     * This is checked across ALL applications under the NIK (including the current one) -
+     * once someone has an Orientasi-stage application with status Mundur in their history,
+     * every one of their applications stays flagged, including any new loker they apply to
+     * afterwards.
      */
     private function attachRiwayatLamaranLain(\Illuminate\Support\Collection $pelamarList): void
     {
         $niks = $pelamarList->pluck('nik')->filter()->unique();
 
         $semuaByNik = Pelamar::whereIn('nik', $niks)
-            ->with(['loker', 'tahapRekrutmen', 'statusPelamar'])
+            ->with(['loker', 'tahapRekrutmen', 'statusPelamar', 'orientasi.unitKerja'])
             ->orderByDesc('tanggal_apply')
             ->orderByDesc('id_pelamar')
             ->get()
@@ -121,12 +123,17 @@ class PelamarController extends Controller
                 ->reject(fn ($s) => $s->id_pelamar === $p->id_pelamar)
                 ->values();
 
-            // $semuaLamaran is newest-first: the first entry is the newest application,
-            // everything after it is "before the newest one".
-            $p->pernahOrientasi = $semuaLamaran->first()?->id_pelamar === $p->id_pelamar
-                && $semuaLamaran->slice(1)->contains(
-                    fn ($s) => $s->id_tahap_rekrutmen >= TahapRekrutmen::ORIENTASI
-                );
+            $riwayatOrientasiMundur = $semuaLamaran->first(
+                fn ($s) => $s->id_tahap_rekrutmen >= TahapRekrutmen::ORIENTASI
+                    && $s->id_status_pelamar === StatusPelamar::MUNDUR
+            );
+
+            $p->pernahOrientasi = $riwayatOrientasiMundur !== null;
+
+            $p->riwayatOrientasiMundur = $riwayatOrientasiMundur ? [
+                'unit' => $riwayatOrientasiMundur->orientasi?->unitKerja?->nama_unit ?? '-',
+                'tanggal' => optional($riwayatOrientasiMundur->orientasi?->tanggal_mulai)->format('d/m/Y') ?? '-',
+            ] : null;
         }
     }
 

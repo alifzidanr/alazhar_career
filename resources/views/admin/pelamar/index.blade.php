@@ -238,21 +238,16 @@
                                 </td>
                                 <td class="px-4 py-3 font-medium whitespace-nowrap">
                                     @php
-                                        $lamaranLain = $p->riwayatLamaranLain->sortByDesc('tanggal_apply')->first();
+                                        $riwayatOrientasiMundur = $p->riwayatOrientasiMundur;
                                     @endphp
-                                    <span class="relative inline-block {{ $lamaranLain ? 'group' : '' }}">
+                                    <span class="relative inline-block {{ $riwayatOrientasiMundur ? 'group' : '' }}">
                                         <a href="{{ route('admin.pelamar.show', $p) }}"
                                             class="hover:underline {{ $p->pernahOrientasi ? 'text-red-600 hover:text-red-700' : 'hover:text-primary' }}"
                                         >{{ $p->namaLengkap() }}</a>
 
-                                        @if ($lamaranLain)
+                                        @if ($riwayatOrientasiMundur)
                                             <div class="pointer-events-none absolute top-full left-0 z-50 mt-1.5 w-64 scale-95 whitespace-normal rounded-md border bg-popover px-3 py-1.5 text-xs text-popover-foreground opacity-0 shadow-md transition-all duration-150 group-hover:scale-100 group-hover:opacity-100">
-                                                <p class="text-muted-foreground">Pernah melamar sebagai</p>
-                                                <p class="font-medium">{{ $lamaranLain->loker?->judul_loker }}</p>
-                                                <p class="text-muted-foreground">{{ $lamaranLain->loker?->wilayah ?: '-' }}</p>
-                                                <p class="mt-1">Apply: {{ optional($lamaranLain->tanggal_apply)->translatedFormat('d M Y') }}</p>
-                                                <p>Tahap: {{ $lamaranLain->tahapRekrutmen?->tahap_rekrutmen }}</p>
-                                                <p>Status: {{ ucfirst($lamaranLain->statusPelamar?->status_pelamar ?? '-') }}</p>
+                                                <p>Pernah orientasi di unit {{ $riwayatOrientasiMundur['unit'] }}, pada {{ $riwayatOrientasiMundur['tanggal'] }}</p>
                                             </div>
                                         @endif
                                     </span>

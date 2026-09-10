@@ -202,7 +202,9 @@
                     <span class="h-1.5 w-1.5 rounded-full bg-brand-navy-600"></span>
                     Lowongan Terbaru
                 </span>
-                <h2 class="mt-4 text-2xl sm:text-3xl font-bold tracking-tight">Peluang Karir Terbuka</h2>
+                <h2 class="mt-4 text-2xl sm:text-3xl font-bold tracking-tight">
+                    <span class="inline-flex items-center rounded-full bg-brand-navy-50 px-5 py-2 text-brand-navy-600">Peluang Karir Terbuka</span>
+                </h2>
                 <p class="mt-3 text-sm text-muted-foreground leading-relaxed">
                     Cari lowongan sesuai wilayah dan posisi yang sesuai dengan Anda.
                 </p>
@@ -220,7 +222,7 @@
                 <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                     @foreach ($lokerTerbaru as $loker)
                         <a href="{{ route('loker.show', $loker) }}" class="block h-full">
-                            <x-loker-card :loker="$loker" />
+                            <x-loker-card :loker="$loker" :highlight="true" />
                         </a>
                     @endforeach
                 </div>
