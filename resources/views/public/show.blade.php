@@ -270,13 +270,13 @@
                                     this.open = false;
                                 },
                             }"
+                            @click.outside="open = false"
                         >
                             <x-ui.label for="kerja_al_azhar_periode_btn">Kapan <span class="text-destructive">*</span></x-ui.label>
                             <button
                                 type="button"
                                 id="kerja_al_azhar_periode_btn"
                                 @click="open = !open"
-                                @click.outside="open = false"
                                 class="mt-1.5 flex h-9 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm"
                             >
                                 <span :class="display ? '' : 'text-muted-foreground'" x-text="display || 'Pilih bulan & tahun'"></span>
