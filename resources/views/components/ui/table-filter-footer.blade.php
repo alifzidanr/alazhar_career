@@ -5,7 +5,7 @@
 
         <label class="flex items-center gap-2 text-muted-foreground">
             Baris:
-            <x-ui.select x-model.number="perPage" class="!h-8 !w-auto py-0">
+            <x-ui.select x-model.number="perPage" class="!h-8 !w-20 py-0">
                 <option value="10">10</option>
                 <option value="25">25</option>
                 <option value="50">50</option>

@@ -41,7 +41,7 @@
                     <p class="mt-1 text-[11px] font-semibold text-destructive">{{ $daysLeft <= 0 ? 'Hari ini' : 'H-'.$daysLeft }}</p>
                 @endif
             @elseif ($loker->end_time)
-                <x-ui.badge variant="muted">Sampai {{ $loker->end_time->translatedFormat('d F') }}</x-ui.badge>
+                <span class="inline-flex items-center rounded-md border border-transparent bg-brand-green-600 px-2.5 py-0.5 text-xs font-semibold text-white shadow-sm">Sampai {{ $loker->end_time->translatedFormat('d F') }}</span>
             @endif
         </div>
     </div>
@@ -62,7 +62,7 @@
 
     <div class="mt-4 flex items-center justify-between gap-2">
         @if ($jenjangNama)
-            <span class="inline-flex items-center rounded-md bg-muted px-2 py-1 text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">{{ $jenjangNama }}</span>
+            <span class="inline-flex items-center rounded-md bg-brand-navy-600 px-2.5 py-1 text-[11px] font-bold tracking-wide text-white uppercase shadow-sm">{{ $jenjangNama }}</span>
         @else
             <span></span>
         @endif

@@ -72,7 +72,7 @@
                        data-start="{{ optional($loker->start_time)->timestamp ?? 0 }}"
                        data-end="{{ optional($loker->end_time)->timestamp ?? PHP_INT_MAX }}"
                        x-show="isVisible($el)">
-                        <x-loker-card :loker="$loker" />
+                        <x-loker-card :loker="$loker" :highlight="true" />
                     </a>
                 @endforeach
             </div>
