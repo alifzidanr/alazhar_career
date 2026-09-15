@@ -672,13 +672,79 @@
                                 <x-ui.input type="date" id="tgl_masuk" name="tgl_masuk" value="{{ old('tgl_masuk', optional($migrasi?->tgl_masuk)->format('Y-m-d')) }}" required />
                             </div>
                             <div>
-                                <x-ui.label for="id_regional">Regional <span class="text-destructive">*</span></x-ui.label>
-                                <x-ui.select id="id_regional" name="id_regional" required>
-                                    <option value="">-- Pilih --</option>
-                                    @foreach ($hrisRegionalList as $r)
-                                        <option value="{{ $r->id_regional }}" @selected((string) old('id_regional', $migrasi?->id_regional) === (string) $r->id_regional)>{{ $r->nama_wilayah }}</option>
-                                    @endforeach
-                                </x-ui.select>
+                                @php
+                                    $initialRegionalId = old('id_regional', $migrasi?->id_regional);
+                                    $initialRegionalName = $initialRegionalId
+                                        ? $hrisRegionalList->firstWhere('id_regional', (int) $initialRegionalId)?->nama_wilayah
+                                        : null;
+                                @endphp
+                                <x-ui.label>Regional <span class="text-destructive">*</span></x-ui.label>
+                                <div
+                                    x-data="{
+                                        open: false,
+                                        search: '',
+                                        selectedId: @js((string) ($initialRegionalId ?? '')),
+                                        selectedName: @js($initialRegionalName),
+                                        options: @js($hrisRegionalList->map(fn ($r) => ['id' => (string) $r->id_regional, 'name' => $r->nama_wilayah])),
+                                        get filtered() {
+                                            if (!this.search) return this.options;
+                                            const q = this.search.toLowerCase();
+                                            return this.options.filter(o => o.name.toLowerCase().includes(q));
+                                        },
+                                        select(opt) {
+                                            this.selectedId = opt.id;
+                                            this.selectedName = opt.name;
+                                            this.open = false;
+                                            this.search = '';
+                                        }
+                                    }"
+                                    @click.outside="open = false"
+                                    class="relative"
+                                >
+                                    <input type="hidden" name="id_regional" :value="selectedId" required>
+                                    <button
+                                        type="button"
+                                        @click="open = !open; if (open) $nextTick(() => $refs.regionalSearch.focus())"
+                                        class="flex h-9 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors hover:bg-accent"
+                                    >
+                                        <span x-text="selectedName || 'Pilih Regional'" :class="{ 'text-muted-foreground': !selectedName }" class="truncate"></span>
+                                        <svg class="size-4 text-muted-foreground shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
+                                    <div
+                                        x-show="open"
+                                        x-cloak
+                                        x-transition:enter="transition ease-out duration-150"
+                                        x-transition:enter-start="opacity-0 scale-95"
+                                        x-transition:enter-end="opacity-100 scale-100"
+                                        class="absolute z-10 mt-1 w-full rounded-md border bg-popover text-popover-foreground shadow-md"
+                                    >
+                                        <div class="p-2 border-b">
+                                            <input
+                                                x-ref="regionalSearch"
+                                                x-model="search"
+                                                type="text"
+                                                placeholder="Cari regional..."
+                                                autocomplete="off"
+                                                @click.stop
+                                                @keydown.stop
+                                                class="flex h-8 w-full rounded-md border border-input bg-background px-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                                            >
+                                        </div>
+                                        <div class="max-h-60 overflow-y-auto py-1">
+                                            <template x-for="opt in filtered" :key="opt.id">
+                                                <a
+                                                    href="#"
+                                                    @click.prevent="select(opt)"
+                                                    x-text="opt.name"
+                                                    class="block px-3 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground cursor-pointer"
+                                                ></a>
+                                            </template>
+                                            <p x-show="filtered.length === 0" class="px-3 py-1.5 text-sm text-muted-foreground">Tidak ditemukan.</p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div>
                                 <x-ui.label for="id_status_kepegawaian">Status Kepegawaian <span class="text-destructive">*</span></x-ui.label>
