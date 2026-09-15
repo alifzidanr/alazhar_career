@@ -64,6 +64,32 @@ return [
             ]) : [],
         ],
 
+        // simpeg-proto's (HRIS) database — same MySQL server as the default
+        // connection above. Used for live reads of HRIS reference tables that
+        // are too large/volatile to snapshot locally (e.g. t_ref_regional,
+        // 1000+ rows and growing) — see App\Models\HrisRegional. Small, stable
+        // HRIS enums are still snapshotted locally instead (see hris_status_*,
+        // hris_bidang_diampu and database/seeders/HrisReferenceSeeder.php).
+        'hris' => [
+            'driver' => 'mysql',
+            'url' => env('DB_HRIS_URL'),
+            'host' => env('DB_HRIS_HOST', env('DB_HOST', '127.0.0.1')),
+            'port' => env('DB_HRIS_PORT', env('DB_PORT', '3306')),
+            'database' => env('DB_HRIS_DATABASE', 'db_data22'),
+            'username' => env('DB_HRIS_USERNAME', env('DB_USERNAME', 'root')),
+            'password' => env('DB_HRIS_PASSWORD', env('DB_PASSWORD', '')),
+            'unix_socket' => env('DB_SOCKET', ''),
+            'charset' => env('DB_CHARSET', 'utf8mb4'),
+            'collation' => env('DB_COLLATION', 'utf8mb4_unicode_ci'),
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                Mysql::ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
+
         'mariadb' => [
             'driver' => 'mariadb',
             'url' => env('DB_URL'),

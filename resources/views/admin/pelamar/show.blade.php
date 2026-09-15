@@ -672,8 +672,13 @@
                                 <x-ui.input type="date" id="tgl_masuk" name="tgl_masuk" value="{{ old('tgl_masuk', optional($migrasi?->tgl_masuk)->format('Y-m-d')) }}" required />
                             </div>
                             <div>
-                                <x-ui.label for="id_regional">Regional (ID HRIS) <span class="text-destructive">*</span></x-ui.label>
-                                <x-ui.input type="number" min="1" id="id_regional" name="id_regional" value="{{ old('id_regional', $migrasi?->id_regional) }}" placeholder="Isi sesuai ID Regional/Wilayah pada HRIS" required />
+                                <x-ui.label for="id_regional">Regional <span class="text-destructive">*</span></x-ui.label>
+                                <x-ui.select id="id_regional" name="id_regional" required>
+                                    <option value="">-- Pilih --</option>
+                                    @foreach ($hrisRegionalList as $r)
+                                        <option value="{{ $r->id_regional }}" @selected((string) old('id_regional', $migrasi?->id_regional) === (string) $r->id_regional)>{{ $r->nama_wilayah }}</option>
+                                    @endforeach
+                                </x-ui.select>
                             </div>
                             <div>
                                 <x-ui.label for="id_status_kepegawaian">Status Kepegawaian <span class="text-destructive">*</span></x-ui.label>
