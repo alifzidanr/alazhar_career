@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Exports\PelamarExport;
 use App\Http\Controllers\Controller;
 use App\Models\HrisBidangDiampu;
+use App\Models\HrisRegional;
 use App\Models\HrisStatusKeaktifan;
 use App\Models\HrisStatusKepegawaian;
 use App\Models\HrisStatusNikah;
@@ -186,6 +187,14 @@ class PelamarController extends Controller
         $hrisBidangDiampuList = HrisBidangDiampu::orderBy('nama_bidang')->get();
         $hrisStatusNikahList = HrisStatusNikah::orderBy('id_status_nikah')->get();
 
+        // Live read from HRIS (1000+ rows, keeps growing) — don't let the whole
+        // page 500 if the HRIS database is briefly unreachable.
+        try {
+            $hrisRegionalList = HrisRegional::orderBy('nama_wilayah')->get();
+        } catch (\Throwable $e) {
+            $hrisRegionalList = collect();
+        }
+
         // Other applications filed under the same NIK, for the "Riwayat Lamaran Lain" panel.
         $riwayatLamaranLain = Pelamar::where('nik', $pelamar->nik)
             ->where('id_pelamar', '!=', $pelamar->id_pelamar)
@@ -217,7 +226,7 @@ class PelamarController extends Controller
 
         return view('admin.pelamar.show', compact(
             'pelamar', 'statusOptions', 'unitKerjaList', 'tahapList', 'prevPelamarId', 'nextPelamarId', 'riwayatLamaranLain',
-            'hrisStatusKepegawaianList', 'hrisStatusKeaktifanList', 'hrisBidangDiampuList', 'hrisStatusNikahList'
+            'hrisStatusKepegawaianList', 'hrisStatusKeaktifanList', 'hrisBidangDiampuList', 'hrisStatusNikahList', 'hrisRegionalList'
         ));
     }
 
@@ -694,7 +703,7 @@ class PelamarController extends Controller
             'tgl_lahir' => ['required', 'date'],
             'jenis_kelamin' => ['required', 'in:Laki-laki,Perempuan'],
             'id_status_nikah' => ['required', 'exists:hris_status_nikah,id_status_nikah'],
-            'id_regional' => ['required', 'integer', 'min:1'],
+            'id_regional' => ['required', 'exists:hris.t_ref_regional,id_regional'],
             'gelar_depan' => ['nullable', 'string', 'max:50'],
             'gelar_belakang' => ['nullable', 'string', 'max:50'],
             'no_ktp' => ['nullable', 'string', 'max:50'],
