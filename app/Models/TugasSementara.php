@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Storage;
 
 class TugasSementara extends Model
 {
@@ -24,11 +23,15 @@ class TugasSementara extends Model
 
     public function skTugasSementaraUrl(): ?string
     {
-        return $this->sk_tugas_sementara_upload ? Storage::disk('public')->url($this->sk_tugas_sementara_upload) : null;
+        return $this->sk_tugas_sementara_upload
+            ? route('admin.pelamar.berkas', ['pelamar' => $this->id_pelamar, 'column' => 'sk_tugas_sementara_upload'])
+            : null;
     }
 
     public function hasilTesKesehatanUrl(): ?string
     {
-        return $this->hasil_tes_kesehatan_upload ? Storage::disk('public')->url($this->hasil_tes_kesehatan_upload) : null;
+        return $this->hasil_tes_kesehatan_upload
+            ? route('admin.pelamar.berkas', ['pelamar' => $this->id_pelamar, 'column' => 'hasil_tes_kesehatan_upload'])
+            : null;
     }
 }

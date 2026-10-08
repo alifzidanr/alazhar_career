@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Storage;
 
 class Pelamar extends Model
 {
@@ -215,62 +214,62 @@ class Pelamar extends Model
 
     public function ijazahUrl(): ?string
     {
-        return $this->ijazah_upload ? Storage::disk('public')->url($this->ijazah_upload) : null;
+        return $this->ijazah_upload ? route('admin.pelamar.berkas', ['pelamar' => $this, 'column' => 'ijazah_upload']) : null;
     }
 
     public function ktpUrl(): ?string
     {
-        return $this->ktp_upload ? Storage::disk('public')->url($this->ktp_upload) : null;
+        return $this->ktp_upload ? route('admin.pelamar.berkas', ['pelamar' => $this, 'column' => 'ktp_upload']) : null;
     }
 
     public function transkripUrl(): ?string
     {
-        return $this->transkrip_nilai_upload ? Storage::disk('public')->url($this->transkrip_nilai_upload) : null;
+        return $this->transkrip_nilai_upload ? route('admin.pelamar.berkas', ['pelamar' => $this, 'column' => 'transkrip_nilai_upload']) : null;
     }
 
     public function transkripS1Url(): ?string
     {
-        return $this->transkrip_nilai_s1_upload ? Storage::disk('public')->url($this->transkrip_nilai_s1_upload) : null;
+        return $this->transkrip_nilai_s1_upload ? route('admin.pelamar.berkas', ['pelamar' => $this, 'column' => 'transkrip_nilai_s1_upload']) : null;
     }
 
     public function transkripS2Url(): ?string
     {
-        return $this->transkrip_nilai_s2_upload ? Storage::disk('public')->url($this->transkrip_nilai_s2_upload) : null;
+        return $this->transkrip_nilai_s2_upload ? route('admin.pelamar.berkas', ['pelamar' => $this, 'column' => 'transkrip_nilai_s2_upload']) : null;
     }
 
     public function transkripS3Url(): ?string
     {
-        return $this->transkrip_nilai_s3_upload ? Storage::disk('public')->url($this->transkrip_nilai_s3_upload) : null;
+        return $this->transkrip_nilai_s3_upload ? route('admin.pelamar.berkas', ['pelamar' => $this, 'column' => 'transkrip_nilai_s3_upload']) : null;
     }
 
     public function cvUrl(): ?string
     {
-        return $this->cv_upload ? Storage::disk('public')->url($this->cv_upload) : null;
+        return $this->cv_upload ? route('admin.pelamar.berkas', ['pelamar' => $this, 'column' => 'cv_upload']) : null;
     }
 
     public function pasFotoUrl(): ?string
     {
-        return $this->pas_foto_upload ? Storage::disk('public')->url($this->pas_foto_upload) : null;
+        return $this->pas_foto_upload ? route('admin.pelamar.berkas', ['pelamar' => $this, 'column' => 'pas_foto_upload']) : null;
     }
 
     public function suratLamaranUrl(): ?string
     {
-        return $this->surat_lamaran_upload ? Storage::disk('public')->url($this->surat_lamaran_upload) : null;
+        return $this->surat_lamaran_upload ? route('admin.pelamar.berkas', ['pelamar' => $this, 'column' => 'surat_lamaran_upload']) : null;
     }
 
     public function simUrl(): ?string
     {
-        return $this->sim_upload ? Storage::disk('public')->url($this->sim_upload) : null;
+        return $this->sim_upload ? route('admin.pelamar.berkas', ['pelamar' => $this, 'column' => 'sim_upload']) : null;
     }
 
     public function sertifikatGadaPratamaUrl(): ?string
     {
-        return $this->sertifikat_gada_pratama_upload ? Storage::disk('public')->url($this->sertifikat_gada_pratama_upload) : null;
+        return $this->sertifikat_gada_pratama_upload ? route('admin.pelamar.berkas', ['pelamar' => $this, 'column' => 'sertifikat_gada_pratama_upload']) : null;
     }
 
     public function sertifikatTambahanUrl(): ?string
     {
-        return $this->sertifikat_tambahan_upload ? Storage::disk('public')->url($this->sertifikat_tambahan_upload) : null;
+        return $this->sertifikat_tambahan_upload ? route('admin.pelamar.berkas', ['pelamar' => $this, 'column' => 'sertifikat_tambahan_upload']) : null;
     }
 
     /** All uploaded berkas with their label, URL, and stored path, filtered to only those actually uploaded. */

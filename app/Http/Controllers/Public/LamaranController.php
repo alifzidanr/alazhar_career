@@ -92,31 +92,31 @@ class LamaranController extends Controller
                 'id_status_pelamar' => StatusPelamar::SCREENING,
                 'id_tahap_rekrutmen' => TahapRekrutmen::SELEKSI_BERKAS,
                 'tanggal_apply' => now()->toDateString(),
-                'cv_upload' => $request->file('cv_upload')->store('pelamar/cv', 'public'),
-                'ijazah_upload' => $request->file('ijazah_upload')->store('pelamar/ijazah', 'public'),
-                'ktp_upload' => $request->file('ktp_upload')->store('pelamar/ktp', 'public'),
+                'cv_upload' => $request->file('cv_upload')->store('pelamar/cv', 'local'),
+                'ijazah_upload' => $request->file('ijazah_upload')->store('pelamar/ijazah', 'local'),
+                'ktp_upload' => $request->file('ktp_upload')->store('pelamar/ktp', 'local'),
                 'transkrip_nilai_upload' => $request->hasFile('transkrip_nilai_upload')
-                    ? $request->file('transkrip_nilai_upload')->store('pelamar/transkrip', 'public')
+                    ? $request->file('transkrip_nilai_upload')->store('pelamar/transkrip', 'local')
                     : null,
                 'transkrip_nilai_s1_upload' => $request->hasFile('transkrip_nilai_s1_upload')
-                    ? $request->file('transkrip_nilai_s1_upload')->store('pelamar/transkrip', 'public')
+                    ? $request->file('transkrip_nilai_s1_upload')->store('pelamar/transkrip', 'local')
                     : null,
                 'transkrip_nilai_s2_upload' => $request->hasFile('transkrip_nilai_s2_upload')
-                    ? $request->file('transkrip_nilai_s2_upload')->store('pelamar/transkrip', 'public')
+                    ? $request->file('transkrip_nilai_s2_upload')->store('pelamar/transkrip', 'local')
                     : null,
                 'transkrip_nilai_s3_upload' => $request->hasFile('transkrip_nilai_s3_upload')
-                    ? $request->file('transkrip_nilai_s3_upload')->store('pelamar/transkrip', 'public')
+                    ? $request->file('transkrip_nilai_s3_upload')->store('pelamar/transkrip', 'local')
                     : null,
-                'pas_foto_upload' => $request->file('pas_foto_upload')->store('pelamar/pas_foto', 'public'),
-                'surat_lamaran_upload' => $request->file('surat_lamaran_upload')->store('pelamar/surat_lamaran', 'public'),
+                'pas_foto_upload' => $request->file('pas_foto_upload')->store('pelamar/pas_foto', 'local'),
+                'surat_lamaran_upload' => $request->file('surat_lamaran_upload')->store('pelamar/surat_lamaran', 'local'),
                 'sim_upload' => $request->hasFile('sim_upload')
-                    ? $request->file('sim_upload')->store('pelamar/sim', 'public')
+                    ? $request->file('sim_upload')->store('pelamar/sim', 'local')
                     : null,
                 'sertifikat_gada_pratama_upload' => $request->hasFile('sertifikat_gada_pratama_upload')
-                    ? $request->file('sertifikat_gada_pratama_upload')->store('pelamar/sertifikat_gada_pratama', 'public')
+                    ? $request->file('sertifikat_gada_pratama_upload')->store('pelamar/sertifikat_gada_pratama', 'local')
                     : null,
                 'sertifikat_tambahan_upload' => $request->hasFile('sertifikat_tambahan_upload')
-                    ? $request->file('sertifikat_tambahan_upload')->store('pelamar/sertifikat_tambahan', 'public')
+                    ? $request->file('sertifikat_tambahan_upload')->store('pelamar/sertifikat_tambahan', 'local')
                     : null,
                 'bersedia_ditempatkan' => true,
             ]);
