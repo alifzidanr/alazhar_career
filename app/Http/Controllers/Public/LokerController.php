@@ -37,6 +37,8 @@ class LokerController extends Controller
 
     public function show(Loker $loker): View
     {
+        abort_unless($loker->isBuka(), 404);
+
         $loker->load(['kriteria.kriteria', 'jenjang']);
 
         $kriteriaByBobot = $loker->kriteria->groupBy('bobot');
