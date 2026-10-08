@@ -12,7 +12,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // Behind the Cloudflare Tunnel, the origin only ever sees the
+        // tunnel's internal connection, not the visitor's — without this,
+        // request()->secure(), the client IP (and so per-visitor rate
+        // limiting), and generated https:// URLs all break.
+        $middleware->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

@@ -36,7 +36,7 @@ class SkOrientasiMail extends Mailable
     public function attachments(): array
     {
         return [
-            Attachment::fromStorageDisk('public', $this->attachmentPath)
+            Attachment::fromStorageDisk('local', $this->attachmentPath)
                 ->as($this->attachmentName)
                 ->withMime('application/pdf'),
         ];
