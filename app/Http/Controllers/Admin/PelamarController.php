@@ -291,6 +291,44 @@ class PelamarController extends Controller
         return back()->with('status', 'Data Pelamar berhasil disimpan.');
     }
 
+    /**
+     * Upload columns servable via showBerkas(), mapped to where the column
+     * lives: directly on Pelamar, or on one of its related stage records.
+     * This allowlist exists so {column} in the route can never be used to
+     * read an arbitrary model attribute.
+     */
+    private const BERKAS_COLUMNS = [
+        'surat_lamaran_upload' => null,
+        'cv_upload' => null,
+        'ijazah_upload' => null,
+        'transkrip_nilai_upload' => null,
+        'transkrip_nilai_s1_upload' => null,
+        'transkrip_nilai_s2_upload' => null,
+        'transkrip_nilai_s3_upload' => null,
+        'pas_foto_upload' => null,
+        'ktp_upload' => null,
+        'sim_upload' => null,
+        'sertifikat_gada_pratama_upload' => null,
+        'sertifikat_tambahan_upload' => null,
+        'sk_orientasi_upload' => 'orientasi',
+        'sk_tugas_sementara_upload' => 'tugasSementara',
+        'hasil_tes_kesehatan_upload' => 'tugasSementara',
+    ];
+
+    /** Stream a single uploaded berkas inline. Requires admin auth (route middleware) — the files live on the private disk, not the public one. */
+    public function showBerkas(Pelamar $pelamar, string $column): \Symfony\Component\HttpFoundation\StreamedResponse
+    {
+        abort_unless(array_key_exists($column, self::BERKAS_COLUMNS), 404);
+
+        $relation = self::BERKAS_COLUMNS[$column];
+        $source = $relation ? $pelamar->{$relation} : $pelamar;
+        $path = $source?->{$column};
+
+        abort_unless($path && Storage::disk('local')->exists($path), 404);
+
+        return Storage::disk('local')->response($path);
+    }
+
     /** Merge every uploaded berkas (PDFs and images) into a single downloadable PDF. */
     public function downloadBerkas(Pelamar $pelamar): Response
     {
@@ -305,7 +343,7 @@ class PelamarController extends Controller
         $pdf->SetAutoPageBreak(false);
 
         foreach ($berkasList as $berkas) {
-            $path = Storage::disk('public')->path($berkas['path']);
+            $path = Storage::disk('local')->path($berkas['path']);
 
             if (! is_file($path)) {
                 continue;
@@ -651,7 +689,7 @@ class PelamarController extends Controller
         $orientasi->fill(collect($data)->except('sk_orientasi_upload')->all());
 
         if ($request->hasFile('sk_orientasi_upload')) {
-            $orientasi->sk_orientasi_upload = $request->file('sk_orientasi_upload')->store('pelamar/sk_orientasi', 'public');
+            $orientasi->sk_orientasi_upload = $request->file('sk_orientasi_upload')->store('pelamar/sk_orientasi', 'local');
         }
 
         $orientasi->save();
@@ -669,11 +707,11 @@ class PelamarController extends Controller
         $tugasSementara = TugasSementara::firstOrNew(['id_pelamar' => $pelamar->id_pelamar]);
 
         if ($request->hasFile('sk_tugas_sementara_upload')) {
-            $tugasSementara->sk_tugas_sementara_upload = $request->file('sk_tugas_sementara_upload')->store('pelamar/sk_tugas_sementara', 'public');
+            $tugasSementara->sk_tugas_sementara_upload = $request->file('sk_tugas_sementara_upload')->store('pelamar/sk_tugas_sementara', 'local');
         }
 
         if ($request->hasFile('hasil_tes_kesehatan_upload')) {
-            $tugasSementara->hasil_tes_kesehatan_upload = $request->file('hasil_tes_kesehatan_upload')->store('pelamar/hasil_tes_kesehatan', 'public');
+            $tugasSementara->hasil_tes_kesehatan_upload = $request->file('hasil_tes_kesehatan_upload')->store('pelamar/hasil_tes_kesehatan', 'local');
         }
 
         $tugasSementara->save();

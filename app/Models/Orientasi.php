@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Storage;
 
 class Orientasi extends Model
 {
@@ -42,6 +41,8 @@ class Orientasi extends Model
 
     public function skOrientasiUrl(): ?string
     {
-        return $this->sk_orientasi_upload ? Storage::disk('public')->url($this->sk_orientasi_upload) : null;
+        return $this->sk_orientasi_upload
+            ? route('admin.pelamar.berkas', ['pelamar' => $this->id_pelamar, 'column' => 'sk_orientasi_upload'])
+            : null;
     }
 }

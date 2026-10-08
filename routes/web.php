@@ -19,8 +19,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [LokerController::class, 'index'])->name('loker.index');
 Route::get('/lowongan', [LokerController::class, 'list'])->name('loker.list');
 Route::get('/loker/{loker}', [LokerController::class, 'show'])->name('loker.show');
-Route::get('/loker/{loker}/cek-nik', [LamaranController::class, 'cekNik'])->name('loker.cek-nik');
-Route::post('/loker/{loker}/lamar', [LamaranController::class, 'store'])->name('loker.lamar');
+Route::get('/loker/{loker}/cek-nik', [LamaranController::class, 'cekNik'])->middleware('throttle:30,1')->name('loker.cek-nik');
+Route::post('/loker/{loker}/lamar', [LamaranController::class, 'store'])->middleware('throttle:5,1')->name('loker.lamar');
 
 Route::view('/tentang-kami', 'public.tentang')->name('tentang.index');
 
@@ -38,6 +38,7 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::get('/pelamar/export', [AdminPelamarController::class, 'export'])->name('pelamar.export');
     Route::get('/pelamar/{pelamar}', [AdminPelamarController::class, 'show'])->name('pelamar.show');
     Route::get('/pelamar/{pelamar}/download-berkas', [AdminPelamarController::class, 'downloadBerkas'])->name('pelamar.download-berkas');
+    Route::get('/pelamar/{pelamar}/berkas/{column}', [AdminPelamarController::class, 'showBerkas'])->name('pelamar.berkas');
     Route::patch('/pelamar/{pelamar}/data', [AdminPelamarController::class, 'updateData'])->name('pelamar.data');
     Route::patch('/pelamar/{pelamar}/status', [AdminPelamarController::class, 'updateStatus'])->name('pelamar.status');
     Route::patch('/pelamar/{pelamar}/lanjut', [AdminPelamarController::class, 'advanceTahap'])->name('pelamar.lanjut');
