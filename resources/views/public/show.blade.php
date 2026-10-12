@@ -166,6 +166,22 @@
                         <x-input-error :messages="$errors->get('jenis_kelamin')" class="mt-2" />
                     </div>
                     <div>
+                        <x-ui.label for="status_nikah">Status Nikah (Sudah Menikah?) <span class="text-destructive">*</span></x-ui.label>
+                        <x-ui.select id="status_nikah" name="status_nikah" x-model="fields.status_nikah" required>
+                            <option value="">-- Pilih --</option>
+                            <option value="Ya" @selected(old('status_nikah') === 'Ya')>Ya</option>
+                            <option value="Tidak" @selected(old('status_nikah') === 'Tidak')>Tidak</option>
+                        </x-ui.select>
+                        <x-input-error :messages="$errors->get('status_nikah')" class="mt-2" />
+                    </div>
+                    @if ($loker->jenjang?->nama_jenjang === 'Satpam')
+                        <div>
+                            <x-ui.label for="tinggi_badan">Tinggi Badan (cm) <span class="text-destructive">*</span></x-ui.label>
+                            <x-ui.input type="number" id="tinggi_badan" name="tinggi_badan" x-model="fields.tinggi_badan" value="{{ old('tinggi_badan') }}" required min="100" max="250" placeholder="Contoh: 170" />
+                            <x-input-error :messages="$errors->get('tinggi_badan')" class="mt-2" />
+                        </div>
+                    @endif
+                    <div>
                         <x-ui.label for="email">Email <span class="text-destructive">*</span></x-ui.label>
                         <x-ui.input type="email" id="email" name="email" x-model="fields.email" value="{{ old('email') }}" required />
                         <x-input-error :messages="$errors->get('email')" class="mt-2" />
@@ -788,6 +804,8 @@
                             nik: oldInput.nik ?? '',
                             tanggal_lahir: oldInput.tanggal_lahir ?? '',
                             jenis_kelamin: oldInput.jenis_kelamin ?? '',
+                            status_nikah: oldInput.status_nikah ?? '',
+                            tinggi_badan: oldInput.tinggi_badan ?? '',
                             email: oldInput.email ?? '',
                             no_hp: oldInput.no_hp ?? '',
                             alamat: oldInput.alamat ?? '',

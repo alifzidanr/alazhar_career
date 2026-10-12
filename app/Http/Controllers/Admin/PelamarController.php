@@ -243,6 +243,11 @@ class PelamarController extends Controller
             ],
             'tanggal_lahir' => ['required', 'date', 'before:today'],
             'jenis_kelamin' => ['required', 'in:L,P'],
+            'status_nikah' => ['required', 'in:Ya,Tidak'],
+            'tinggi_badan' => [
+                $pelamar->loker?->jenjang?->nama_jenjang === 'Satpam' ? 'required' : 'nullable',
+                'integer', 'min:100', 'max:250',
+            ],
             'gelar' => ['nullable', 'string', 'max:50'],
             'no_hp' => ['required', 'string', 'max:20'],
             'email' => ['required', 'email', 'max:150'],

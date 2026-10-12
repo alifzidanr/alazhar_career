@@ -16,6 +16,8 @@ class Pelamar extends Model
         'nik',
         'tanggal_lahir',
         'jenis_kelamin',
+        'status_nikah',
+        'tinggi_badan',
         'gelar',
         'no_hp',
         'email',
