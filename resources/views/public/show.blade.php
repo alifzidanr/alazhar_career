@@ -604,6 +604,8 @@
                     <div class="flex justify-between gap-2"><dt class="text-muted-foreground">Institusi</dt><dd class="font-medium text-right" x-text="institusiTerakhir"></dd></div>
                 </dl>
 
+                <p class="mt-3 text-sm text-muted-foreground">Harap cek email Anda pada bagian kotak masuk/spam/inbox setelah mengirim lamaran.</p>
+
                 <div class="mt-5 flex justify-end gap-2">
                     <x-ui.button type="button" variant="outline" @click="confirmOpen = false">Batal, Periksa Lagi</x-ui.button>
                     <x-ui.button type="button" @click="submitNow()">Ya, Kirim Lamaran</x-ui.button>
