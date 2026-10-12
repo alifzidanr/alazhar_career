@@ -56,6 +56,8 @@ class LamaranController extends Controller
                 'nik' => $data['nik'],
                 'tanggal_lahir' => $data['tanggal_lahir'],
                 'jenis_kelamin' => $data['jenis_kelamin'],
+                'status_nikah' => $data['status_nikah'],
+                'tinggi_badan' => $data['tinggi_badan'] ?? null,
                 'gelar' => $data['gelar'] ?? null,
                 'no_hp' => $data['no_hp'],
                 'email' => $data['email'],

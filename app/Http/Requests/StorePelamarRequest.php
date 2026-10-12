@@ -34,6 +34,11 @@ class StorePelamarRequest extends FormRequest
                 }
             }],
             'jenis_kelamin' => ['required', 'in:L,P'],
+            'status_nikah' => ['required', 'in:Ya,Tidak'],
+            'tinggi_badan' => [
+                $this->lokerJenjangIs('Satpam') ? 'required' : 'nullable',
+                'integer', 'min:100', 'max:250',
+            ],
             'gelar' => ['nullable', 'string', 'max:50'],
             'no_hp' => ['required', 'string', 'max:20'],
             'email' => ['required', 'email', 'max:150'],

@@ -72,7 +72,7 @@
 
                 <div class="grid md:grid-cols-2 gap-6">
                     <x-ui.card x-data="{
-                            editing: {{ $errors->hasAny(['nama', 'nik', 'tanggal_lahir', 'jenis_kelamin', 'gelar', 'no_hp', 'email', 'alamat', 'pernah_rekrutmen_sebelumnya', 'bulan_rekrutmen_sebelumnya', 'tahun_rekrutmen_sebelumnya', 'id_tahap_rekrutmen_sebelumnya', 'pernah_bekerja_di_al_azhar', 'lokasi_kerja_al_azhar_sebelumnya', 'bulan_kerja_al_azhar_sebelumnya', 'tahun_kerja_al_azhar_sebelumnya', 'jenis_kepegawaian_al_azhar_sebelumnya', 'jenis_kepegawaian_al_azhar_lainnya']) ? 'true' : 'false' }},
+                            editing: {{ $errors->hasAny(['nama', 'nik', 'tanggal_lahir', 'jenis_kelamin', 'status_nikah', 'tinggi_badan', 'gelar', 'no_hp', 'email', 'alamat', 'pernah_rekrutmen_sebelumnya', 'bulan_rekrutmen_sebelumnya', 'tahun_rekrutmen_sebelumnya', 'id_tahap_rekrutmen_sebelumnya', 'pernah_bekerja_di_al_azhar', 'lokasi_kerja_al_azhar_sebelumnya', 'bulan_kerja_al_azhar_sebelumnya', 'tahun_kerja_al_azhar_sebelumnya', 'jenis_kepegawaian_al_azhar_sebelumnya', 'jenis_kepegawaian_al_azhar_lainnya']) ? 'true' : 'false' }},
                             pernahRekrutmen: '{{ old('pernah_rekrutmen_sebelumnya', $pelamar->pernah_rekrutmen_sebelumnya) }}',
                             pernahKerja: '{{ old('pernah_bekerja_di_al_azhar', $pelamar->pernah_bekerja_di_al_azhar) }}',
                             jenisKepegawaian: '{{ old('jenis_kepegawaian_al_azhar_sebelumnya', $pelamar->jenis_kepegawaian_al_azhar_sebelumnya) }}',
@@ -90,6 +90,10 @@
                             <div><dt class="text-muted-foreground">Tanggal Apply</dt><dd class="font-medium">{{ $pelamar->tanggal_apply->translatedFormat('d M Y') }}</dd></div>
                             <div><dt class="text-muted-foreground">Tanggal Lahir</dt><dd class="font-medium">{{ $pelamar->tanggal_lahir->translatedFormat('d M Y') }} ({{ $pelamar->usia() }} tahun)</dd></div>
                             <div><dt class="text-muted-foreground">Jenis Kelamin</dt><dd class="font-medium">{{ $pelamar->jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan' }}</dd></div>
+                            <div><dt class="text-muted-foreground">Status Nikah</dt><dd class="font-medium">{{ $pelamar->status_nikah ?: '-' }}</dd></div>
+                            @if ($pelamar->loker?->jenjang?->nama_jenjang === 'Satpam')
+                                <div><dt class="text-muted-foreground">Tinggi Badan</dt><dd class="font-medium">{{ $pelamar->tinggi_badan ? $pelamar->tinggi_badan.' cm' : '-' }}</dd></div>
+                            @endif
                             <div><dt class="text-muted-foreground">Email</dt><dd class="font-medium">{{ $pelamar->email ?: '-' }}</dd></div>
                             <div><dt class="text-muted-foreground">No. WhatsApp</dt><dd class="font-medium">{{ $pelamar->no_hp ?: '-' }}</dd></div>
 
@@ -142,6 +146,21 @@
                                     </x-ui.select>
                                     <x-input-error :messages="$errors->get('jenis_kelamin')" class="mt-2" />
                                 </div>
+                                <div>
+                                    <x-ui.label for="status_nikah">Status Nikah</x-ui.label>
+                                    <x-ui.select id="status_nikah" name="status_nikah" required>
+                                        <option value="Ya" @selected(old('status_nikah', $pelamar->status_nikah) === 'Ya')>Ya</option>
+                                        <option value="Tidak" @selected(old('status_nikah', $pelamar->status_nikah) === 'Tidak')>Tidak</option>
+                                    </x-ui.select>
+                                    <x-input-error :messages="$errors->get('status_nikah')" class="mt-2" />
+                                </div>
+                                @if ($pelamar->loker?->jenjang?->nama_jenjang === 'Satpam')
+                                    <div>
+                                        <x-ui.label for="tinggi_badan">Tinggi Badan (cm)</x-ui.label>
+                                        <x-ui.input type="number" id="tinggi_badan" name="tinggi_badan" value="{{ old('tinggi_badan', $pelamar->tinggi_badan) }}" min="100" max="250" required />
+                                        <x-input-error :messages="$errors->get('tinggi_badan')" class="mt-2" />
+                                    </div>
+                                @endif
                                 <div>
                                     <x-ui.label for="email">Email</x-ui.label>
                                     <x-ui.input type="email" id="email" name="email" value="{{ old('email', $pelamar->email) }}" required />
