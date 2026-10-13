@@ -127,9 +127,42 @@ class StorePelamarRequest extends FormRequest
         ];
     }
 
+    /**
+     * Upload field => label shown in the public form, reused here so the
+     * "too large" message matches the client-side dialog's wording.
+     */
+    private const FILE_FIELD_LABELS = [
+        'cv_upload' => 'Curriculum Vitae',
+        'ijazah_upload' => 'Ijazah',
+        'ktp_upload' => 'KTP',
+        'transkrip_nilai_upload' => 'Transkrip Nilai',
+        'transkrip_nilai_s1_upload' => 'Transkrip Nilai S1',
+        'transkrip_nilai_s2_upload' => 'Transkrip Nilai S2',
+        'transkrip_nilai_s3_upload' => 'Transkrip Nilai S3',
+        'pas_foto_upload' => 'Pas Foto 3x4',
+        'surat_lamaran_upload' => 'Surat Lamaran',
+        'sim_upload' => 'SIM',
+        'sertifikat_gada_pratama_upload' => 'Sertifikat Gada Pratama',
+        'sertifikat_tambahan_upload' => 'Sertifikat Tambahan',
+    ];
+
+    public function attributes(): array
+    {
+        return self::FILE_FIELD_LABELS;
+    }
+
     public function messages(): array
     {
-        return [
+        $fileMessages = [];
+        foreach (array_keys(self::FILE_FIELD_LABELS) as $field) {
+            // "uploaded" fires when PHP itself rejects the file (e.g. over
+            // upload_max_filesize) before Laravel's own max:5120 rule ever
+            // runs, so both need the same "too large" wording in Indonesian.
+            $fileMessages["{$field}.uploaded"] = 'Ukuran file :attribute terlalu besar. Maksimal 5MB, silakan pilih file lain yang lebih kecil.';
+            $fileMessages["{$field}.max"] = 'Ukuran file :attribute terlalu besar. Maksimal 5MB, silakan pilih file lain yang lebih kecil.';
+        }
+
+        return $fileMessages + [
             'nik.unique' => 'NIK ini sudah pernah digunakan untuk melamar lowongan ini.',
             'bersedia_ditempatkan.required' => 'Anda harus menyetujui pernyataan kesediaan penempatan sebelum mengirim lamaran.',
             'bersedia_ditempatkan.accepted' => 'Anda harus menyetujui pernyataan kesediaan penempatan sebelum mengirim lamaran.',
