@@ -66,6 +66,8 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::post('/jenjang', [AdminJenjangController::class, 'store'])->name('jenjang.store');
     Route::patch('/jenjang/{jenjang}', [AdminJenjangController::class, 'update'])->name('jenjang.update');
     Route::delete('/jenjang/{jenjang}', [AdminJenjangController::class, 'destroy'])->name('jenjang.destroy');
+    Route::patch('/jenjang/{jenjang}/naik', [AdminJenjangController::class, 'moveUp'])->name('jenjang.naik');
+    Route::patch('/jenjang/{jenjang}/turun', [AdminJenjangController::class, 'moveDown'])->name('jenjang.turun');
 
     Route::get('/wilayah', [AdminWilayahController::class, 'index'])->name('wilayah.index');
     Route::post('/wilayah', [AdminWilayahController::class, 'store'])->name('wilayah.store');

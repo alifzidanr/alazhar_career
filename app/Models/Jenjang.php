@@ -12,7 +12,7 @@ class Jenjang extends Model
 
     public $timestamps = false;
 
-    protected $fillable = ['nama_jenjang', 'id_pendidikan_minimum'];
+    protected $fillable = ['nama_jenjang', 'id_pendidikan_minimum', 'urutan'];
 
     public function loker()
     {

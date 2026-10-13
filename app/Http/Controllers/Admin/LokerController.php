@@ -26,7 +26,7 @@ class LokerController extends Controller
     {
         $wilayahList = Wilayah::orderBy('nama_wilayah')->get();
         $pendidikanList = PendidikanTerakhir::orderBy('id_pendidikan_terakhir')->get();
-        $jenjangList = Jenjang::orderBy('nama_jenjang')->get();
+        $jenjangList = Jenjang::orderBy('urutan')->get();
 
         return view('admin.loker.create', compact('wilayahList', 'pendidikanList', 'jenjangList'));
     }
@@ -44,7 +44,7 @@ class LokerController extends Controller
         $kriteriaList = Kriteria::orderBy('teks_kriteria')->get();
         $wilayahList = Wilayah::orderBy('nama_wilayah')->get();
         $pendidikanList = PendidikanTerakhir::orderBy('id_pendidikan_terakhir')->get();
-        $jenjangList = Jenjang::orderBy('nama_jenjang')->get();
+        $jenjangList = Jenjang::orderBy('urutan')->get();
 
         return view('admin.loker.edit', compact('loker', 'kriteriaList', 'wilayahList', 'pendidikanList', 'jenjangList'));
     }

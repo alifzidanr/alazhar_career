@@ -36,6 +36,7 @@
                     <table class="min-w-full divide-y text-sm">
                         <thead class="bg-muted/50">
                             <tr class="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                                <th class="px-4 py-3">Urutan</th>
                                 <th class="px-4 py-3">Jenjang</th>
                                 <th class="px-4 py-3">Pendidikan Minimum</th>
                                 <th class="px-4 py-3">Dipakai</th>
@@ -43,9 +44,25 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y" x-ref="tbody">
-                            @forelse ($jenjangList as $j)
+                            @forelse ($jenjangList as $i => $j)
                                 @php($formId = 'jenjang-form-'.$j->id_jenjang)
                                 <tr class="hover:bg-muted/30" data-row data-search="{{ Str::lower($j->nama_jenjang) }}" x-show="isVisible($el)">
+                                    <td class="px-4 py-3">
+                                        <div class="flex items-center gap-1">
+                                            <form method="POST" action="{{ route('admin.jenjang.naik', $j) }}">
+                                                @csrf @method('PATCH')
+                                                <x-ui.button type="submit" variant="ghost" size="sm" class="h-7 w-7 p-0" :disabled="$i === 0" title="Naikkan urutan">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+                                                </x-ui.button>
+                                            </form>
+                                            <form method="POST" action="{{ route('admin.jenjang.turun', $j) }}">
+                                                @csrf @method('PATCH')
+                                                <x-ui.button type="submit" variant="ghost" size="sm" class="h-7 w-7 p-0" :disabled="$i === $jenjangList->count() - 1" title="Turunkan urutan">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+                                                </x-ui.button>
+                                            </form>
+                                        </div>
+                                    </td>
                                     <td class="px-4 py-3">
                                         <form id="{{ $formId }}" method="POST" action="{{ route('admin.jenjang.update', $j) }}">
                                             @csrf @method('PATCH')
@@ -72,10 +89,10 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="4" class="px-4 py-8 text-center text-muted-foreground">Belum ada jenjang.</td></tr>
+                                <tr><td colspan="5" class="px-4 py-8 text-center text-muted-foreground">Belum ada jenjang.</td></tr>
                             @endforelse
                             @if ($jenjangList->isNotEmpty())
-                                <tr x-show="total === 0"><td colspan="4" class="px-4 py-8 text-center text-muted-foreground">Tidak ada jenjang yang cocok.</td></tr>
+                                <tr x-show="total === 0"><td colspan="5" class="px-4 py-8 text-center text-muted-foreground">Tidak ada jenjang yang cocok.</td></tr>
                             @endif
                         </tbody>
                     </table>
