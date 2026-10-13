@@ -704,12 +704,16 @@ class PelamarController extends Controller
 
     public function updateTugasSementara(Request $request, Pelamar $pelamar): RedirectResponse
     {
-        $request->validate([
+        $data = $request->validate([
+            'ts_uang_makan' => ['nullable', 'integer', 'min:0'],
+            'ts_uang_transport' => ['nullable', 'integer', 'min:0'],
             'sk_tugas_sementara_upload' => ['nullable', 'file', 'mimes:pdf', 'max:5120'],
             'hasil_tes_kesehatan_upload' => ['nullable', 'file', 'mimes:pdf', 'max:5120'],
         ]);
 
         $tugasSementara = TugasSementara::firstOrNew(['id_pelamar' => $pelamar->id_pelamar]);
+        $tugasSementara->uang_makan = $data['ts_uang_makan'];
+        $tugasSementara->uang_transport = $data['ts_uang_transport'];
 
         if ($request->hasFile('sk_tugas_sementara_upload')) {
             $tugasSementara->sk_tugas_sementara_upload = $request->file('sk_tugas_sementara_upload')->store('pelamar/sk_tugas_sementara', 'local');

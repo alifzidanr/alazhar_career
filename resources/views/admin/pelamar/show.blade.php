@@ -637,6 +637,17 @@
                         <form method="POST" action="{{ route('admin.pelamar.tugas-sementara', $pelamar) }}" enctype="multipart/form-data" class="grid sm:grid-cols-2 gap-4">
                             @csrf
                             @method('PATCH')
+                            @php
+                                $formatRibuan = fn ($v) => is_numeric($v) ? number_format((float) $v, 0, ',', '.') : $v;
+                            @endphp
+                            <div>
+                                <x-ui.label for="ts_uang_makan">Uang Makan</x-ui.label>
+                                <x-ui.input type="text" inputmode="numeric" data-format="ribuan" id="ts_uang_makan" name="ts_uang_makan" value="{{ $formatRibuan(old('ts_uang_makan', $pelamar->tugasSementara?->uang_makan)) }}" />
+                            </div>
+                            <div>
+                                <x-ui.label for="ts_uang_transport">Uang Transport</x-ui.label>
+                                <x-ui.input type="text" inputmode="numeric" data-format="ribuan" id="ts_uang_transport" name="ts_uang_transport" value="{{ $formatRibuan(old('ts_uang_transport', $pelamar->tugasSementara?->uang_transport)) }}" />
+                            </div>
                             <div>
                                 <x-ui.label for="sk_tugas_sementara_upload">SK Tugas Sementara (PDF)</x-ui.label>
                                 <input type="file" id="sk_tugas_sementara_upload" name="sk_tugas_sementara_upload" accept=".pdf" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">

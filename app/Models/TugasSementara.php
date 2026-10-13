@@ -12,6 +12,8 @@ class TugasSementara extends Model
 
     protected $fillable = [
         'id_pelamar',
+        'uang_makan',
+        'uang_transport',
         'sk_tugas_sementara_upload',
         'hasil_tes_kesehatan_upload',
     ];
