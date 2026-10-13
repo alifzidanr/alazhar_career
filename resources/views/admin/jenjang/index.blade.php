@@ -51,14 +51,14 @@
                                         <div class="flex items-center gap-1">
                                             <form method="POST" action="{{ route('admin.jenjang.naik', $j) }}">
                                                 @csrf @method('PATCH')
-                                                <x-ui.button type="submit" variant="ghost" size="sm" class="h-7 w-7 p-0" :disabled="$i === 0" title="Naikkan urutan">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+                                                <x-ui.button type="submit" variant="ghost" size="icon" class="!h-7 !w-7" :disabled="$i === 0" title="Naikkan urutan">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 shrink-0"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
                                                 </x-ui.button>
                                             </form>
                                             <form method="POST" action="{{ route('admin.jenjang.turun', $j) }}">
                                                 @csrf @method('PATCH')
-                                                <x-ui.button type="submit" variant="ghost" size="sm" class="h-7 w-7 p-0" :disabled="$i === $jenjangList->count() - 1" title="Turunkan urutan">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+                                                <x-ui.button type="submit" variant="ghost" size="icon" class="!h-7 !w-7" :disabled="$i === $jenjangList->count() - 1" title="Turunkan urutan">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 shrink-0"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
                                                 </x-ui.button>
                                             </form>
                                         </div>
