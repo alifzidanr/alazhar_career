@@ -18,7 +18,7 @@ class LokerController extends Controller
         $totalLowongan = Loker::dibuka()->count();
         $tahapRekrutmen = TahapRekrutmen::orderBy('id_tahap_rekrutmen')->get();
         $wilayahOptions = Loker::dibuka()->whereNotNull('wilayah')->distinct()->orderBy('wilayah')->pluck('wilayah');
-        $jenjangOptions = Jenjang::orderBy('nama_jenjang')->get();
+        $jenjangOptions = Jenjang::orderBy('urutan')->get();
         $lokerUntukPencarian = Loker::dibuka()->orderBy('judul_loker')->get(['id_loker', 'judul_loker', 'wilayah']);
 
         return view('public.index', compact('lokerTerbaru', 'totalLowongan', 'tahapRekrutmen', 'wilayahOptions', 'jenjangOptions', 'lokerUntukPencarian'));
@@ -30,7 +30,7 @@ class LokerController extends Controller
 
         $wilayahOptions = Loker::dibuka()->whereNotNull('wilayah')->distinct()->orderBy('wilayah')->pluck('wilayah');
         $unitOptions = UnitKerja::orderBy('nama_unit')->get();
-        $jenjangOptions = Jenjang::orderBy('nama_jenjang')->get();
+        $jenjangOptions = Jenjang::orderBy('urutan')->get();
 
         return view('public.lowongan', compact('lokerList', 'wilayahOptions', 'unitOptions', 'jenjangOptions'));
     }
