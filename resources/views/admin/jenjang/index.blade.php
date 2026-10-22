@@ -9,16 +9,16 @@
         <div class="w-full px-4 sm:px-6 lg:px-8 space-y-6">
 
             <x-ui.card title="Tambah Jenjang" description="Jenjang ini akan tersedia sebagai pilihan dropdown saat membuat/mengubah loker. Pendidikan minimum menentukan pilihan pendidikan terakhir yang bisa dipilih pelamar pada formulir lamaran untuk loker dengan jenjang ini.">
-                <form method="POST" action="{{ route('admin.jenjang.store') }}" class="flex gap-2">
+                <form method="POST" action="{{ route('admin.jenjang.store') }}" class="flex flex-col sm:flex-row gap-2">
                     @csrf
-                    <x-ui.input type="text" name="nama_jenjang" placeholder="cth. Guru SD" value="{{ old('nama_jenjang') }}" required class="flex-1" />
-                    <x-ui.select name="id_pendidikan_minimum" required class="w-48">
+                    <x-ui.input type="text" name="nama_jenjang" placeholder="cth. Guru SD" value="{{ old('nama_jenjang') }}" required class="flex-1 min-w-0" />
+                    <x-ui.select name="id_pendidikan_minimum" required class="sm:!w-56 sm:shrink-0">
                         <option value="">-- Pendidikan Minimum --</option>
                         @foreach ($pendidikanList as $p)
                             <option value="{{ $p->id_pendidikan_terakhir }}" @selected((string) old('id_pendidikan_minimum') === (string) $p->id_pendidikan_terakhir)>{{ $p->pendidikan_terakhir }}</option>
                         @endforeach
                     </x-ui.select>
-                    <x-ui.button type="submit">Tambah</x-ui.button>
+                    <x-ui.button type="submit" class="shrink-0">Tambah</x-ui.button>
                 </form>
                 <x-input-error :messages="$errors->get('nama_jenjang')" class="mt-2" />
                 <x-input-error :messages="$errors->get('id_pendidikan_minimum')" class="mt-2" />
