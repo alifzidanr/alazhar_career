@@ -48,4 +48,18 @@
             </x-primary-button>
         </div>
     </form>
+
+    <div x-data="passkeyLogin" class="mt-6">
+        <div class="relative flex items-center gap-3 text-xs uppercase text-muted-foreground">
+            <span class="h-px flex-1 bg-border"></span>
+            atau
+            <span class="h-px flex-1 bg-border"></span>
+        </div>
+
+        <x-ui.button type="button" variant="outline" class="mt-4 w-full" @click="login()" x-bind:disabled="busy">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 shrink-0"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6M15.5 7.5l3 3L22 7l-3-3"/></svg>
+            <span x-text="busy ? 'Menunggu perangkat...' : 'Masuk dengan Passkey'">Masuk dengan Passkey</span>
+        </x-ui.button>
+        <p x-show="error" x-text="error" x-cloak class="mt-2 text-sm text-destructive"></p>
+    </div>
 </x-guest-layout>

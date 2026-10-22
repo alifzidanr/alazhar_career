@@ -16,6 +16,10 @@
             <x-ui.card>
                 @include('profile.partials.update-password-form')
             </x-ui.card>
+
+            <x-ui.card>
+                @include('profile.partials.passkeys')
+            </x-ui.card>
         </div>
     </div>
 </x-app-layout>

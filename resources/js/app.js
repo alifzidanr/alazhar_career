@@ -2,6 +2,7 @@
 
 import Alpine from 'alpinejs';
 import Viewer from 'viewerjs';
+import Webpass from '@laragear/webpass';
 
 window.Alpine = Alpine;
 window.Viewer = Viewer;
@@ -188,6 +189,78 @@ Alpine.data('tableFilter', (perPage = 15, initialFilters = {}, sortModes = {}) =
 
     nextPage() {
         if (this.page < this.totalPages) this.page++;
+    },
+}));
+
+// Passkeys (WebAuthn). Browsers only expose WebAuthn on HTTPS or localhost,
+// so explain that case instead of the generic "not supported" message.
+// The routes keep CSRF protection; Webpass reads the token from the
+// <meta name="csrf-token"> tag in both layouts.
+const webpass = Webpass.create({ findCsrfToken: true });
+const passkeyRequest = (path, body = {}) => ({ path, body, findCsrfToken: true });
+
+const passkeyUnavailableMessage = () => (window.isSecureContext
+    ? 'Browser atau perangkat ini tidak mendukung passkey.'
+    : 'Passkey hanya bisa digunakan jika situs dibuka lewat HTTPS.');
+
+const passkeyErrorMessage = (error, fallback) => {
+    if (error?.name === 'NotAllowedError') return 'Dibatalkan atau waktu habis. Silakan coba lagi.';
+    if (error?.name === 'InvalidStateError') return 'Passkey untuk akun ini sudah ada di perangkat ini.';
+    return error?.data?.message || error?.response?._data?.message || fallback;
+};
+
+Alpine.data('passkeyRegister', () => ({
+    alias: '',
+    busy: false,
+    error: '',
+
+    async register() {
+        this.error = '';
+        if (Webpass.isUnsupported()) {
+            this.error = passkeyUnavailableMessage();
+            return;
+        }
+
+        this.busy = true;
+        const { success, error } = await webpass.attest(
+            passkeyRequest('/webauthn/register/options'),
+            passkeyRequest('/webauthn/register', { alias: this.alias }),
+        );
+        this.busy = false;
+
+        if (success) {
+            window.location.reload();
+        } else {
+            this.error = passkeyErrorMessage(error, 'Gagal mendaftarkan passkey.');
+        }
+    },
+}));
+
+Alpine.data('passkeyLogin', () => ({
+    busy: false,
+    error: '',
+
+    async login() {
+        this.error = '';
+        if (Webpass.isUnsupported()) {
+            this.error = passkeyUnavailableMessage();
+            return;
+        }
+
+        const remember = document.getElementById('remember_me')?.checked ?? false;
+
+        this.busy = true;
+        const { success, data, error } = await webpass.assert(
+            passkeyRequest('/webauthn/login/options'),
+            passkeyRequest('/webauthn/login', { remember }),
+        );
+        this.busy = false;
+
+        if (success) {
+            window.location.assign(data?.redirect || '/admin');
+        } else {
+            this.error = passkeyErrorMessage(error, 'Login dengan passkey gagal.');
+        }
     },
 }));
 
