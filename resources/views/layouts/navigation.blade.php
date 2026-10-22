@@ -34,6 +34,10 @@
                         {{ __('Profile') }}
                     </x-dropdown-link>
 
+                    <x-dropdown-link :href="route('admin.profile.edit').'#passkey'">
+                        {{ __('Passkey') }}
+                    </x-dropdown-link>
+
                     <a href="{{ route('loker.index') }}" target="_blank" class="block w-full mx-1 px-3 py-1.5 text-start text-sm text-popover-foreground hover:bg-accent hover:text-accent-foreground focus:outline-none focus:bg-accent transition-colors rounded-sm" style="width: calc(100% - 0.5rem);">
                         {{ __('Lihat Portal Publik') }}
                     </a>
