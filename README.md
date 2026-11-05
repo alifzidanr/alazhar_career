@@ -1,58 +1,126 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Al-Azhar Career
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplikasi rekrutmen pegawai YPI Al-Azhar. Pelamar melihat lowongan dan mengirim lamaran secara daring; admin kepegawaian memproses pelamar melalui setiap tahap rekrutmen hingga datanya siap dimigrasikan ke HRIS (simpeg-proto).
 
-## About Laravel
+## Fitur
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### Halaman publik
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- Daftar dan detail lowongan kerja (loker) yang sedang dibuka.
+- Formulir lamaran dengan unggah berkas: CV, ijazah, KTP, pas foto, surat lamaran, transkrip nilai (S1/S2/S3), serta SIM dan sertifikat sesuai kebutuhan loker.
+- Pengecekan NIK sebelum melamar agar pelamar tidak mendaftar ganda.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Panel admin (`/admin`)
 
-## Learning Laravel
+- **Dashboard** ringkasan pelamar dan lowongan.
+- **Pelamar**: pencarian dan filter, detail pelamar, pratinjau berkas, unduh seluruh berkas sebagai satu PDF, catatan, serta ekspor ke Excel.
+- **Tahap rekrutmen**, dengan pencatatan riwayat setiap perpindahan tahap:
+  1. Seleksi Berkas
+  2. Tes Tulis
+  3. Wawancara
+  4. Orientasi
+  5. Tugas Sementara
+  6. Terima SK
+  7. Migrasi Data
+- **Status pelamar** (mis. lolos, tidak lolos, dicadangkan, ditolak, mundur, diterima), dapat diubah per pelamar maupun massal.
+- **Notifikasi email** ke pelamar, termasuk pengiriman SK orientasi; setiap pengiriman tercatat di log notifikasi.
+- **Master data**: lowongan beserta kriterianya, kriteria, jenjang, wilayah, unit kerja, dan akun admin.
+- **Login dengan passkey (WebAuthn)** selain email dan kata sandi.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Teknologi
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- PHP 8.5, Laravel 13
+- MySQL (database aplikasi dan database HRIS)
+- Blade, Alpine.js, Tailwind CSS, Vite
+- `maatwebsite/excel` untuk ekspor Excel, `setasign/fpdi-fpdf` untuk menggabungkan berkas PDF, `laragear/webauthn` untuk passkey
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+## Instalasi lokal
 
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+Kebutuhan: PHP 8.5, Composer, Node.js beserta npm, dan MySQL.
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+git clone https://github.com/TD-YPI-AL-AZHAR/alazhar_career.git
+cd alazhar_career
+composer install
+cp .env.example .env
+php artisan key:generate
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Sesuaikan `.env`:
 
-## Contributing
+```dotenv
+APP_NAME="Al-Azhar Career"
+APP_URL=http://localhost:8000
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=alazhar_career
+DB_USERNAME=root
+DB_PASSWORD=
 
-## Code of Conduct
+# Database HRIS (simpeg-proto), dipakai untuk membaca data referensi HRIS
+# secara langsung. Host, user, dan password mengikuti koneksi utama bila
+# tidak diisi (lihat koneksi `hris` di config/database.php).
+DB_HRIS_DATABASE=db_data22
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# Pengiriman email notifikasi ke pelamar
+MAIL_MAILER=smtp
+MAIL_HOST=
+MAIL_PORT=587
+MAIL_USERNAME=
+MAIL_PASSWORD=
+MAIL_FROM_ADDRESS=
+MAIL_FROM_NAME="${APP_NAME}"
+```
 
-## Security Vulnerabilities
+Lalu jalankan migrasi dan build aset:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+php artisan migrate
+php artisan db:seed --class=HrisReferenceSeeder
+npm install
+npm run build
+```
 
-## License
+`HrisReferenceSeeder` mengisi salinan lokal data referensi HRIS (status kepegawaian, status keaktifan, status nikah, bidang diampu) yang dipakai saat migrasi data pegawai. Seeder `LokerSampleSeeder*`, `DemoRekrutmenSeeder`, `DummyRiwayatOrientasiSeeder`, dan `MockScaleSeeder` hanya berisi data contoh untuk pengembangan; jangan dijalankan di server produksi.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Membuat akun admin pertama
+
+Akun admin disimpan di tabel `admin_kepegawaian`. Akun pertama dibuat lewat Tinker:
+
+```bash
+php artisan tinker --execute 'App\Models\User::forceCreate(["nama" => "Admin", "email" => "admin@example.com", "password" => "ganti-kata-sandi"]);'
+```
+
+Admin dengan `id_admin` 1 adalah akun pemilik: tidak tampil di daftar admin lain dan tidak bisa dihapus. Akun admin berikutnya dapat dibuat dari menu **Manajemen Pengguna** di panel admin.
+
+### Menjalankan aplikasi
+
+```bash
+composer run dev
+```
+
+Perintah ini menjalankan server Laravel, antrean (queue), log, dan Vite sekaligus. Aplikasi terbuka di `http://localhost:8000`, dan panel admin di `http://localhost:8000/login`.
+
+## Pengujian
+
+```bash
+php artisan test
+```
+
+## Deploy
+
+Aplikasi berjalan di server internal `192.168.13.10` (direktori `/home/ypia/alazhar_career`, port 8081, PHP-FPM 8.5). Langkah pembaruan, dijalankan sebagai user `ypia`:
+
+```bash
+cd /home/ypia/alazhar_career
+git fetch origin main
+git reset --hard origin/main
+php8.5 /usr/local/bin/composer install --no-dev --optimize-autoloader --no-interaction   # bila composer.lock berubah
+php8.5 artisan migrate --force                                                         # bila ada migrasi baru
+npm run build
+php8.5 artisan optimize:clear
+```
+
+Gunakan `php8.5` secara eksplisit, karena `php` bawaan di server masih versi 8.4.
