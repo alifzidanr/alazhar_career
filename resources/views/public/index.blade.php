@@ -353,4 +353,74 @@
             </div>
         </div>
     </section>
+
+    <!-- Pertanyaan Umum (FAQ) -->
+    <section id="faq" class="w-full px-4 sm:px-6 lg:px-10 xl:px-16 py-16 sm:py-20 scroll-mt-20">
+        <div class="max-w-3xl mx-auto">
+            <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-center">Pertanyaan Umum</h2>
+            <p class="mt-2 text-sm text-muted-foreground text-center">Jawaban atas pertanyaan yang paling sering diajukan seputar proses melamar.</p>
+
+            @php
+                $faq = [
+                    [
+                        'tanya' => 'Bagaimana cara melamar?',
+                        'jawab' => 'Pilih lowongan di bagian <a href="#peluang-karir" class="font-medium text-brand-navy-600 hover:underline">Peluang Karir Terbuka</a> atau di halaman <a href="'.e(route('loker.list')).'" class="font-medium text-brand-navy-600 hover:underline">Lowongan</a>, buka detailnya, lalu isi formulir lamaran dan unggah berkas yang diminta. Lamaran langsung terkirim setelah Anda menekan tombol kirim; tidak perlu membuat akun.',
+                    ],
+                    [
+                        'tanya' => 'Apakah proses rekrutmen dipungut biaya?',
+                        'jawab' => 'Tidak. Seluruh proses rekrutmen YPI Al Azhar tidak dipungut biaya apa pun. Waspadai pihak yang meminta pembayaran atas nama YPI Al Azhar.',
+                    ],
+                    [
+                        'tanya' => 'Berapa batas usia pelamar?',
+                        'jawab' => 'Pelamar harus berusia 18 sampai 35 tahun saat mengirim lamaran.',
+                    ],
+                    [
+                        'tanya' => 'Berkas apa saja yang perlu disiapkan?',
+                        'jawab' => 'CV, ijazah, transkrip nilai, dan surat lamaran dalam format PDF; KTP dan pas foto dalam format JPG atau PNG. Pelamar S1, S2, atau S3 mengunggah transkrip untuk setiap jenjang. Lowongan Driver mewajibkan SIM (JPG/PNG), dan lowongan Satpam mewajibkan sertifikat Gada Pratama (PDF). Sertifikat tambahan boleh dilampirkan. Ukuran setiap berkas maksimal 5 MB.',
+                    ],
+                    [
+                        'tanya' => 'Bolehkah melamar lebih dari satu lowongan?',
+                        'jawab' => 'Boleh. Satu NIK hanya dapat digunakan sekali untuk lowongan yang sama, tetapi Anda dapat melamar lowongan lain yang sesuai.',
+                    ],
+                    [
+                        'tanya' => 'Saya pernah melamar atau bekerja di YPI Al Azhar. Apakah boleh melamar lagi?',
+                        'jawab' => 'Boleh. Cukup isi riwayat rekrutmen atau riwayat kerja Anda di YPI Al Azhar pada formulir lamaran.',
+                    ],
+                    [
+                        'tanya' => 'Apakah data lamaran bisa diubah setelah dikirim?',
+                        'jawab' => 'Lamaran yang sudah terkirim tidak dapat diubah melalui situs ini. Jika ada data yang keliru, hubungi kami di <a href="mailto:karir@al-azhar.or.id" class="font-medium text-brand-navy-600 hover:underline">karir@al-azhar.or.id</a> dengan menyebutkan nama, NIK, dan lowongan yang dilamar.',
+                    ],
+                    [
+                        'tanya' => 'Bagaimana saya mengetahui hasil seleksi?',
+                        'jawab' => 'Setelah lamaran terkirim, Anda menerima email konfirmasi. Informasi tahap berikutnya disampaikan tim HR melalui WhatsApp atau email yang Anda isi di formulir, jadi pastikan nomor dan email tersebut aktif, dan periksa juga folder spam.',
+                    ],
+                    [
+                        'tanya' => 'Apa saja tahapan seleksinya?',
+                        'jawab' => e($tahapRekrutmen->pluck('tahap_rekrutmen')->implode(', ')).'. Penjelasan setiap tahap tersedia di tombol <span class="font-medium">Panduan Seleksi</span> di bagian atas halaman ini.',
+                    ],
+                    [
+                        'tanya' => 'Mengapa saya tidak bisa melamar sebuah lowongan?',
+                        'jawab' => 'Lowongan yang sudah ditutup atau melewati batas waktunya tidak lagi menerima lamaran. Pantau halaman <a href="'.e(route('loker.list')).'" class="font-medium text-brand-navy-600 hover:underline">Lowongan</a> untuk kesempatan berikutnya.',
+                    ],
+                ];
+            @endphp
+
+            <div class="mt-8 divide-y rounded-2xl border bg-background">
+                @foreach ($faq as $item)
+                    <details class="group px-5 sm:px-6">
+                        <summary class="flex cursor-pointer list-none items-center justify-between gap-4 py-4 text-sm sm:text-base font-semibold [&::-webkit-details-marker]:hidden">
+                            {{ $item['tanya'] }}
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
+                        </summary>
+                        <p class="pb-4 text-sm text-muted-foreground leading-relaxed">{!! $item['jawab'] !!}</p>
+                    </details>
+                @endforeach
+            </div>
+
+            <p class="mt-6 text-sm text-muted-foreground text-center">
+                Pertanyaan Anda belum terjawab?
+                <a href="mailto:karir@al-azhar.or.id" class="font-medium text-brand-navy-600 hover:underline">karir@al-azhar.or.id</a>
+            </p>
+        </div>
+    </section>
 </x-layouts.public>

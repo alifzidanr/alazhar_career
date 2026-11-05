@@ -68,7 +68,7 @@
                     <ul class="space-y-2 text-sm text-muted-foreground">
                         <li><a href="#" class="hover:text-foreground">Panduan Melamar</a></li>
                         <li><a href="#" class="hover:text-foreground">Tahapan Seleksi</a></li>
-                        <li><a href="#" class="hover:text-foreground">Pertanyaan Umum</a></li>
+                        <li><a href="{{ route('loker.index') }}#faq" class="hover:text-foreground">Pertanyaan Umum</a></li>
                     </ul>
                 </div>
 
