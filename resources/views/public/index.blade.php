@@ -6,7 +6,20 @@
             ->map(fn ($n) => asset('images/hero-carousel/hero-'.str_pad($n, 2, '0', STR_PAD_LEFT).'.jpg'))
             ->all();
     @endphp
-    <section class="relative overflow-hidden" x-data="{ panduanOpen: false }">
+    {{-- #panduan (e.g. the footer's "Panduan Melamar" link) opens the Panduan Seleksi modal straight away; the hash is cleared on close so the same link works again. --}}
+    <section
+        class="relative overflow-hidden"
+        x-data="{
+            panduanOpen: window.location.hash === '#panduan',
+            tutupPanduan() {
+                this.panduanOpen = false;
+                if (window.location.hash === '#panduan') {
+                    history.replaceState(null, '', window.location.pathname + window.location.search);
+                }
+            },
+        }"
+        @hashchange.window="if (window.location.hash === '#panduan') panduanOpen = true"
+    >
         <div
             class="absolute inset-0 -z-10"
             x-data="{
@@ -67,7 +80,7 @@
 
         <!-- Panduan Seleksi modal -->
         <div x-show="panduanOpen" x-cloak class="fixed inset-0 z-[90] flex items-center justify-center p-4">
-            <div class="absolute inset-0 bg-black/50" @click="panduanOpen = false"></div>
+            <div class="absolute inset-0 bg-black/50" @click="tutupPanduan()"></div>
             <div
                 x-show="panduanOpen"
                 x-transition:enter="transition ease-out duration-200"
@@ -80,7 +93,7 @@
                         <h3 class="text-base font-semibold">Panduan Seleksi</h3>
                         <p class="mt-1 text-sm text-muted-foreground">Tahapan yang akan dilalui setiap pelamar dalam proses rekrutmen YPI Al Azhar.</p>
                     </div>
-                    <button type="button" @click="panduanOpen = false" class="shrink-0 text-muted-foreground hover:text-foreground">
+                    <button type="button" @click="tutupPanduan()" class="shrink-0 text-muted-foreground hover:text-foreground">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-5 w-5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                         </svg>
@@ -112,7 +125,7 @@
                 </ol>
 
                 <div class="mt-6 flex justify-end">
-                    <x-ui.button type="button" variant="outline" @click="panduanOpen = false">Tutup</x-ui.button>
+                    <x-ui.button type="button" variant="outline" @click="tutupPanduan()">Tutup</x-ui.button>
                 </div>
             </div>
         </div>
@@ -300,7 +313,7 @@
     </section>
 
     <!-- Alur seleksi -->
-    <section class="bg-[#f6f9fd] border-t">
+    <section id="alur-seleksi" class="bg-[#f6f9fd] border-t scroll-mt-16">
         <div class="w-full px-4 sm:px-6 lg:px-10 xl:px-16 py-16 sm:py-20">
             <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">Alur seleksi hingga bergabung</h2>
             <p class="mt-2 text-sm text-muted-foreground max-w-2xl">Enam tahapan utama setelah lamaran masuk — dari verifikasi hingga penyambutan resmi.</p>
@@ -355,7 +368,7 @@
     </section>
 
     <!-- Pertanyaan Umum (FAQ) -->
-    <section id="faq" class="w-full px-4 sm:px-6 lg:px-10 xl:px-16 py-16 sm:py-20 scroll-mt-20">
+    <section id="faq" class="w-full px-4 sm:px-6 lg:px-10 xl:px-16 py-16 sm:py-20 scroll-mt-16">
         <div class="max-w-3xl mx-auto">
             <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-center">Pertanyaan Umum</h2>
             <p class="mt-2 text-sm text-muted-foreground text-center">Jawaban atas pertanyaan yang paling sering diajukan seputar proses melamar.</p>
@@ -418,7 +431,7 @@
             </div>
 
             <p class="mt-6 text-sm text-muted-foreground text-center">
-                Pertanyaan Anda belum terjawab?
+                Pertanyaan Anda belum terjawab? Hubungi
                 <a href="mailto:karir@al-azhar.or.id" class="font-medium text-brand-navy-600 hover:underline">karir@al-azhar.or.id</a>
             </p>
         </div>

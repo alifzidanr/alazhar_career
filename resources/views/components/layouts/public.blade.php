@@ -66,8 +66,8 @@
                     <h3 class="text-sm font-semibold">Tentang Rekrutmen</h3>
                     <div class="mt-2 mb-4 border-t"></div>
                     <ul class="space-y-2 text-sm text-muted-foreground">
-                        <li><a href="#" class="hover:text-foreground">Panduan Melamar</a></li>
-                        <li><a href="#" class="hover:text-foreground">Tahapan Seleksi</a></li>
+                        <li><a href="{{ route('loker.index') }}#panduan" class="hover:text-foreground">Panduan Melamar</a></li>
+                        <li><a href="{{ route('loker.index') }}#alur-seleksi" class="hover:text-foreground">Tahapan Seleksi</a></li>
                         <li><a href="{{ route('loker.index') }}#faq" class="hover:text-foreground">Pertanyaan Umum</a></li>
                     </ul>
                 </div>
@@ -76,7 +76,9 @@
                     <h3 class="text-sm font-semibold">Tautan Cepat</h3>
                     <div class="mt-2 mb-4 border-t"></div>
                     <ul class="space-y-2 text-sm text-muted-foreground">
-                        <li><a href="#" class="hover:text-foreground">Unit Pendidikan</a></li>
+                        <li><a href="https://www.al-azhar.or.id/" target="_blank" rel="noopener" class="hover:text-foreground">Website Utama</a></li>
+                        <li><a href="https://www.instagram.com/ypi_alazhar/" target="_blank" rel="noopener" class="hover:text-foreground">Instagram YPIA</a></li>
+                        <li><a href="https://info.alazhar.or.id/" target="_blank" rel="noopener" class="hover:text-foreground">Al-Azhar Apps</a></li>
                     </ul>
                 </div>
 
