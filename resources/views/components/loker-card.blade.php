@@ -7,10 +7,11 @@
     $daysLeft = $loker->end_time ? (int) now()->startOfDay()->diffInDays($loker->end_time->copy()->startOfDay(), false) : null;
 @endphp
 
-<x-ui.card class="hover:border-brand-navy-100 hover:shadow-md transition-all h-full flex flex-col {{ $highlight ? '!bg-brand-navy-50 !border-brand-navy-100' : 'bg-white' }}">
+<x-ui.card class="hover:border-brand-navy-100 hover:shadow-md transition-all h-full {{ $highlight ? '!bg-brand-navy-50 !border-brand-navy-100' : 'bg-white' }}" :padded="false">
+    <div class="h-full flex flex-col p-4 sm:p-6">
     <div class="flex-1">
     <div class="flex items-start justify-between gap-3">
-        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl {{ $highlight ? 'bg-white' : 'bg-brand-navy-50' }} text-brand-navy-600">
+        <div class="flex h-9 w-9 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-xl {{ $highlight ? 'bg-white' : 'bg-brand-navy-50' }} text-brand-navy-600">
             @if ($jenjangNama && str_contains($jenjangNama, 'Guru'))
                 {{-- academic cap --}}
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" class="h-5 w-5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.436 60.436 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443" /></svg>
@@ -46,7 +47,7 @@
         </div>
     </div>
 
-    <h3 class="mt-4 font-semibold text-base leading-snug">{{ $loker->judul_loker }}</h3>
+    <h3 class="mt-3 sm:mt-4 font-semibold text-base leading-snug">{{ $loker->judul_loker }}</h3>
 
     @if ($loker->wilayah || $jenjangNama)
         <p class="mt-1.5 flex items-center gap-1.5 text-sm text-muted-foreground">
@@ -56,11 +57,11 @@
     @endif
 
     @if ($loker->deskripsi_loker)
-        <p class="mt-3 text-sm text-muted-foreground/90 line-clamp-2">{{ Str::limit($loker->deskripsi_loker, 100) }}</p>
+        <p class="mt-2 sm:mt-3 text-sm text-muted-foreground/90 line-clamp-2">{{ Str::limit($loker->deskripsi_loker, 100) }}</p>
     @endif
     </div>
 
-    <div class="mt-4 flex items-center justify-between gap-2">
+    <div class="mt-3 sm:mt-4 flex items-center justify-between gap-2">
         @if ($jenjangNama)
             <span class="inline-flex items-center rounded-md bg-brand-navy-600 px-2.5 py-1 text-[11px] font-bold tracking-wide text-white uppercase shadow-sm">{{ $jenjangNama }}</span>
         @else
@@ -70,5 +71,6 @@
             Lihat Detail
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-3.5 w-3.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" /></svg>
         </span>
+    </div>
     </div>
 </x-ui.card>

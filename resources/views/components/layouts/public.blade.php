@@ -49,10 +49,11 @@
         {{ $slot }}
     </main>
 
-    <footer class="mt-20 border-t bg-background">
-        <div class="w-full px-4 sm:px-6 lg:px-10 xl:px-16 py-12">
-            <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
-                <div>
+    <footer class="mt-12 sm:mt-20 border-t bg-background">
+        <div class="w-full px-4 sm:px-6 lg:px-10 xl:px-16 py-10 sm:py-12">
+            {{-- Two link columns side by side on phones; brand and address span the full width. --}}
+            <div class="grid grid-cols-2 gap-x-6 gap-y-8 sm:gap-10 lg:grid-cols-4">
+                <div class="col-span-2 sm:col-span-1">
                     <a href="{{ route('loker.index') }}" class="flex items-center gap-2 font-bold tracking-tight">
                         <x-application-logo class="h-6 w-6 fill-current text-foreground" />
                         Rekrutmen YPI Al Azhar
@@ -82,7 +83,7 @@
                     </ul>
                 </div>
 
-                <div>
+                <div class="col-span-2 sm:col-span-1">
                     <h3 class="text-sm font-semibold">Alamat Pusat</h3>
                     <div class="mt-2 mb-4 border-t"></div>
                     <p class="text-sm text-muted-foreground leading-relaxed">
@@ -94,7 +95,7 @@
                 </div>
             </div>
 
-            <div class="mt-10 pt-6 border-t text-sm text-muted-foreground">
+            <div class="mt-8 sm:mt-10 pt-6 border-t text-center text-sm text-muted-foreground">
                 &copy; {{ date('Y') }} Yayasan Pendidikan Islam Al-Azhar
             </div>
         </div>
