@@ -484,77 +484,77 @@
                     <div>
                         <x-ui.label for="cv_upload">Curriculum Vitae <span class="text-destructive">*</span></x-ui.label>
                         <input type="file" id="cv_upload" name="cv_upload" required accept=".pdf" @change="onFileSelected($event, 'Curriculum Vitae')" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
-                        <p class="text-xs text-muted-foreground mt-1">Format PDF, maksimal 5MB.</p>
+                        <p class="text-xs text-muted-foreground mt-1">Format PDF, maksimal 2MB.</p>
                         <x-input-error :messages="$errors->get('cv_upload')" class="mt-2" />
                     </div>
                     <div>
                         <x-ui.label for="pas_foto_upload">Pas Foto 3x4 <span class="text-destructive">*</span></x-ui.label>
                         <input type="file" id="pas_foto_upload" name="pas_foto_upload" required accept=".jpg,.jpeg,.png" @change="onFileSelected($event, 'Pas Foto 3x4')" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
-                        <p class="text-xs text-muted-foreground mt-1">Format JPG/PNG, maksimal 5MB.</p>
+                        <p class="text-xs text-muted-foreground mt-1">Format JPG/PNG, maksimal 2MB.</p>
                         <x-input-error :messages="$errors->get('pas_foto_upload')" class="mt-2" />
                     </div>
                     <div>
                         <x-ui.label for="ktp_upload">KTP <span class="text-destructive">*</span></x-ui.label>
                         <input type="file" id="ktp_upload" name="ktp_upload" required accept=".jpg,.jpeg,.png" @change="onFileSelected($event, 'KTP')" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
-                        <p class="text-xs text-muted-foreground mt-1">Format JPG/PNG, maksimal 5MB.</p>
+                        <p class="text-xs text-muted-foreground mt-1">Format JPG/PNG, maksimal 2MB.</p>
                         <x-input-error :messages="$errors->get('ktp_upload')" class="mt-2" />
                     </div>
                     @if ($loker->jenjang?->nama_jenjang === 'Driver')
                         <div>
                             <x-ui.label for="sim_upload">SIM <span class="text-destructive">*</span></x-ui.label>
                             <input type="file" id="sim_upload" name="sim_upload" required accept=".jpg,.jpeg,.png" @change="onFileSelected($event, 'SIM')" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
-                            <p class="text-xs text-muted-foreground mt-1">Format JPG/PNG, maksimal 5MB.</p>
+                            <p class="text-xs text-muted-foreground mt-1">Format JPG/PNG, maksimal 2MB.</p>
                             <x-input-error :messages="$errors->get('sim_upload')" class="mt-2" />
                         </div>
                     @endif
                     <div>
                         <x-ui.label for="ijazah_upload">Ijazah SD - Pendidikan Terakhir <span class="text-destructive">*</span></x-ui.label>
                         <input type="file" id="ijazah_upload" name="ijazah_upload" required accept=".pdf" @change="onFileSelected($event, 'Ijazah')" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
-                        <p class="text-xs text-muted-foreground mt-1">Format PDF, maksimal 5MB. Sertakan ijazah dari jenjang pendidikan awal hingga pendidikan terakhir (dapat digabungkan dalam satu file PDF).</p>
+                        <p class="text-xs text-muted-foreground mt-1">Format PDF, maksimal 2MB. Sertakan ijazah dari jenjang pendidikan awal hingga pendidikan terakhir (dapat digabungkan dalam satu file PDF).</p>
                         <x-input-error :messages="$errors->get('ijazah_upload')" class="mt-2" />
                     </div>
                     <div x-show="!isS1 && !isS2 && !isS3" x-cloak>
                         <x-ui.label for="transkrip_nilai_upload">Transkrip Nilai <span class="text-destructive">*</span></x-ui.label>
                         <input type="file" id="transkrip_nilai_upload" name="transkrip_nilai_upload" x-bind:required="!isS1 && !isS2 && !isS3" accept=".pdf" @change="onFileSelected($event, 'Transkrip Nilai')" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
-                        <p class="text-xs text-muted-foreground mt-1">Format PDF, maksimal 5MB.</p>
+                        <p class="text-xs text-muted-foreground mt-1">Format PDF, maksimal 2MB.</p>
                         <x-input-error :messages="$errors->get('transkrip_nilai_upload')" class="mt-2" />
                     </div>
                     <div x-show="isS1 || isS2 || isS3" x-cloak>
                         <x-ui.label for="transkrip_nilai_s1_upload">Transkrip Nilai S1 <span class="text-destructive">*</span></x-ui.label>
                         <input type="file" id="transkrip_nilai_s1_upload" name="transkrip_nilai_s1_upload" x-bind:required="isS1 || isS2 || isS3" accept=".pdf" @change="onFileSelected($event, 'Transkrip Nilai S1')" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
-                        <p class="text-xs text-muted-foreground mt-1">Format PDF, maksimal 5MB.</p>
+                        <p class="text-xs text-muted-foreground mt-1">Format PDF, maksimal 2MB.</p>
                         <x-input-error :messages="$errors->get('transkrip_nilai_s1_upload')" class="mt-2" />
                     </div>
                     <div x-show="isS2 || isS3" x-cloak>
                         <x-ui.label for="transkrip_nilai_s2_upload">Transkrip Nilai S2 <span class="text-destructive">*</span></x-ui.label>
                         <input type="file" id="transkrip_nilai_s2_upload" name="transkrip_nilai_s2_upload" x-bind:required="isS2 || isS3" accept=".pdf" @change="onFileSelected($event, 'Transkrip Nilai S2')" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
-                        <p class="text-xs text-muted-foreground mt-1">Format PDF, maksimal 5MB.</p>
+                        <p class="text-xs text-muted-foreground mt-1">Format PDF, maksimal 2MB.</p>
                         <x-input-error :messages="$errors->get('transkrip_nilai_s2_upload')" class="mt-2" />
                     </div>
                     <div x-show="isS3" x-cloak>
                         <x-ui.label for="transkrip_nilai_s3_upload">Transkrip Nilai S3 <span class="text-destructive">*</span></x-ui.label>
                         <input type="file" id="transkrip_nilai_s3_upload" name="transkrip_nilai_s3_upload" x-bind:required="isS3" accept=".pdf" @change="onFileSelected($event, 'Transkrip Nilai S3')" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
-                        <p class="text-xs text-muted-foreground mt-1">Format PDF, maksimal 5MB.</p>
+                        <p class="text-xs text-muted-foreground mt-1">Format PDF, maksimal 2MB.</p>
                         <x-input-error :messages="$errors->get('transkrip_nilai_s3_upload')" class="mt-2" />
                     </div>
                     <div>
                         <x-ui.label for="surat_lamaran_upload">Surat Lamaran <span class="text-destructive">*</span></x-ui.label>
                         <input type="file" id="surat_lamaran_upload" name="surat_lamaran_upload" required accept=".pdf" @change="onFileSelected($event, 'Surat Lamaran')" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
-                        <p class="text-xs text-muted-foreground mt-1">Format PDF, maksimal 5MB.</p>
+                        <p class="text-xs text-muted-foreground mt-1">Format PDF, maksimal 2MB.</p>
                         <x-input-error :messages="$errors->get('surat_lamaran_upload')" class="mt-2" />
                     </div>
                     @if ($loker->jenjang?->nama_jenjang === 'Satpam')
                         <div>
                             <x-ui.label for="sertifikat_gada_pratama_upload">Sertifikat Gada Pratama <span class="text-destructive">*</span></x-ui.label>
                             <input type="file" id="sertifikat_gada_pratama_upload" name="sertifikat_gada_pratama_upload" required accept=".pdf" @change="onFileSelected($event, 'Sertifikat Gada Pratama')" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
-                            <p class="text-xs text-muted-foreground mt-1">Format PDF, maksimal 5MB.</p>
+                            <p class="text-xs text-muted-foreground mt-1">Format PDF, maksimal 2MB.</p>
                             <x-input-error :messages="$errors->get('sertifikat_gada_pratama_upload')" class="mt-2" />
                         </div>
                     @endif
                     <div>
                         <x-ui.label for="sertifikat_tambahan_upload">Sertifikat Tambahan (opsional)</x-ui.label>
                         <input type="file" id="sertifikat_tambahan_upload" name="sertifikat_tambahan_upload" accept=".pdf" @change="onFileSelected($event, 'Sertifikat Tambahan')" class="block w-full text-sm text-foreground file:mr-3 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground hover:file:bg-secondary/80">
-                        <p class="text-xs text-muted-foreground mt-1">Format PDF, maksimal 5MB.</p>
+                        <p class="text-xs text-muted-foreground mt-1">Format PDF, maksimal 2MB.</p>
                         <x-input-error :messages="$errors->get('sertifikat_tambahan_upload')" class="mt-2" />
                     </div>
                 </div>
@@ -931,7 +931,7 @@
                             }
                         },
 
-                        async onFileSelected(event, label, maxMb = 5) {
+                        async onFileSelected(event, label, maxMb = 2) {
                             const input = event.target;
                             const file = input.files && input.files[0];
 

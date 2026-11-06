@@ -108,21 +108,21 @@ class StorePelamarRequest extends FormRequest
             'ipk_s3' => ['nullable', 'numeric', 'between:0,4', Rule::requiredIf(fn () => $this->pendidikanLabel() === 'S3')],
 
             // Step 3: Unggah Dokumen
-            'cv_upload' => ['required', 'file', 'mimes:pdf', 'max:5120'],
-            'ijazah_upload' => ['required', 'file', 'mimes:pdf', 'max:5120'],
-            'ktp_upload' => ['required', 'file', 'mimes:jpg,jpeg,png', 'max:5120'],
+            'cv_upload' => ['required', 'file', 'mimes:pdf', 'max:2048'],
+            'ijazah_upload' => ['required', 'file', 'mimes:pdf', 'max:2048'],
+            'ktp_upload' => ['required', 'file', 'mimes:jpg,jpeg,png', 'max:2048'],
             // Transkrip nilai only applies to non-tertiary levels (SD through D3); S1/S2/S3 upload one
             // transcript per degree below since an S2/S3 applicant has more than one.
-            'transkrip_nilai_upload' => [Rule::requiredIf(fn () => ! in_array($this->pendidikanLabel(), ['S1', 'S2', 'S3'], true)), 'nullable', 'file', 'mimes:pdf', 'max:5120'],
-            'transkrip_nilai_s1_upload' => [Rule::requiredIf(fn () => in_array($this->pendidikanLabel(), ['S1', 'S2', 'S3'], true)), 'nullable', 'file', 'mimes:pdf', 'max:5120'],
-            'transkrip_nilai_s2_upload' => [Rule::requiredIf(fn () => in_array($this->pendidikanLabel(), ['S2', 'S3'], true)), 'nullable', 'file', 'mimes:pdf', 'max:5120'],
-            'transkrip_nilai_s3_upload' => [Rule::requiredIf(fn () => $this->pendidikanLabel() === 'S3'), 'nullable', 'file', 'mimes:pdf', 'max:5120'],
-            'pas_foto_upload' => ['required', 'file', 'mimes:jpg,jpeg,png', 'max:5120'],
-            'surat_lamaran_upload' => ['required', 'file', 'mimes:pdf', 'max:5120'],
+            'transkrip_nilai_upload' => [Rule::requiredIf(fn () => ! in_array($this->pendidikanLabel(), ['S1', 'S2', 'S3'], true)), 'nullable', 'file', 'mimes:pdf', 'max:2048'],
+            'transkrip_nilai_s1_upload' => [Rule::requiredIf(fn () => in_array($this->pendidikanLabel(), ['S1', 'S2', 'S3'], true)), 'nullable', 'file', 'mimes:pdf', 'max:2048'],
+            'transkrip_nilai_s2_upload' => [Rule::requiredIf(fn () => in_array($this->pendidikanLabel(), ['S2', 'S3'], true)), 'nullable', 'file', 'mimes:pdf', 'max:2048'],
+            'transkrip_nilai_s3_upload' => [Rule::requiredIf(fn () => $this->pendidikanLabel() === 'S3'), 'nullable', 'file', 'mimes:pdf', 'max:2048'],
+            'pas_foto_upload' => ['required', 'file', 'mimes:jpg,jpeg,png', 'max:2048'],
+            'surat_lamaran_upload' => ['required', 'file', 'mimes:pdf', 'max:2048'],
             // Only required when the loker itself calls for that jenjang (SIM for Driver, Gada Pratama for Satpam).
-            'sim_upload' => [$this->lokerJenjangIs('Driver') ? 'required' : 'nullable', 'file', 'mimes:jpg,jpeg,png', 'max:5120'],
-            'sertifikat_gada_pratama_upload' => [$this->lokerJenjangIs('Satpam') ? 'required' : 'nullable', 'file', 'mimes:pdf', 'max:5120'],
-            'sertifikat_tambahan_upload' => ['nullable', 'file', 'mimes:pdf', 'max:5120'],
+            'sim_upload' => [$this->lokerJenjangIs('Driver') ? 'required' : 'nullable', 'file', 'mimes:jpg,jpeg,png', 'max:2048'],
+            'sertifikat_gada_pratama_upload' => [$this->lokerJenjangIs('Satpam') ? 'required' : 'nullable', 'file', 'mimes:pdf', 'max:2048'],
+            'sertifikat_tambahan_upload' => ['nullable', 'file', 'mimes:pdf', 'max:2048'],
             'bersedia_ditempatkan' => ['required', 'accepted'],
         ];
     }
@@ -156,10 +156,10 @@ class StorePelamarRequest extends FormRequest
         $fileMessages = [];
         foreach (array_keys(self::FILE_FIELD_LABELS) as $field) {
             // "uploaded" fires when PHP itself rejects the file (e.g. over
-            // upload_max_filesize) before Laravel's own max:5120 rule ever
+            // upload_max_filesize) before Laravel's own max:2048 rule ever
             // runs, so both need the same "too large" wording in Indonesian.
-            $fileMessages["{$field}.uploaded"] = 'Ukuran file :attribute terlalu besar. Maksimal 5MB, silakan pilih file lain yang lebih kecil.';
-            $fileMessages["{$field}.max"] = 'Ukuran file :attribute terlalu besar. Maksimal 5MB, silakan pilih file lain yang lebih kecil.';
+            $fileMessages["{$field}.uploaded"] = 'Ukuran file :attribute terlalu besar. Maksimal 2MB, silakan pilih file lain yang lebih kecil.';
+            $fileMessages["{$field}.max"] = 'Ukuran file :attribute terlalu besar. Maksimal 2MB, silakan pilih file lain yang lebih kecil.';
         }
 
         return $fileMessages + [

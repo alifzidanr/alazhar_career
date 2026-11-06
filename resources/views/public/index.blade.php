@@ -389,7 +389,7 @@
                     ],
                     [
                         'tanya' => 'Berkas apa saja yang perlu disiapkan?',
-                        'jawab' => 'CV, ijazah, transkrip nilai, dan surat lamaran dalam format PDF; KTP dan pas foto dalam format JPG atau PNG. Pelamar S1, S2, atau S3 mengunggah transkrip untuk setiap jenjang. Lowongan Driver mewajibkan SIM (JPG/PNG), dan lowongan Satpam mewajibkan sertifikat Gada Pratama (PDF). Sertifikat tambahan boleh dilampirkan. Ukuran setiap berkas maksimal 5 MB.',
+                        'jawab' => 'CV, ijazah, transkrip nilai, dan surat lamaran dalam format PDF; KTP dan pas foto dalam format JPG atau PNG. Pelamar S1, S2, atau S3 mengunggah transkrip untuk setiap jenjang. Lowongan Driver mewajibkan SIM (JPG/PNG), dan lowongan Satpam mewajibkan sertifikat Gada Pratama (PDF). Sertifikat tambahan boleh dilampirkan. Ukuran setiap berkas maksimal 2 MB.',
                     ],
                     [
                         'tanya' => 'Bolehkah melamar lebih dari satu lowongan?',
