@@ -749,7 +749,7 @@ class PelamarController extends Controller
             'id_bidang_diampu' => ['required', 'exists:hris_bidang_diampu,id_bidang_diampu'],
             'tgl_lahir' => ['required', 'date'],
             'jenis_kelamin' => ['required', 'in:Laki-laki,Perempuan'],
-            'id_status_nikah' => ['required', 'exists:hris_status_nikah,id_status_nikah'],
+            'id_status_nikah' => ['nullable', 'exists:hris_status_nikah,id_status_nikah'],
             'id_regional' => ['required', 'exists:hris.t_ref_regional,id_regional'],
             'gelar_depan' => ['nullable', 'string', 'max:50'],
             'gelar_belakang' => ['nullable', 'string', 'max:50'],

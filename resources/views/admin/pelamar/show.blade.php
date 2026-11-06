@@ -849,8 +849,8 @@
                                 </x-ui.select>
                             </div>
                             <div>
-                                <x-ui.label for="id_status_nikah">Status Nikah <span class="text-destructive">*</span></x-ui.label>
-                                <x-ui.select id="id_status_nikah" name="id_status_nikah" required>
+                                <x-ui.label for="id_status_nikah">Status Nikah</x-ui.label>
+                                <x-ui.select id="id_status_nikah" name="id_status_nikah">
                                     <option value="">-- Pilih --</option>
                                     @foreach ($hrisStatusNikahList as $s)
                                         <option value="{{ $s->id_status_nikah }}" @selected((string) old('id_status_nikah', $migrasi?->id_status_nikah) === (string) $s->id_status_nikah)>{{ $s->status_nikah }}</option>
