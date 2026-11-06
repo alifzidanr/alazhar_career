@@ -39,6 +39,8 @@ class UserController extends Controller
 
     public function update(Request $request, User $user): RedirectResponse
     {
+        $this->abortIfProtected($request, $user);
+
         $data = $request->validate([
             'nama' => ['required', 'string', 'max:150'],
             'email' => ['required', 'email', 'max:150', 'unique:admin_kepegawaian,email,'.$user->id_admin.',id_admin'],
@@ -51,6 +53,8 @@ class UserController extends Controller
 
     public function updatePassword(Request $request, User $user): RedirectResponse
     {
+        $this->abortIfProtected($request, $user);
+
         $data = $request->validate([
             'password' => ['required', Password::defaults(), 'confirmed'],
         ]);
@@ -75,5 +79,15 @@ class UserController extends Controller
         $user->delete();
 
         return back()->with('status', 'Pengguna berhasil dihapus.');
+    }
+
+    /**
+     * The owner account is hidden from other admins' list; without this they
+     * could still PATCH its email or password directly and take it over.
+     * 404 matches it not being listed for them.
+     */
+    private function abortIfProtected(Request $request, User $user): void
+    {
+        abort_if($user->isProtected() && $user->id_admin !== $request->user()->id_admin, 404);
     }
 }
