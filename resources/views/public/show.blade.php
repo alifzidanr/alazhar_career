@@ -1,4 +1,17 @@
-<x-layouts.public :title="$loker->judul_loker.' - Rekrutmen YPI Al Azhar'">
+@php
+    // Link-preview summary: jenjang · wilayah · deadline, then the start of the description.
+    $previewDescription = collect([
+        $loker->jenjang?->nama_jenjang,
+        $loker->wilayah ? 'Wilayah '.$loker->wilayah : null,
+        $loker->end_time ? 'Berlaku sampai '.$loker->end_time->translatedFormat('d M Y') : null,
+    ])->filter()->implode(' · ');
+    $previewDescription = trim($previewDescription.($previewDescription !== '' ? '. ' : '').($loker->deskripsi_loker ?: 'Lamar secara online di portal rekrutmen YPI Al Azhar.'));
+@endphp
+<x-layouts.public
+    :title="$loker->judul_loker.' - Rekrutmen YPI Al Azhar'"
+    :description="$previewDescription"
+    :image="asset('images/og/og-lowongan.jpg')"
+>
   <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8" x-data="{ lamaranSuksesOpen: {{ session('lamaran_sukses') ? 'true' : 'false' }} }">
     @if (session('lamaran_sukses'))
         <div x-show="lamaranSuksesOpen" x-cloak class="fixed inset-0 z-[90] flex items-center justify-center p-4">

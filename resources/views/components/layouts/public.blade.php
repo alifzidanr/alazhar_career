@@ -5,6 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title ?? 'Rekrutmen YPI Al Azhar' }}</title>
+    {{-- Link previews (WhatsApp, Facebook, LinkedIn, Telegram, X). Pages may pass
+         :description, :image and :url to override these defaults. --}}
+    @php
+        $metaTitle = $title ?? 'Rekrutmen YPI Al Azhar';
+        $metaDescription = \Illuminate\Support\Str::limit(
+            trim(preg_replace('/\s+/', ' ', $description ?? 'Portal rekrutmen resmi Yayasan Pesantren Islam Al Azhar. Lihat lowongan guru dan tenaga kependidikan yang sedang dibuka dan lamar secara online.')),
+            200
+        );
+        $metaImage = $image ?? asset('images/og/og-default.jpg');
+        $metaUrl = $url ?? url()->current();
+    @endphp
+    <meta name="description" content="{{ $metaDescription }}">
+    <link rel="canonical" href="{{ $metaUrl }}">
+    <meta property="og:site_name" content="Rekrutmen YPI Al Azhar">
+    <meta property="og:locale" content="id_ID">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="{{ $metaTitle }}">
+    <meta property="og:description" content="{{ $metaDescription }}">
+    <meta property="og:url" content="{{ $metaUrl }}">
+    <meta property="og:image" content="{{ $metaImage }}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="{{ $metaTitle }}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ $metaTitle }}">
+    <meta name="twitter:description" content="{{ $metaDescription }}">
+    <meta name="twitter:image" content="{{ $metaImage }}">
     <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}">
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png') }}">
