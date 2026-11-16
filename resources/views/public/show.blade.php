@@ -1,9 +1,9 @@
 @php
-    // Link-preview text: "Formulir pendaftaran {judul} YPI Al-Azhar wilayah {wilayah}, berlaku sampai {deadline}, lamar segera".
+    // Link-preview text: "Formulir pendaftaran {judul} YPI Al-Azhar wilayah {wilayah}, berlaku sampai {deadline}, lamar sekarang!".
     $previewDescription = collect([
         'Formulir pendaftaran '.$loker->judul_loker.' YPI Al-Azhar'.($loker->wilayah ? ' wilayah '.$loker->wilayah : ''),
         $loker->end_time ? 'berlaku sampai '.$loker->end_time->translatedFormat('d F Y') : null,
-        'lamar segera',
+        'lamar sekarang!',
     ])->filter()->implode(', ');
 @endphp
 <x-layouts.public

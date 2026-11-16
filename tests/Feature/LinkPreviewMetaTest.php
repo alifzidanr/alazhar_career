@@ -103,7 +103,7 @@ class LinkPreviewMetaTest extends TestCase
         $this->get('/lowongan')
             ->assertOk()
             ->assertSee('<meta property="og:title" content="Lowongan Kerja - Rekrutmen YPI Al Azhar">', false)
-            ->assertSee('<meta property="og:description" content="1 lowongan tersedia, lamar sekarang.">', false)
+            ->assertSee('<meta property="og:description" content="1 lowongan tersedia, lamar sekarang!">', false)
             ->assertSee('<meta property="og:image" content="'.asset('images/og/og-lowongan.jpg').'">', false)
             ->assertSee('<meta property="og:url" content="'.url('/lowongan').'">', false);
     }
@@ -116,7 +116,7 @@ class LinkPreviewMetaTest extends TestCase
         $this->get(route('loker.show', $loker))
             ->assertOk()
             ->assertSee('<meta property="og:title" content="Guru Matematika (SD) - Rekrutmen YPI Al Azhar">', false)
-            ->assertSee('<meta property="og:description" content="Formulir pendaftaran Guru Matematika (SD) YPI Al-Azhar wilayah DKI Jakarta, berlaku sampai '.$deadline.', lamar segera">', false)
+            ->assertSee('<meta property="og:description" content="Formulir pendaftaran Guru Matematika (SD) YPI Al-Azhar wilayah DKI Jakarta, berlaku sampai '.$deadline.', lamar sekarang!">', false)
             ->assertSee('<meta property="og:url" content="'.route('loker.show', $loker).'">', false);
     }
 }
