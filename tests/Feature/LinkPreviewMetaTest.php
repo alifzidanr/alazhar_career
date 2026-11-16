@@ -91,7 +91,7 @@ class LinkPreviewMetaTest extends TestCase
         $this->get('/')
             ->assertOk()
             ->assertSee('<meta property="og:title" content="Rekrutmen YPI Al Azhar">', false)
-            ->assertSee('1 lowongan guru dan tenaga kependidikan sedang dibuka', false)
+            ->assertSee('<meta property="og:description" content="Bergabunglah bersama Yayasan Pesantren Islam Al-Azhar. 1 Lowongan kerja tersedia, lamar sekarang!">', false)
             ->assertSee('<meta property="og:image" content="'.asset('images/og/og-default.jpg').'">', false)
             ->assertSee('<meta name="twitter:card" content="summary_large_image">', false);
     }
@@ -103,7 +103,7 @@ class LinkPreviewMetaTest extends TestCase
         $this->get('/lowongan')
             ->assertOk()
             ->assertSee('<meta property="og:title" content="Lowongan Kerja - Rekrutmen YPI Al Azhar">', false)
-            ->assertSee('1 lowongan dibuka untuk guru dan tenaga kependidikan', false)
+            ->assertSee('<meta property="og:description" content="1 lowongan tersedia, lamar sekarang.">', false)
             ->assertSee('<meta property="og:image" content="'.asset('images/og/og-lowongan.jpg').'">', false)
             ->assertSee('<meta property="og:url" content="'.url('/lowongan').'">', false);
     }
@@ -111,12 +111,12 @@ class LinkPreviewMetaTest extends TestCase
     public function test_lowongan_detail_preview_describes_the_job(): void
     {
         $loker = $this->openLoker();
-        $deadline = $loker->end_time->translatedFormat('d M Y');
+        $deadline = $loker->end_time->translatedFormat('d F Y');
 
         $this->get(route('loker.show', $loker))
             ->assertOk()
             ->assertSee('<meta property="og:title" content="Guru Matematika (SD) - Rekrutmen YPI Al Azhar">', false)
-            ->assertSee('<meta property="og:description" content="Guru SD · Wilayah DKI Jakarta · Berlaku sampai '.$deadline.'. Mengajar matematika untuk siswa SD.">', false)
+            ->assertSee('<meta property="og:description" content="Formulir pendaftaran Guru Matematika (SD) YPI Al-Azhar wilayah DKI Jakarta, berlaku sampai '.$deadline.', lamar segera">', false)
             ->assertSee('<meta property="og:url" content="'.route('loker.show', $loker).'">', false);
     }
 }

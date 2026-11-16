@@ -1,6 +1,6 @@
 <x-layouts.public
     :title="'Rekrutmen YPI Al Azhar'"
-    :description="'Bergabung bersama Yayasan Pesantren Islam Al Azhar. '.($totalLowongan > 0 ? $totalLowongan.' lowongan guru dan tenaga kependidikan sedang dibuka, lamar secara online.' : 'Pantau lowongan guru dan tenaga kependidikan terbaru dan lamar secara online.')"
+    :description="'Bergabunglah bersama Yayasan Pesantren Islam Al-Azhar. '.($totalLowongan > 0 ? $totalLowongan.' Lowongan kerja tersedia, lamar sekarang!' : 'Pantau lowongan kerja terbaru dan lamar sekarang!')"
 >
 
     <!-- Hero -->

@@ -1,11 +1,10 @@
 @php
-    // Link-preview summary: jenjang · wilayah · deadline, then the start of the description.
+    // Link-preview text: "Formulir pendaftaran {judul} YPI Al-Azhar wilayah {wilayah}, berlaku sampai {deadline}, lamar segera".
     $previewDescription = collect([
-        $loker->jenjang?->nama_jenjang,
-        $loker->wilayah ? 'Wilayah '.$loker->wilayah : null,
-        $loker->end_time ? 'Berlaku sampai '.$loker->end_time->translatedFormat('d M Y') : null,
-    ])->filter()->implode(' · ');
-    $previewDescription = trim($previewDescription.($previewDescription !== '' ? '. ' : '').($loker->deskripsi_loker ?: 'Lamar secara online di portal rekrutmen YPI Al Azhar.'));
+        'Formulir pendaftaran '.$loker->judul_loker.' YPI Al-Azhar'.($loker->wilayah ? ' wilayah '.$loker->wilayah : ''),
+        $loker->end_time ? 'berlaku sampai '.$loker->end_time->translatedFormat('d F Y') : null,
+        'lamar segera',
+    ])->filter()->implode(', ');
 @endphp
 <x-layouts.public
     :title="$loker->judul_loker.' - Rekrutmen YPI Al Azhar'"
