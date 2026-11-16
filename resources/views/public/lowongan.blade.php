@@ -1,7 +1,7 @@
 <x-layouts.public
     :title="'Lowongan Kerja - Rekrutmen YPI Al Azhar'"
     :description="$lokerList->count() > 0 ? $lokerList->count().' lowongan tersedia, lamar sekarang!' : 'Pantau lowongan terbaru dan lamar sekarang!'"
-    :image="asset('images/og/og-lowongan.jpg')"
+    :image="asset('images/og/og-lowongan.jpg').'?v=2'"
 >
     <div class="w-full px-4 sm:px-6 lg:px-10 xl:px-16 py-6 sm:py-10"
          x-data="tableFilter(25, { unit: '', jenjang: '', wilayah: '' }, { terbaru: { field: 'start', dir: 'desc' }, terlama: { field: 'start', dir: 'asc' }, batas_terdekat: { field: 'end', dir: 'asc' } })"

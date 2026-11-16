@@ -13,7 +13,7 @@
             trim(preg_replace('/\s+/', ' ', $description ?? 'Portal rekrutmen resmi Yayasan Pesantren Islam Al Azhar. Lihat lowongan guru dan tenaga kependidikan yang sedang dibuka dan lamar secara online.')),
             200
         );
-        $metaImage = $image ?? asset('images/og/og-default.jpg');
+        $metaImage = $image ?? asset('images/og/og-default.jpg').'?v=2';
         $metaUrl = $url ?? url()->current();
     @endphp
     <meta name="description" content="{{ $metaDescription }}">
