@@ -191,9 +191,9 @@
             <!--# if expr="$status != 200" --><p class="code">Kode galat: <!--# echo var="status" default="-" --></p><!--# endif -->
 
             <div class="actions">
-                <a class="btn btn-primary" href="/" onclick="if (history.length > 1) { history.back(); return false; }">
+                <a class="btn btn-primary" id="tombol-kembali" href="/">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m7 7-7-7 7-7"/></svg>
-                    Kembali &amp; Coba Lagi
+                    Kembali ke Halaman Sebelumnya
                 </a>
                 <a class="btn btn-outline" href="/">Ke Beranda</a>
             </div>
@@ -207,5 +207,43 @@
     </main>
 
     <footer>&copy; Yayasan Pesantren Islam Al Azhar</footer>
+
+    <script>
+        // "Kembali" returns to the page the visitor actually came from: the previous
+        // history entry, else the referring page. When neither is known (e.g. the link
+        // was opened in a fresh tab), the button is hidden instead of guessing the
+        // landing page; "Ke Beranda" remains for that.
+        (function () {
+            var tombol = document.getElementById('tombol-kembali');
+            var asal = document.referrer;
+            var adaRiwayat = window.history.length > 1;
+
+            if (!adaRiwayat && !asal) {
+                tombol.style.display = 'none';
+                return;
+            }
+
+            if (asal) {
+                tombol.href = asal;
+            }
+
+            tombol.addEventListener('click', function (event) {
+                if (!adaRiwayat) {
+                    return; // follow href = referring page
+                }
+
+                event.preventDefault();
+                var halamanSaatIni = window.location.href;
+                window.history.back();
+
+                // If history.back() had nowhere to go, fall back to the referring page.
+                setTimeout(function () {
+                    if (window.location.href === halamanSaatIni && asal) {
+                        window.location.href = asal;
+                    }
+                }, 600);
+            });
+        })();
+    </script>
 </body>
 </html>
