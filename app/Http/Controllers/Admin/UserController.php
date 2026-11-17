@@ -66,21 +66,6 @@ class UserController extends Controller
         return back()->with('status', 'Password pengguna berhasil diubah.');
     }
 
-    public function destroy(Request $request, User $user): RedirectResponse
-    {
-        if ($user->id_admin === $request->user()->id_admin) {
-            return back()->withErrors(['nama' => 'Anda tidak dapat menghapus akun Anda sendiri.']);
-        }
-
-        if ($user->isProtected()) {
-            return back()->withErrors(['nama' => 'Akun ini tidak dapat dihapus.']);
-        }
-
-        $user->delete();
-
-        return back()->with('status', 'Pengguna berhasil dihapus.');
-    }
-
     /**
      * The owner account is hidden from other admins' list; without this they
      * could still PATCH its email or password directly and take it over.

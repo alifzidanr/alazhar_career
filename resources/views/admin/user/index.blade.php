@@ -69,12 +69,6 @@
                                                 @click="pwModal = { show: true, action: '{{ route('admin.users.password', $u) }}', nama: {{ \Illuminate\Support\Js::from($u->nama) }} }">
                                                 Ubah Password
                                             </x-ui.button>
-                                            @if ($u->id_admin !== auth()->id())
-                                                <form method="POST" action="{{ route('admin.users.destroy', $u) }}" x-data @submit.prevent="$dispatch('confirm-dialog', { title: 'Hapus pengguna ' + @js($u->nama) + '?', description: 'Pengguna tidak akan bisa masuk lagi setelah dihapus.', destructive: true, confirmText: 'Hapus', form: $el })">
-                                                    @csrf @method('DELETE')
-                                                    <x-ui.button type="submit" variant="ghost" size="sm" class="text-destructive hover:text-destructive">Hapus</x-ui.button>
-                                                </form>
-                                            @endif
                                         </div>
                                     </td>
                                 </tr>

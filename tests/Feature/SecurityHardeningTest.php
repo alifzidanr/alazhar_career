@@ -134,4 +134,17 @@ class SecurityHardeningTest extends TestCase
             ->assertHeader('X-Content-Type-Options', 'nosniff')
             ->assertHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
     }
+
+    public function test_admin_users_cannot_be_deleted(): void
+    {
+        $this->admin('owner@example.test');
+        $admin = $this->admin('admin@example.test');
+        $other = $this->admin('staf@example.test');
+
+        $this->actingAs($admin)
+            ->delete("/admin/users/{$other->id_admin}")
+            ->assertMethodNotAllowed();
+
+        $this->assertDatabaseHas('admin_kepegawaian', ['id_admin' => $other->id_admin]);
+    }
 }
