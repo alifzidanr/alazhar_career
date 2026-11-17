@@ -2,11 +2,13 @@
     <x-slot name="title">{{ $pelamar->namaLengkap() }} - {{ $pelamar->loker->judul_loker }}</x-slot>
 
     <x-slot name="header">
-        <div class="flex items-center justify-between gap-3 flex-wrap">
-            <h2 class="font-semibold text-lg tracking-tight">
+        {{-- Phones: name on top (max 2 lines), navigation buttons on their own row below.
+             sm and up: a single row, name truncated to leave room for the buttons. --}}
+        <div class="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+            <h2 class="min-w-0 font-semibold text-base leading-snug tracking-tight line-clamp-2 sm:text-lg sm:truncate" title="{{ $pelamar->namaLengkap() }} — {{ $pelamar->loker->judul_loker }}">
                 {{ $pelamar->namaLengkap() }}<span class="hidden sm:inline"> &mdash; {{ $pelamar->loker->judul_loker }}</span>
             </h2>
-            <div class="flex items-center gap-2">
+            <div class="flex shrink-0 items-center gap-2">
                 <x-ui.button :href="$prevPelamarId ? route('admin.pelamar.show', $prevPelamarId) : null" :disabled="! $prevPelamarId" variant="outline" size="sm" title="Sebelumnya">&larr;<span class="hidden sm:inline"> Sebelumnya</span></x-ui.button>
                 <x-ui.button :href="$nextPelamarId ? route('admin.pelamar.show', $nextPelamarId) : null" :disabled="! $nextPelamarId" variant="outline" size="sm" title="Berikutnya"><span class="hidden sm:inline">Berikutnya </span>&rarr;</x-ui.button>
                 <x-ui.button :href="route('admin.pelamar.index', ['loker' => $pelamar->id_loker])" variant="ghost" size="sm">Kembali</x-ui.button>

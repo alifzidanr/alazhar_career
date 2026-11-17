@@ -1,5 +1,6 @@
 <nav class="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-b sticky top-0 z-30">
-    <div class="flex h-16 items-center gap-4 px-4 sm:px-6">
+    {{-- On phones the bar grows with a page header that wraps to two rows; from sm up it stays 64px. --}}
+    <div class="flex min-h-16 items-center gap-3 px-4 py-2 sm:h-16 sm:gap-4 sm:px-6 sm:py-0">
         <!-- Sidebar toggle (mobile) -->
         <button @click="sidebarOpen = ! sidebarOpen" class="lg:hidden inline-flex items-center justify-center p-2 -ms-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent focus:outline-none transition-colors">
             <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
