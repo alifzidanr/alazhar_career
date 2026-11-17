@@ -9,7 +9,7 @@
 <x-layouts.public
     :title="$loker->judul_loker.' - Rekrutmen YPI Al Azhar'"
     :description="$previewDescription"
-    :image="asset('images/og/og-lowongan.jpg').'?v=2'"
+    :image="asset('images/og/og-lowongan.jpg').'?v=3'"
 >
   <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8" x-data="{ lamaranSuksesOpen: {{ session('lamaran_sukses') ? 'true' : 'false' }} }">
     @if (session('lamaran_sukses'))

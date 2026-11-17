@@ -92,7 +92,7 @@ class LinkPreviewMetaTest extends TestCase
             ->assertOk()
             ->assertSee('<meta property="og:title" content="Rekrutmen YPI Al Azhar">', false)
             ->assertSee('<meta property="og:description" content="Bergabunglah bersama Yayasan Pesantren Islam Al-Azhar. 1 Lowongan kerja tersedia, lamar sekarang!">', false)
-            ->assertSee('<meta property="og:image" content="'.asset('images/og/og-default.jpg').'?v=2">', false)
+            ->assertSee('<meta property="og:image" content="'.asset('images/og/og-default.jpg').'?v=3">', false)
             ->assertSee('<meta name="twitter:card" content="summary_large_image">', false);
     }
 
@@ -104,7 +104,7 @@ class LinkPreviewMetaTest extends TestCase
             ->assertOk()
             ->assertSee('<meta property="og:title" content="Lowongan Kerja - Rekrutmen YPI Al Azhar">', false)
             ->assertSee('<meta property="og:description" content="1 lowongan tersedia, lamar sekarang!">', false)
-            ->assertSee('<meta property="og:image" content="'.asset('images/og/og-lowongan.jpg').'?v=2">', false)
+            ->assertSee('<meta property="og:image" content="'.asset('images/og/og-lowongan.jpg').'?v=3">', false)
             ->assertSee('<meta property="og:url" content="'.url('/lowongan').'">', false);
     }
 
