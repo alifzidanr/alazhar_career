@@ -14,11 +14,14 @@ class ErrorPageTest extends TestCase
         config(['app.debug' => false]);
     }
 
-    public function test_missing_page_shows_technical_error_page(): void
+    public function test_missing_page_shows_not_found_page(): void
     {
         $this->get('/halaman-yang-tidak-ada')
             ->assertNotFound()
-            ->assertSee('Terjadi Kendala Teknis')
+            ->assertSee('<h1>Halaman yang Anda Cari Tidak Ditemukan</h1>', false)
+            ->assertSee('<title>Halaman yang Anda Cari Tidak Ditemukan', false)
+            ->assertSee('lowongan terkait sudah ditutup')
+            ->assertDontSee('Terjadi Kendala Teknis')
             ->assertSee('Kode galat: 404')
             ->assertDontSee('<!--#', false);
     }
