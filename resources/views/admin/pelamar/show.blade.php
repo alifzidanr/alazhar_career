@@ -122,12 +122,12 @@
                             <div class="grid sm:grid-cols-2 gap-4">
                                 <div>
                                     <x-ui.label for="nama">Nama</x-ui.label>
-                                    <x-ui.input type="text" id="nama" name="nama" value="{{ old('nama', $pelamar->nama) }}" required />
+                                    <x-ui.input type="text" id="nama" name="nama" oninput="this.value=this.value.replace(/[^\p{L}\s'’]/gu,'')" value="{{ old('nama', $pelamar->nama) }}" required />
                                     <x-input-error :messages="$errors->get('nama')" class="mt-2" />
                                 </div>
                                 <div>
                                     <x-ui.label for="gelar">Gelar</x-ui.label>
-                                    <x-ui.input type="text" id="gelar" name="gelar" value="{{ old('gelar', $pelamar->gelar) }}" />
+                                    <x-ui.input type="text" id="gelar" name="gelar" oninput="this.value=this.value.replace(/[^\p{L}\s.,]/gu,'')" value="{{ old('gelar', $pelamar->gelar) }}" />
                                     <x-input-error :messages="$errors->get('gelar')" class="mt-2" />
                                 </div>
                                 <div>
@@ -170,7 +170,7 @@
                                 </div>
                                 <div>
                                     <x-ui.label for="no_hp">No. WhatsApp</x-ui.label>
-                                    <x-ui.input type="text" id="no_hp" name="no_hp" value="{{ old('no_hp', $pelamar->no_hp) }}" required />
+                                    <x-ui.input type="text" id="no_hp" name="no_hp" value="{{ old('no_hp', $pelamar->no_hp) }}" inputmode="numeric" maxlength="12" oninput="this.value=this.value.replace(/\D/g,'').slice(0,12)" required />
                                     <x-input-error :messages="$errors->get('no_hp')" class="mt-2" />
                                 </div>
                                 <div class="sm:col-span-2">

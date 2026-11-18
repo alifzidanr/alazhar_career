@@ -26,6 +26,8 @@ class PelamarExport extends DefaultValueBinder implements FromCollection, Should
     {
         return [
             'Nama',
+            'Tahap',
+            'Status',
             'Usia',
             'Tgl Lahir',
             'Alamat Domisili',
@@ -46,6 +48,8 @@ class PelamarExport extends DefaultValueBinder implements FromCollection, Should
 
         return [
             $pelamar->namaLengkap(),
+            $pelamar->tahapRekrutmen?->tahap_rekrutmen,
+            $pelamar->statusPelamar?->status_pelamar,
             $pelamar->usia(),
             optional($pelamar->tanggal_lahir)->format('d/m/Y'),
             $pelamar->alamat,

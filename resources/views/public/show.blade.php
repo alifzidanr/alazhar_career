@@ -153,7 +153,7 @@
                 <div class="grid sm:grid-cols-2 gap-5">
                     <div class="sm:col-span-2">
                         <x-ui.label for="nama">Nama Sesuai KTP <span class="text-destructive">*</span></x-ui.label>
-                        <x-ui.input type="text" id="nama" name="nama" x-model="fields.nama" value="{{ old('nama') }}" required />
+                        <x-ui.input type="text" id="nama" name="nama" oninput="this.value=this.value.replace(/[^\p{L}\s'’]/gu,'')" x-model="fields.nama" value="{{ old('nama') }}" required />
                         <x-input-error :messages="$errors->get('nama')" class="mt-2" />
                     </div>
                     <div>
@@ -200,7 +200,7 @@
                     </div>
                     <div>
                         <x-ui.label for="no_hp">No. WhatsApp <span class="text-destructive">*</span></x-ui.label>
-                        <x-ui.input type="text" id="no_hp" name="no_hp" x-model="fields.no_hp" value="{{ old('no_hp') }}" required placeholder="08xxxxxxxxxx" />
+                        <x-ui.input type="text" id="no_hp" name="no_hp" x-model="fields.no_hp" value="{{ old('no_hp') }}" inputmode="numeric" maxlength="12" oninput="this.value=this.value.replace(/\D/g,'').slice(0,12)" required placeholder="08xxxxxxxxxx" />
                         <x-input-error :messages="$errors->get('no_hp')" class="mt-2" />
                     </div>
                     <div class="sm:col-span-2">
@@ -362,7 +362,7 @@
                     </div>
                     <div>
                         <x-ui.label for="gelar">Gelar (opsional)</x-ui.label>
-                        <x-ui.input type="text" id="gelar" name="gelar" x-model="fields.gelar" value="{{ old('gelar') }}" placeholder="cth. S.Pd." />
+                        <x-ui.input type="text" id="gelar" name="gelar" oninput="this.value=this.value.replace(/[^\p{L}\s.,]/gu,'')" x-model="fields.gelar" value="{{ old('gelar') }}" placeholder="cth. S.Pd." />
                         <x-input-error :messages="$errors->get('gelar')" class="mt-2" />
                     </div>
                     <div class="sm:col-span-2" x-show="!isS1 && !isS2 && !isS3" x-cloak>
@@ -394,7 +394,7 @@
                     </div>
                     <div x-show="isD3" x-cloak>
                         <x-ui.label for="program_studi">Program Studi / Jurusan D3 <span class="text-destructive">*</span></x-ui.label>
-                        <x-ui.input type="text" id="program_studi" name="program_studi" x-model="fields.program_studi" value="{{ old('program_studi') }}" x-bind:required="isD3" />
+                        <x-ui.input type="text" id="program_studi" name="program_studi" oninput="this.value=this.value.replace(/[^\p{L}\s'’-]/gu,'')" x-model="fields.program_studi" value="{{ old('program_studi') }}" x-bind:required="isD3" />
                         <x-input-error :messages="$errors->get('program_studi')" class="mt-2" />
                     </div>
                     <div x-show="isD3" x-cloak>
@@ -419,7 +419,7 @@
                     </div>
                     <div x-show="isS1 || isS2 || isS3" x-cloak>
                         <x-ui.label for="program_studi_s1">Program Studi / Jurusan S1 <span class="text-destructive">*</span></x-ui.label>
-                        <x-ui.input type="text" id="program_studi_s1" name="program_studi_s1" x-model="fields.program_studi_s1" value="{{ old('program_studi_s1') }}" x-bind:required="isS1 || isS2 || isS3" />
+                        <x-ui.input type="text" id="program_studi_s1" name="program_studi_s1" oninput="this.value=this.value.replace(/[^\p{L}\s'’-]/gu,'')" x-model="fields.program_studi_s1" value="{{ old('program_studi_s1') }}" x-bind:required="isS1 || isS2 || isS3" />
                         <x-input-error :messages="$errors->get('program_studi_s1')" class="mt-2" />
                     </div>
                     <div x-show="isS1 || isS2 || isS3" x-cloak>
@@ -444,7 +444,7 @@
                     </div>
                     <div x-show="isS2 || isS3" x-cloak>
                         <x-ui.label for="program_studi_s2">Program Studi / Jurusan S2 <span class="text-destructive">*</span></x-ui.label>
-                        <x-ui.input type="text" id="program_studi_s2" name="program_studi_s2" x-model="fields.program_studi_s2" value="{{ old('program_studi_s2') }}" x-bind:required="isS2 || isS3" />
+                        <x-ui.input type="text" id="program_studi_s2" name="program_studi_s2" oninput="this.value=this.value.replace(/[^\p{L}\s'’-]/gu,'')" x-model="fields.program_studi_s2" value="{{ old('program_studi_s2') }}" x-bind:required="isS2 || isS3" />
                         <x-input-error :messages="$errors->get('program_studi_s2')" class="mt-2" />
                     </div>
                     <div x-show="isS2 || isS3" x-cloak>
@@ -469,7 +469,7 @@
                     </div>
                     <div x-show="isS3" x-cloak>
                         <x-ui.label for="program_studi_s3">Program Studi / Jurusan S3 <span class="text-destructive">*</span></x-ui.label>
-                        <x-ui.input type="text" id="program_studi_s3" name="program_studi_s3" x-model="fields.program_studi_s3" value="{{ old('program_studi_s3') }}" x-bind:required="isS3" />
+                        <x-ui.input type="text" id="program_studi_s3" name="program_studi_s3" oninput="this.value=this.value.replace(/[^\p{L}\s'’-]/gu,'')" x-model="fields.program_studi_s3" value="{{ old('program_studi_s3') }}" x-bind:required="isS3" />
                         <x-input-error :messages="$errors->get('program_studi_s3')" class="mt-2" />
                     </div>
                     <div x-show="isS3" x-cloak>

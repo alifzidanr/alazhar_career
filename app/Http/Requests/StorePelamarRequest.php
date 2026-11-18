@@ -4,11 +4,43 @@ namespace App\Http\Requests;
 
 use App\Models\PendidikanTerakhir;
 use App\Models\TahapRekrutmen;
+use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class StorePelamarRequest extends FormRequest
 {
+    /**
+     * Allowed characters for applicant text fields. Numbers and symbols are
+     * rejected, but each field keeps the few characters real values need:
+     * names with an apostrophe (e.g. "Ma'ruf"), degrees written "S.Pd., M.Kom",
+     * and study programs like "Ilmu Al-Qur'an dan Tafsir".
+     */
+    public const POLA_NAMA = "/^[\\p{L}\\s'’]+$/u";
+
+    public const POLA_GELAR = '/^[\p{L}\s.,]+$/u';
+
+    public const POLA_PROGRAM_STUDI = "/^[\\p{L}\\s'’\\-]+$/u";
+
+    /** WhatsApp number: digits only, at most 12. */
+    public const POLA_NO_HP = '/^[0-9]{1,12}$/';
+
+    /** @return array<string, string> */
+    public static function pesanPolaTeks(): array
+    {
+        $prodi = ":attribute hanya boleh berisi huruf, spasi, tanda hubung (-), dan apostrof ('). Angka dan simbol tidak diperbolehkan.";
+
+        return [
+            'nama.regex' => "Nama hanya boleh berisi huruf, spasi, dan apostrof ('). Angka dan simbol tidak diperbolehkan.",
+            'gelar.regex' => 'Gelar hanya boleh berisi huruf, spasi, titik (.), dan koma (,). Angka dan simbol tidak diperbolehkan.',
+            'no_hp.regex' => 'Nomor WhatsApp hanya boleh berisi angka, maksimal 12 digit.',
+            'program_studi.regex' => $prodi,
+            'program_studi_s1.regex' => $prodi,
+            'program_studi_s2.regex' => $prodi,
+            'program_studi_s3.regex' => $prodi,
+        ];
+    }
+
     public function authorize(): bool
     {
         return true;
@@ -18,7 +50,7 @@ class StorePelamarRequest extends FormRequest
     {
         return [
             // Step 1: Data Pelamar
-            'nama' => ['required', 'string', 'max:150'],
+            'nama' => ['required', 'string', 'max:150', 'regex:'.self::POLA_NAMA],
             'nik' => [
                 'required',
                 'digits:16',
@@ -26,7 +58,7 @@ class StorePelamarRequest extends FormRequest
                     ->where(fn ($query) => $query->where('id_loker', $this->route('loker')?->id_loker)),
             ],
             'tanggal_lahir' => ['required', 'date', 'before:today', function ($attribute, $value, $fail) {
-                $age = \Carbon\Carbon::parse($value)->age;
+                $age = Carbon::parse($value)->age;
                 if ($age < 18) {
                     $fail('Maaf, pelamar dengan usia kurang dari 18 tahun tidak dapat melanjutkan proses pendaftaran ini.');
                 } elseif ($age > 35) {
@@ -39,8 +71,8 @@ class StorePelamarRequest extends FormRequest
                 $this->lokerJenjangIs('Satpam') ? 'required' : 'nullable',
                 'integer', 'min:100', 'max:250',
             ],
-            'gelar' => ['nullable', 'string', 'max:50'],
-            'no_hp' => ['required', 'string', 'max:20'],
+            'gelar' => ['nullable', 'string', 'max:50', 'regex:'.self::POLA_GELAR],
+            'no_hp' => ['required', 'string', 'regex:'.self::POLA_NO_HP],
             'email' => ['required', 'email', 'max:150'],
             'alamat' => ['required', 'string', 'max:1000'],
             'pernah_rekrutmen_sebelumnya' => ['required', 'in:Ya,Tidak'],
@@ -89,21 +121,21 @@ class StorePelamarRequest extends FormRequest
             'akreditasi' => ['nullable', 'in:A,B,C', Rule::requiredIf(fn () => ! $this->isSekolahMenengah())],
             'tahun_lulus' => ['required', 'integer', 'between:2012,2026'],
             // Program studi/kategori/IPK D3 only applies to D3 applicants.
-            'program_studi' => ['nullable', 'string', 'max:150', Rule::requiredIf(fn () => $this->pendidikanLabel() === 'D3')],
+            'program_studi' => ['nullable', 'string', 'max:150', 'regex:'.self::POLA_PROGRAM_STUDI, Rule::requiredIf(fn () => $this->pendidikanLabel() === 'D3')],
             'kategori_perguruan_tinggi_d3' => ['nullable', 'in:Perguruan Tinggi Negeri,Perguruan Tinggi Swasta,Lain-lain', Rule::requiredIf(fn () => $this->pendidikanLabel() === 'D3')],
             'ipk_d3' => ['nullable', 'numeric', 'between:0,4', Rule::requiredIf(fn () => $this->pendidikanLabel() === 'D3')],
             // Institusi/program studi/kategori/IPK S1 is also required for S2/S3 applicants (an S2/S3 always has a prior S1 on record).
             'institusi_s1' => ['nullable', 'string', 'max:150', Rule::requiredIf(fn () => in_array($this->pendidikanLabel(), ['S1', 'S2', 'S3'], true))],
-            'program_studi_s1' => ['nullable', 'string', 'max:150', Rule::requiredIf(fn () => in_array($this->pendidikanLabel(), ['S1', 'S2', 'S3'], true))],
+            'program_studi_s1' => ['nullable', 'string', 'max:150', 'regex:'.self::POLA_PROGRAM_STUDI, Rule::requiredIf(fn () => in_array($this->pendidikanLabel(), ['S1', 'S2', 'S3'], true))],
             'kategori_perguruan_tinggi_s1' => ['nullable', 'in:Perguruan Tinggi Negeri,Perguruan Tinggi Swasta,Lain-lain', Rule::requiredIf(fn () => in_array($this->pendidikanLabel(), ['S1', 'S2', 'S3'], true))],
             'ipk_s1' => ['nullable', 'numeric', 'between:0,4', Rule::requiredIf(fn () => in_array($this->pendidikanLabel(), ['S1', 'S2', 'S3'], true))],
             // Institusi/program studi/kategori/IPK S2 is also required for S3 applicants (an S3 always has a prior S2 on record).
             'institusi_s2' => ['nullable', 'string', 'max:150', Rule::requiredIf(fn () => in_array($this->pendidikanLabel(), ['S2', 'S3'], true))],
-            'program_studi_s2' => ['nullable', 'string', 'max:150', Rule::requiredIf(fn () => in_array($this->pendidikanLabel(), ['S2', 'S3'], true))],
+            'program_studi_s2' => ['nullable', 'string', 'max:150', 'regex:'.self::POLA_PROGRAM_STUDI, Rule::requiredIf(fn () => in_array($this->pendidikanLabel(), ['S2', 'S3'], true))],
             'kategori_perguruan_tinggi_s2' => ['nullable', 'in:Perguruan Tinggi Negeri,Perguruan Tinggi Swasta,Lain-lain', Rule::requiredIf(fn () => in_array($this->pendidikanLabel(), ['S2', 'S3'], true))],
             'ipk_s2' => ['nullable', 'numeric', 'between:0,4', Rule::requiredIf(fn () => in_array($this->pendidikanLabel(), ['S2', 'S3'], true))],
             'institusi_s3' => ['nullable', 'string', 'max:150', Rule::requiredIf(fn () => $this->pendidikanLabel() === 'S3')],
-            'program_studi_s3' => ['nullable', 'string', 'max:150', Rule::requiredIf(fn () => $this->pendidikanLabel() === 'S3')],
+            'program_studi_s3' => ['nullable', 'string', 'max:150', 'regex:'.self::POLA_PROGRAM_STUDI, Rule::requiredIf(fn () => $this->pendidikanLabel() === 'S3')],
             'kategori_perguruan_tinggi_s3' => ['nullable', 'in:Perguruan Tinggi Negeri,Perguruan Tinggi Swasta,Lain-lain', Rule::requiredIf(fn () => $this->pendidikanLabel() === 'S3')],
             'ipk_s3' => ['nullable', 'numeric', 'between:0,4', Rule::requiredIf(fn () => $this->pendidikanLabel() === 'S3')],
 
@@ -162,7 +194,7 @@ class StorePelamarRequest extends FormRequest
             $fileMessages["{$field}.max"] = 'Ukuran file :attribute terlalu besar. Maksimal 2MB, silakan pilih file lain yang lebih kecil.';
         }
 
-        return $fileMessages + [
+        return $fileMessages + self::pesanPolaTeks() + [
             'nik.unique' => 'NIK ini sudah pernah digunakan untuk melamar lowongan ini.',
             'bersedia_ditempatkan.required' => 'Anda harus menyetujui pernyataan kesediaan penempatan sebelum mengirim lamaran.',
             'bersedia_ditempatkan.accepted' => 'Anda harus menyetujui pernyataan kesediaan penempatan sebelum mengirim lamaran.',

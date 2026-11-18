@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Exports\PelamarExport;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StorePelamarRequest;
 use App\Models\HrisBidangDiampu;
 use App\Models\HrisRegional;
 use App\Models\HrisStatusKeaktifan;
@@ -24,6 +25,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -32,6 +34,7 @@ use Illuminate\View\View;
 use Maatwebsite\Excel\Facades\Excel;
 use setasign\Fpdi\Fpdi;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class PelamarController extends Controller
 {
@@ -48,7 +51,7 @@ class PelamarController extends Controller
             $kategoriAktif
         );
 
-        $pelamarList = $query->orderByDesc('tanggal_apply')->get();
+        $pelamarList = $query->orderByDesc('created_at')->orderByDesc('id_pelamar')->get();
 
         $this->attachRiwayatLamaranLain($pelamarList);
 
@@ -106,7 +109,7 @@ class PelamarController extends Controller
      * every one of their applications stays flagged, including any new loker they apply to
      * afterwards.
      */
-    private function attachRiwayatLamaranLain(\Illuminate\Support\Collection $pelamarList): void
+    private function attachRiwayatLamaranLain(Collection $pelamarList): void
     {
         $niks = $pelamarList->pluck('nik')->filter()->unique();
 
@@ -145,11 +148,11 @@ class PelamarController extends Controller
         $kategoriAktif = (string) $request->query('kategori', '');
 
         $pelamarList = $this->filterPelamarQuery(
-            Pelamar::with(['pendidikanTerakhir', 'loker']),
+            Pelamar::with(['pendidikanTerakhir', 'loker', 'tahapRekrutmen', 'statusPelamar']),
             $tahapAktif,
             $lokerAktif,
             $kategoriAktif
-        )->orderByDesc('tanggal_apply')->get();
+        )->orderByDesc('created_at')->orderByDesc('id_pelamar')->get();
 
         $lokerAktifModel = $lokerAktif !== 0 ? Loker::find($lokerAktif) : null;
         $filenameSuffix = $lokerAktifModel ? Str::slug($lokerAktifModel->judul_loker) : 'semua-loker';
@@ -215,7 +218,7 @@ class PelamarController extends Controller
         // so Sebelumnya/Berikutnya steps through applicants in the order they're listed there
         // (Tidak Lolos applicants included, same as that list).
         $lokerPelamarIds = Pelamar::where('id_loker', $pelamar->id_loker)
-            ->orderByDesc('tanggal_apply')
+            ->orderByDesc('created_at')
             ->orderByDesc('id_pelamar')
             ->pluck('id_pelamar');
 
@@ -233,7 +236,7 @@ class PelamarController extends Controller
     public function updateData(Request $request, Pelamar $pelamar): RedirectResponse
     {
         $data = $request->validate([
-            'nama' => ['required', 'string', 'max:150'],
+            'nama' => ['required', 'string', 'max:150', 'regex:'.StorePelamarRequest::POLA_NAMA],
             'nik' => [
                 'required',
                 'digits:16',
@@ -248,8 +251,8 @@ class PelamarController extends Controller
                 $pelamar->loker?->jenjang?->nama_jenjang === 'Satpam' ? 'required' : 'nullable',
                 'integer', 'min:100', 'max:250',
             ],
-            'gelar' => ['nullable', 'string', 'max:50'],
-            'no_hp' => ['required', 'string', 'max:20'],
+            'gelar' => ['nullable', 'string', 'max:50', 'regex:'.StorePelamarRequest::POLA_GELAR],
+            'no_hp' => ['required', 'string', 'regex:'.StorePelamarRequest::POLA_NO_HP],
             'email' => ['required', 'email', 'max:150'],
             'alamat' => ['required', 'string', 'max:1000'],
             'pernah_rekrutmen_sebelumnya' => ['required', 'in:Ya,Tidak'],
@@ -273,7 +276,7 @@ class PelamarController extends Controller
                 'nullable', 'string', 'max:255',
                 Rule::requiredIf(fn () => $request->input('pernah_bekerja_di_al_azhar') === 'Ya' && $request->input('jenis_kepegawaian_al_azhar_sebelumnya') === 'Lain-lain'),
             ],
-        ]);
+        ], StorePelamarRequest::pesanPolaTeks());
 
         if ($data['pernah_rekrutmen_sebelumnya'] === 'Tidak') {
             $data['bulan_rekrutmen_sebelumnya'] = null;
@@ -321,7 +324,7 @@ class PelamarController extends Controller
     ];
 
     /** Stream a single uploaded berkas inline. Requires admin auth (route middleware) — the files live on the private disk, not the public one. */
-    public function showBerkas(Pelamar $pelamar, string $column): \Symfony\Component\HttpFoundation\StreamedResponse
+    public function showBerkas(Pelamar $pelamar, string $column): StreamedResponse
     {
         abort_unless(array_key_exists($column, self::BERKAS_COLUMNS), 404);
 
@@ -343,7 +346,7 @@ class PelamarController extends Controller
             return back()->withErrors(['berkas' => 'Pelamar ini tidak memiliki berkas yang bisa diunduh.']);
         }
 
-        $pdf = new Fpdi();
+        $pdf = new Fpdi;
         $pdf->SetTitle('Berkas '.$pelamar->namaLengkap());
         $pdf->SetAutoPageBreak(false);
 

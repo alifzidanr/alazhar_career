@@ -6,7 +6,10 @@
     </x-slot>
 
     <div class="py-8">
+        {{-- Default sort: newest application first (by submission time). Tgl Apply toggles newest/oldest. --}}
         <div class="w-full px-4 sm:px-6 lg:px-8 space-y-6" x-data="tableFilter(25, {}, {
+                apply_desc: { field: 'apply', dir: 'desc' },
+                apply_asc: { field: 'apply', dir: 'asc' },
                 '': null,
                 ipk_asc: { field: 'ipk_s1', dir: 'asc' },
                 ipk_desc: { field: 'ipk_s1', dir: 'desc' },
@@ -226,13 +229,17 @@
                                 <th class="px-4 py-3">Nilai Akhir</th>
                             @endif
                             <th class="px-4 py-3">Status</th>
-                            <th class="px-4 py-3">Tgl Apply</th>
+                            <th class="px-4 py-3 cursor-pointer select-none whitespace-nowrap" title="Urutkan berdasarkan waktu melamar" @click="sort = sort === 'apply_desc' ? 'apply_asc' : 'apply_desc'">
+                                Tgl Apply
+                                <span x-show="sort === 'apply_desc'" title="Terbaru dulu">&darr;</span>
+                                <span x-show="sort === 'apply_asc'" title="Terlama dulu">&uarr;</span>
+                            </th>
                             <th class="px-4 py-3">Aksi Cepat</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y" x-ref="tbody">
                         @forelse ($pelamarList as $p)
-                            <tr class="hover:bg-muted/30" data-row data-id="{{ $p->id_pelamar }}" data-search="{{ Str::lower($p->namaLengkap()) }}" data-ipk_s1="{{ $p->ipk_s1 ?? '' }}" data-institusi_s1="{{ Str::lower($p->institusi_s1 ?? '') }}" data-loker="{{ Str::lower($p->loker->judul_loker ?? '') }}" x-show="isVisible($el)">
+                            <tr class="hover:bg-muted/30" data-row data-id="{{ $p->id_pelamar }}" data-apply="{{ ($p->created_at?->getTimestamp() ?? 0) * 100000 + $p->id_pelamar }}" data-search="{{ Str::lower($p->namaLengkap()) }}" data-ipk_s1="{{ $p->ipk_s1 ?? '' }}" data-institusi_s1="{{ Str::lower($p->institusi_s1 ?? '') }}" data-loker="{{ Str::lower($p->loker->judul_loker ?? '') }}" x-show="isVisible($el)">
                                 <td class="px-4 py-3">
                                     <input type="checkbox" class="rounded border-input" :checked="isSelected({{ $p->id_pelamar }})" @change="toggleSelect({{ $p->id_pelamar }}, $event.target.checked)">
                                 </td>
