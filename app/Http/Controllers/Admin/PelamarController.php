@@ -51,7 +51,12 @@ class PelamarController extends Controller
             $kategoriAktif
         );
 
-        $pelamarList = $query->orderByDesc('created_at')->orderByDesc('id_pelamar')->get();
+        // Tidak Lolos applicants go last; within each group, newest application first.
+        $pelamarList = $query
+            ->orderByRaw('id_status_pelamar = ? asc', [StatusPelamar::TIDAK_LOLOS])
+            ->orderByDesc('created_at')
+            ->orderByDesc('id_pelamar')
+            ->get();
 
         $this->attachRiwayatLamaranLain($pelamarList);
 
@@ -152,7 +157,10 @@ class PelamarController extends Controller
             $tahapAktif,
             $lokerAktif,
             $kategoriAktif
-        )->orderByDesc('created_at')->orderByDesc('id_pelamar')->get();
+        )->orderByRaw('id_status_pelamar = ? asc', [StatusPelamar::TIDAK_LOLOS])
+            ->orderByDesc('created_at')
+            ->orderByDesc('id_pelamar')
+            ->get();
 
         $lokerAktifModel = $lokerAktif !== 0 ? Loker::find($lokerAktif) : null;
         $filenameSuffix = $lokerAktifModel ? Str::slug($lokerAktifModel->judul_loker) : 'semua-loker';
@@ -216,8 +224,9 @@ class PelamarController extends Controller
 
         // Same ordering as the "Manajemen Pelamar" list, scoped to this pelamar's loker,
         // so Sebelumnya/Berikutnya steps through applicants in the order they're listed there
-        // (Tidak Lolos applicants included, same as that list).
+        // (Tidak Lolos applicants included at the end, same as that list).
         $lokerPelamarIds = Pelamar::where('id_loker', $pelamar->id_loker)
+            ->orderByRaw('id_status_pelamar = ? asc', [StatusPelamar::TIDAK_LOLOS])
             ->orderByDesc('created_at')
             ->orderByDesc('id_pelamar')
             ->pluck('id_pelamar');

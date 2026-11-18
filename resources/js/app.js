@@ -155,6 +155,12 @@ Alpine.data('tableFilter', (perPage = 15, initialFilters = {}, sortModes = {}) =
             });
         }
 
+        // Rows marked data-sink="1" (e.g. Tidak Lolos applicants) always stay at the
+        // bottom, whatever the sort; their relative order is kept (stable partition).
+        if (rows.some(el => el.dataset.sink === '1')) {
+            return [...rows.filter(el => el.dataset.sink !== '1'), ...rows.filter(el => el.dataset.sink === '1')];
+        }
+
         return rows;
     },
 
