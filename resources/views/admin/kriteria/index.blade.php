@@ -31,7 +31,6 @@
                             <tr class="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                                 <th class="px-4 py-3">Kriteria</th>
                                 <th class="px-4 py-3">Dipakai</th>
-                                <th class="px-4 py-3"></th>
                             </tr>
                         </thead>
                         <tbody class="divide-y" x-ref="tbody">
@@ -45,18 +44,12 @@
                                         </form>
                                     </td>
                                     <td class="px-4 py-3 text-muted-foreground">{{ $k->kriteria_loker_count }}x</td>
-                                    <td class="px-4 py-3 text-right">
-                                        <form method="POST" action="{{ route('admin.kriteria.destroy', $k) }}" x-data @submit.prevent="$dispatch('confirm-dialog', { title: 'Hapus kriteria ini?', destructive: true, confirmText: 'Hapus', form: $el })">
-                                            @csrf @method('DELETE')
-                                            <x-ui.button type="submit" variant="ghost" size="sm" class="text-destructive hover:text-destructive">Hapus</x-ui.button>
-                                        </form>
-                                    </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="3" class="px-4 py-8 text-center text-muted-foreground">Belum ada kriteria.</td></tr>
+                                <tr><td colspan="2" class="px-4 py-8 text-center text-muted-foreground">Belum ada kriteria.</td></tr>
                             @endforelse
                             @if ($kriteriaList->isNotEmpty())
-                                <tr x-show="total === 0"><td colspan="3" class="px-4 py-8 text-center text-muted-foreground">Tidak ada kriteria yang cocok.</td></tr>
+                                <tr x-show="total === 0"><td colspan="2" class="px-4 py-8 text-center text-muted-foreground">Tidak ada kriteria yang cocok.</td></tr>
                             @endif
                         </tbody>
                     </table>

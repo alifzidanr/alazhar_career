@@ -81,10 +81,6 @@
                                     <td class="px-4 py-3 text-right">
                                         <div class="flex items-center justify-end gap-2">
                                             <x-ui.button form="{{ $formId }}" type="submit" variant="outline" size="sm">Simpan</x-ui.button>
-                                            <form method="POST" action="{{ route('admin.jenjang.destroy', $j) }}" x-data @submit.prevent="$dispatch('confirm-dialog', { title: 'Hapus jenjang ini?', destructive: true, confirmText: 'Hapus', form: $el })">
-                                                @csrf @method('DELETE')
-                                                <x-ui.button type="submit" variant="ghost" size="sm" class="text-destructive hover:text-destructive">Hapus</x-ui.button>
-                                            </form>
                                         </div>
                                     </td>
                                 </tr>

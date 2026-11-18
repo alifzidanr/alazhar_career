@@ -31,7 +31,6 @@
                             <tr class="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                                 <th class="px-4 py-3">Unit Kerja</th>
                                 <th class="px-4 py-3">Dipakai</th>
-                                <th class="px-4 py-3"></th>
                             </tr>
                         </thead>
                         <tbody class="divide-y" x-ref="tbody">
@@ -45,18 +44,12 @@
                                         </form>
                                     </td>
                                     <td class="px-4 py-3 text-muted-foreground">{{ $u->kriteria_loker_count + $u->orientasi_count }}x</td>
-                                    <td class="px-4 py-3 text-right">
-                                        <form method="POST" action="{{ route('admin.unit-kerja.destroy', $u) }}" x-data @submit.prevent="$dispatch('confirm-dialog', { title: 'Hapus unit kerja ini?', destructive: true, confirmText: 'Hapus', form: $el })">
-                                            @csrf @method('DELETE')
-                                            <x-ui.button type="submit" variant="ghost" size="sm" class="text-destructive hover:text-destructive">Hapus</x-ui.button>
-                                        </form>
-                                    </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="3" class="px-4 py-8 text-center text-muted-foreground">Belum ada unit kerja.</td></tr>
+                                <tr><td colspan="2" class="px-4 py-8 text-center text-muted-foreground">Belum ada unit kerja.</td></tr>
                             @endforelse
                             @if ($unitKerjaList->isNotEmpty())
-                                <tr x-show="total === 0"><td colspan="3" class="px-4 py-8 text-center text-muted-foreground">Tidak ada unit kerja yang cocok.</td></tr>
+                                <tr x-show="total === 0"><td colspan="2" class="px-4 py-8 text-center text-muted-foreground">Tidak ada unit kerja yang cocok.</td></tr>
                             @endif
                         </tbody>
                     </table>

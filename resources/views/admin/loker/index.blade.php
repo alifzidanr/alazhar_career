@@ -67,10 +67,6 @@
                                 </td>
                                 <td class="px-4 py-3 text-right space-x-1">
                                     <x-ui.button :href="route('admin.loker.edit', $loker)" variant="ghost" size="sm">Kelola</x-ui.button>
-                                    <form method="POST" action="{{ route('admin.loker.destroy', $loker) }}" class="inline" x-data @submit.prevent="$dispatch('confirm-dialog', { title: 'Hapus loker ini?', destructive: true, confirmText: 'Hapus', form: $el })">
-                                        @csrf @method('DELETE')
-                                        <x-ui.button type="submit" variant="ghost" size="sm" class="text-destructive hover:text-destructive">Hapus</x-ui.button>
-                                    </form>
                                 </td>
                             </tr>
                         @empty
