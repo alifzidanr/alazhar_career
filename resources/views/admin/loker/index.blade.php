@@ -31,7 +31,7 @@
                 </div>
             </x-ui.card>
 
-            <x-ui.card :padded="false" class="overflow-hidden">
+            <x-ui.card :padded="false" class="overflow-x-auto">
                 <table class="min-w-full divide-y text-sm">
                     <thead class="bg-muted/50">
                         <tr class="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
