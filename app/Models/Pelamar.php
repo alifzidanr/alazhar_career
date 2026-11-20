@@ -292,4 +292,99 @@ class Pelamar extends Model
             ['icon' => '📄', 'label' => 'Sertifikat Tambahan', 'url' => $this->sertifikatTambahanUrl(), 'path' => $this->sertifikat_tambahan_upload],
         ])->filter(fn ($b) => $b['url']);
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Identitas pelamar: NIK, No. WhatsApp, dan email
+    |--------------------------------------------------------------------------
+    | Two applications belong to the same person when they share a NIK, a
+    | WhatsApp number, or an email. Each one blocks a second application to
+    | the same loker (a mistyped NIK alone can't slip through) and links the
+    | applications across lokers for "Riwayat Lamaran Lain".
+    */
+
+    /** Digits of a WhatsApp number without the 0 / 62 prefix, e.g. "0812..", "812..", "62812.." -> "812..". */
+    public static function intiNoHp(?string $noHp): string
+    {
+        $digits = preg_replace('/\D/', '', (string) $noHp);
+        if (str_starts_with($digits, '62')) {
+            $digits = substr($digits, 2);
+        }
+
+        return ltrim($digits, '0');
+    }
+
+    /** Every stored spelling of a WhatsApp number that counts as the same number. */
+    public static function variasiNoHp(?string $noHp): array
+    {
+        $inti = self::intiNoHp($noHp);
+
+        return $inti === '' ? [] : [$inti, '0'.$inti, '62'.$inti];
+    }
+
+    public static function normalisasiEmail(?string $email): string
+    {
+        return mb_strtolower(trim((string) $email));
+    }
+
+    public function scopeNoHpSama($query, ?string $noHp)
+    {
+        $variasi = self::variasiNoHp($noHp);
+
+        return $variasi === [] ? $query->whereRaw('1 = 0') : $query->whereIn('no_hp', $variasi);
+    }
+
+    public function scopeEmailSama($query, ?string $email)
+    {
+        $email = self::normalisasiEmail($email);
+
+        return $email === '' ? $query->whereRaw('1 = 0') : $query->whereRaw('LOWER(TRIM(email)) = ?', [$email]);
+    }
+
+    /** Applications that share a NIK, WhatsApp number, or email with any of the given pelamar. */
+    public function scopeSamaOrangDengan($query, iterable $pelamarList)
+    {
+        $niks = [];
+        $noHps = [];
+        $emails = [];
+        foreach ($pelamarList as $p) {
+            if (filled($p->nik)) {
+                $niks[] = $p->nik;
+            }
+            array_push($noHps, ...self::variasiNoHp($p->no_hp));
+            if (($e = self::normalisasiEmail($p->email)) !== '') {
+                $emails[] = $e;
+            }
+        }
+
+        return $query->where(function ($q) use ($niks, $noHps, $emails) {
+            $q->whereRaw('1 = 0');
+            if ($niks) {
+                $q->orWhereIn('nik', array_values(array_unique($niks)));
+            }
+            if ($noHps) {
+                $q->orWhereIn('no_hp', array_values(array_unique($noHps)));
+            }
+            foreach (array_chunk(array_values(array_unique($emails)), 500) as $chunk) {
+                $q->orWhereIn(\Illuminate\Support\Facades\DB::raw('LOWER(TRIM(email))'), $chunk);
+            }
+        });
+    }
+
+    /** Which identifiers this application shares with another one (e.g. ['NIK', 'No. WA']); empty = different person. */
+    public function kecocokanDengan(self $lain): array
+    {
+        $cocok = [];
+        if (filled($this->nik) && $this->nik === $lain->nik) {
+            $cocok[] = 'NIK';
+        }
+        if (($inti = self::intiNoHp($this->no_hp)) !== '' && $inti === self::intiNoHp($lain->no_hp)) {
+            $cocok[] = 'No. WA';
+        }
+        if (($email = self::normalisasiEmail($this->email)) !== '' && $email === self::normalisasiEmail($lain->email)) {
+            $cocok[] = 'Email';
+        }
+
+        return $cocok;
+    }
 }

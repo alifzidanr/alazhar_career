@@ -195,12 +195,14 @@
                     @endif
                     <div>
                         <x-ui.label for="email">Email <span class="text-destructive">*</span></x-ui.label>
-                        <x-ui.input type="email" id="email" name="email" x-model="fields.email" value="{{ old('email') }}" required />
+                        <x-ui.input type="email" id="email" name="email" x-model="fields.email" value="{{ old('email') }}" required @input="emailIsDuplicate = false" @input.debounce.800ms="checkIdentitas('email')" @blur="checkIdentitas('email')" />
+                        <p class="text-xs text-destructive mt-1" x-show="emailIsDuplicate" x-cloak>Email ini sudah pernah digunakan untuk melamar lowongan ini.</p>
                         <x-input-error :messages="$errors->get('email')" class="mt-2" />
                     </div>
                     <div>
                         <x-ui.label for="no_hp">No. WhatsApp <span class="text-destructive">*</span></x-ui.label>
-                        <x-ui.input type="text" id="no_hp" name="no_hp" x-model="fields.no_hp" value="{{ old('no_hp') }}" inputmode="numeric" maxlength="12" oninput="this.value=this.value.replace(/\D/g,'').slice(0,12)" required placeholder="08xxxxxxxxxx" />
+                        <x-ui.input type="text" id="no_hp" name="no_hp" x-model="fields.no_hp" value="{{ old('no_hp') }}" inputmode="numeric" maxlength="12" oninput="this.value=this.value.replace(/\D/g,'').slice(0,12)" required placeholder="08xxxxxxxxxx" @input="noHpIsDuplicate = false" @input.debounce.800ms="checkIdentitas('no_hp')" @blur="checkIdentitas('no_hp')" />
+                        <p class="text-xs text-destructive mt-1" x-show="noHpIsDuplicate" x-cloak>Nomor WhatsApp ini sudah pernah digunakan untuk melamar lowongan ini.</p>
                         <x-input-error :messages="$errors->get('no_hp')" class="mt-2" />
                     </div>
                     <div class="sm:col-span-2">
@@ -654,8 +656,8 @@
                 x-transition:enter-end="opacity-100 scale-100"
                 class="relative w-full max-w-md rounded-lg border bg-background p-6 shadow-lg"
             >
-                <h3 class="text-base font-semibold">NIK Sudah Pernah Melamar</h3>
-                <p class="mt-1.5 text-sm text-muted-foreground">NIK yang Anda masukkan sudah pernah digunakan untuk melamar lowongan ini sebelumnya. Setiap NIK hanya dapat melamar satu kali untuk lowongan yang sama. Silakan periksa kembali NIK Anda, atau pilih lowongan lain jika ingin melamar posisi berbeda.</p>
+                <h3 class="text-base font-semibold"><span x-text="duplikatLabel"></span> Sudah Pernah Melamar</h3>
+                <p class="mt-1.5 text-sm text-muted-foreground"><span x-text="duplikatLabel"></span> yang Anda masukkan sudah pernah digunakan untuk melamar lowongan ini sebelumnya. Setiap pelamar hanya dapat melamar satu kali untuk lowongan yang sama, dan NIK, nomor WhatsApp, maupun email yang sama tidak dapat dipakai dua kali untuk lowongan ini. Silakan periksa kembali data Anda, atau pilih lowongan lain jika ingin melamar posisi berbeda.</p>
 
                 <div class="mt-5 flex justify-end gap-2">
                     <x-ui.button type="button" @click="nikDuplicateAlertOpen = false">Mengerti</x-ui.button>
@@ -808,6 +810,9 @@
                         nikChecking: false,
                         nikIsDuplicate: false,
                         nikDuplicateAlertOpen: false,
+                        noHpIsDuplicate: false,
+                        emailIsDuplicate: false,
+                        duplikatLabel: 'NIK',
                         nikLengthAlertOpen: false,
                         fileTooLargeAlertOpen: false,
                         fileTooLargeAlertMessage: '',
@@ -1035,12 +1040,36 @@
                                 const data = await res.json();
                                 this.nikIsDuplicate = !!data.sudah_melamar;
                                 if (this.nikIsDuplicate) {
+                                    this.duplikatLabel = 'NIK';
                                     this.nikDuplicateAlertOpen = true;
                                 }
                             } catch (e) {
                                 // Network error: let server-side validation on submit catch it instead.
                             } finally {
                                 this.nikChecking = false;
+                            }
+                        },
+
+                        // Same per-loker check as NIK, for the WhatsApp number and email.
+                        // Shows the inline error only; the popup appears when moving on.
+                        async checkIdentitas(field) {
+                            const value = (this.fields[field] ?? '').trim();
+                            const flag = field === 'no_hp' ? 'noHpIsDuplicate' : 'emailIsDuplicate';
+                            const valid = field === 'no_hp' ? /^\d{6,12}$/.test(value) : /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+                            if (!valid) {
+                                this[flag] = false;
+                                return;
+                            }
+                            try {
+                                const res = await fetch(`/loker/${lokerId}/cek-nik?${field}=${encodeURIComponent(value)}`, {
+                                    headers: { 'Accept': 'application/json' },
+                                });
+                                const data = await res.json();
+                                // Ignore a late answer for a value the applicant has since changed.
+                                if ((this.fields[field] ?? '').trim() !== value) return;
+                                this[flag] = !!(field === 'no_hp' ? data.no_hp_dipakai : data.email_dipakai);
+                            } catch (e) {
+                                // Network error: server-side validation on submit catches it instead.
                             }
                         },
 
@@ -1054,7 +1083,8 @@
                                 this.nikLengthAlertOpen = true;
                                 return;
                             }
-                            if (this.step === 1 && this.nikIsDuplicate) {
+                            if (this.step === 1 && (this.nikIsDuplicate || this.noHpIsDuplicate || this.emailIsDuplicate)) {
+                                this.duplikatLabel = this.nikIsDuplicate ? 'NIK' : (this.noHpIsDuplicate ? 'Nomor WhatsApp' : 'Email');
                                 this.nikDuplicateAlertOpen = true;
                                 return;
                             }

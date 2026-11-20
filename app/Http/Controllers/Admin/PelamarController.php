@@ -105,28 +105,37 @@ class PelamarController extends Controller
     }
 
     /**
-     * For each pelamar in the list, attach every other application filed under the same NIK
+     * For each pelamar in the list, attach every other application by the same person
+     * (same NIK, WhatsApp number, or email - see Pelamar::kecocokanDengan)
      * (riwayatLamaranLain, newest first) and whether this person has ever reached the
      * Orientasi stage and then withdrawn (pernahOrientasi / riwayatOrientasiMundur).
      *
-     * This is checked across ALL applications under the NIK (including the current one) -
+     * This is checked across ALL of that person's applications (including the current one) -
      * once someone has an Orientasi-stage application with status Mundur in their history,
      * every one of their applications stays flagged, including any new loker they apply to
      * afterwards.
      */
     private function attachRiwayatLamaranLain(Collection $pelamarList): void
     {
-        $niks = $pelamarList->pluck('nik')->filter()->unique();
-
-        $semuaByNik = Pelamar::whereIn('nik', $niks)
+        $kandidat = Pelamar::samaOrangDengan($pelamarList)
             ->with(['loker', 'tahapRekrutmen', 'statusPelamar', 'orientasi.unitKerja'])
             ->orderByDesc('tanggal_apply')
             ->orderByDesc('id_pelamar')
-            ->get()
-            ->groupBy('nik');
+            ->get();
+
+        // Index the candidates by each identifier so every pelamar only scans its own matches.
+        $byNik = $kandidat->filter(fn ($s) => filled($s->nik))->groupBy('nik');
+        $byNoHp = $kandidat->groupBy(fn ($s) => Pelamar::intiNoHp($s->no_hp));
+        $byEmail = $kandidat->groupBy(fn ($s) => Pelamar::normalisasiEmail($s->email));
 
         foreach ($pelamarList as $p) {
-            $semuaLamaran = $semuaByNik->get($p->nik, collect());
+            $semuaLamaran = collect()
+                ->merge(filled($p->nik) ? $byNik->get($p->nik, []) : [])
+                ->merge(($k = Pelamar::intiNoHp($p->no_hp)) !== '' ? $byNoHp->get($k, []) : [])
+                ->merge(($k = Pelamar::normalisasiEmail($p->email)) !== '' ? $byEmail->get($k, []) : [])
+                ->unique('id_pelamar')
+                ->sortBy([['tanggal_apply', 'desc'], ['id_pelamar', 'desc']])
+                ->values();
 
             $p->riwayatLamaranLain = $semuaLamaran
                 ->reject(fn ($s) => $s->id_pelamar === $p->id_pelamar)
@@ -206,8 +215,9 @@ class PelamarController extends Controller
             $hrisRegionalList = collect();
         }
 
-        // Other applications filed under the same NIK, for the "Riwayat Lamaran Lain" panel.
-        $riwayatLamaranLain = Pelamar::where('nik', $pelamar->nik)
+        // Other applications by the same person (same NIK, WhatsApp number, or email),
+        // for the "Riwayat Lamaran Lain" panel. Each one says which identifiers matched.
+        $riwayatLamaranLain = Pelamar::samaOrangDengan([$pelamar])
             ->where('id_pelamar', '!=', $pelamar->id_pelamar)
             ->with(['loker', 'tahapRekrutmen', 'statusPelamar'])
             ->orderByDesc('tanggal_apply')
@@ -261,8 +271,8 @@ class PelamarController extends Controller
                 'integer', 'min:100', 'max:250',
             ],
             'gelar' => ['nullable', 'string', 'max:50', 'regex:'.StorePelamarRequest::POLA_GELAR],
-            'no_hp' => ['required', 'string', 'regex:'.StorePelamarRequest::POLA_NO_HP],
-            'email' => ['required', 'email', 'max:150'],
+            'no_hp' => ['required', 'string', 'regex:'.StorePelamarRequest::POLA_NO_HP, StorePelamarRequest::belumDipakaiDiLoker('no_hp', $pelamar->id_loker, $pelamar->id_pelamar)],
+            'email' => ['required', 'email', 'max:150', StorePelamarRequest::belumDipakaiDiLoker('email', $pelamar->id_loker, $pelamar->id_pelamar)],
             'alamat' => ['required', 'string', 'max:1000'],
             'pernah_rekrutmen_sebelumnya' => ['required', 'in:Ya,Tidak'],
             'bulan_rekrutmen_sebelumnya' => ['nullable', 'integer', 'between:1,12', Rule::requiredIf(fn () => $request->input('pernah_rekrutmen_sebelumnya') === 'Ya')],

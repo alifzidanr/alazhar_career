@@ -22,7 +22,7 @@
             <x-ui.card class="flex flex-wrap items-center gap-3">
                 <x-tahap-badge :tahap="$pelamar->tahapRekrutmen" />
                 <x-status-badge :status="$pelamar->statusPelamar" />
-                <span class="text-sm text-muted-foreground">Melamar untuk <strong class="text-foreground">{{ $pelamar->loker->judul_loker }}</strong> pada {{ $pelamar->tanggal_apply->translatedFormat('d M Y') }}</span>
+                <span class="text-sm text-muted-foreground">Melamar untuk <strong class="text-foreground">{{ $pelamar->loker->judul_loker }}</strong>@if ($pelamar->loker->wilayah), <strong class="text-foreground">{{ $pelamar->loker->wilayah }}</strong>@endif pada {{ $pelamar->tanggal_apply->translatedFormat('d M Y') }}</span>
             </x-ui.card>
 
             @if ($pelamar->cadanganDari)
@@ -58,6 +58,7 @@
                                     <span class="text-muted-foreground"> &mdash; {{ $r->loker?->wilayah ?: '-' }}</span>
                                     <p class="text-xs text-muted-foreground mt-0.5">
                                         Apply: {{ optional($r->tanggal_apply)->translatedFormat('d M Y') }}
+                                        &middot; Cocok: {{ implode(', ', $pelamar->kecocokanDengan($r)) }}
                                     </p>
                                 </div>
                                 <div class="flex items-center gap-2">

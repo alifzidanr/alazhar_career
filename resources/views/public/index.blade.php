@@ -396,7 +396,7 @@
                     ],
                     [
                         'tanya' => 'Bolehkah melamar lebih dari satu lowongan?',
-                        'jawab' => 'Boleh. Satu NIK hanya dapat digunakan sekali untuk lowongan yang sama, tetapi Anda dapat melamar lowongan lain yang sesuai.',
+                        'jawab' => 'Boleh. Setiap pelamar hanya dapat melamar sekali untuk lowongan yang sama (NIK, nomor WhatsApp, dan email yang sama tidak dapat dipakai dua kali pada satu lowongan), tetapi Anda dapat melamar lowongan lain yang sesuai.',
                     ],
                     [
                         'tanya' => 'Saya pernah melamar atau bekerja di YPI Al Azhar. Apakah boleh melamar lagi?',

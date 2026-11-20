@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Pelamar;
 use App\Models\PendidikanTerakhir;
 use App\Models\TahapRekrutmen;
 use Carbon\Carbon;
@@ -24,6 +25,31 @@ class StorePelamarRequest extends FormRequest
 
     /** WhatsApp number: digits only, at most 12. */
     public const POLA_NO_HP = '/^[0-9]{1,12}$/';
+
+    public const PESAN_NO_HP_DIPAKAI = 'Nomor WhatsApp ini sudah pernah digunakan untuk melamar lowongan ini.';
+
+    public const PESAN_EMAIL_DIPAKAI = 'Email ini sudah pernah digunakan untuk melamar lowongan ini.';
+
+    /**
+     * Rejects a WhatsApp number or email already used by another application
+     * to the same loker (NIK uses Rule::unique). The same person may still
+     * apply to other lokers. $abaikanId skips the application being edited.
+     */
+    public static function belumDipakaiDiLoker(string $jenis, ?int $idLoker, ?int $abaikanId = null): \Closure
+    {
+        return function ($attribute, $value, $fail) use ($jenis, $idLoker, $abaikanId) {
+            if ($idLoker === null || blank($value)) {
+                return;
+            }
+            $query = Pelamar::where('id_loker', $idLoker)
+                ->when($abaikanId, fn ($q) => $q->where('id_pelamar', '!=', $abaikanId));
+            $query = $jenis === 'no_hp' ? $query->noHpSama($value) : $query->emailSama($value);
+
+            if ($query->exists()) {
+                $fail($jenis === 'no_hp' ? self::PESAN_NO_HP_DIPAKAI : self::PESAN_EMAIL_DIPAKAI);
+            }
+        };
+    }
 
     /** @return array<string, string> */
     public static function pesanPolaTeks(): array
@@ -72,8 +98,8 @@ class StorePelamarRequest extends FormRequest
                 'integer', 'min:100', 'max:250',
             ],
             'gelar' => ['nullable', 'string', 'max:50', 'regex:'.self::POLA_GELAR],
-            'no_hp' => ['required', 'string', 'regex:'.self::POLA_NO_HP],
-            'email' => ['required', 'email', 'max:150'],
+            'no_hp' => ['required', 'string', 'regex:'.self::POLA_NO_HP, self::belumDipakaiDiLoker('no_hp', $this->route('loker')?->id_loker)],
+            'email' => ['required', 'email', 'max:150', self::belumDipakaiDiLoker('email', $this->route('loker')?->id_loker)],
             'alamat' => ['required', 'string', 'max:1000'],
             'pernah_rekrutmen_sebelumnya' => ['required', 'in:Ya,Tidak'],
             'bulan_rekrutmen_sebelumnya' => ['nullable', 'integer', 'between:1,12', Rule::requiredIf(fn () => $this->input('pernah_rekrutmen_sebelumnya') === 'Ya')],

@@ -22,17 +22,25 @@ class LamaranController extends Controller
 {
     public function cekNik(Request $request, Loker $loker): JsonResponse
     {
+        // Checks whichever of nik / no_hp / email is sent against earlier applications to
+        // this loker; the form calls it per field as the applicant fills them in.
         $nik = (string) $request->query('nik', '');
+        $noHp = (string) $request->query('no_hp', '');
+        $email = (string) $request->query('email', '');
+        $diLoker = fn () => Pelamar::where('id_loker', $loker->id_loker);
 
-        if (! preg_match('/^\d{16}$/', $nik)) {
-            return response()->json(['sudah_melamar' => false]);
-        }
+        $nikDipakai = preg_match('/^\d{16}$/', $nik) === 1
+            && $diLoker()->where('nik', $nik)->exists();
+        $noHpDipakai = preg_match('/^\d{6,12}$/', $noHp) === 1
+            && $diLoker()->noHpSama($noHp)->exists();
+        $emailDipakai = filter_var($email, FILTER_VALIDATE_EMAIL) !== false
+            && $diLoker()->emailSama($email)->exists();
 
-        $sudahMelamar = Pelamar::where('id_loker', $loker->id_loker)
-            ->where('nik', $nik)
-            ->exists();
-
-        return response()->json(['sudah_melamar' => $sudahMelamar]);
+        return response()->json([
+            'sudah_melamar' => $nikDipakai,
+            'no_hp_dipakai' => $noHpDipakai,
+            'email_dipakai' => $emailDipakai,
+        ]);
     }
 
     public function store(StorePelamarRequest $request, Loker $loker): RedirectResponse

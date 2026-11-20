@@ -52,4 +52,25 @@ class PelamarInputRulesTest extends TestCase
         $this->assertSame(['Nama', 'Tahap', 'Status'], array_slice($export->headings(), 0, 3));
         $this->assertSame(['Wawancara', 'Lolos'], array_slice($export->map($pelamar), 1, 2));
     }
+
+    public function test_no_hp_variants_count_as_the_same_number(): void
+    {
+        $this->assertSame('81234567890', Pelamar::intiNoHp('081234567890'));
+        $this->assertSame('81234567890', Pelamar::intiNoHp('6281234567890'));
+        $this->assertSame('81234567890', Pelamar::intiNoHp('81234567890'));
+        $this->assertSame('', Pelamar::intiNoHp(null));
+        $this->assertSame([], Pelamar::variasiNoHp(''));
+        $this->assertSame(['81234567890', '081234567890', '6281234567890'], Pelamar::variasiNoHp('081234567890'));
+    }
+
+    public function test_kecocokan_lists_every_shared_identifier(): void
+    {
+        $a = new Pelamar(['nik' => '3201010101010001', 'no_hp' => '081234567890', 'email' => 'Siti@Mail.com ']);
+
+        $this->assertSame(['NIK', 'No. WA', 'Email'], $a->kecocokanDengan(new Pelamar(['nik' => '3201010101010001', 'no_hp' => '6281234567890', 'email' => 'siti@mail.com'])));
+        $this->assertSame(['No. WA'], $a->kecocokanDengan(new Pelamar(['nik' => '3201010101010009', 'no_hp' => '81234567890', 'email' => 'lain@mail.com'])));
+        $this->assertSame(['Email'], $a->kecocokanDengan(new Pelamar(['nik' => '3201010101010009', 'no_hp' => '089999999999', 'email' => 'siti@mail.com'])));
+        $this->assertSame([], $a->kecocokanDengan(new Pelamar(['nik' => null, 'no_hp' => '', 'email' => ''])));
+        $this->assertSame([], (new Pelamar(['nik' => null, 'no_hp' => '', 'email' => '']))->kecocokanDengan(new Pelamar(['nik' => null, 'no_hp' => '', 'email' => ''])));
+    }
 }
