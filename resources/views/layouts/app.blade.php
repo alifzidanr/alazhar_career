@@ -57,6 +57,17 @@
             </div>
         </div>
 
+        <!-- Floating horizontal slider for wide tables (toggled from the sidebar) -->
+        <div x-data="floatingTableSlider" x-show="$store.tableSlider.on && target" x-cloak
+                class="fixed bottom-4 z-30 flex items-center gap-2 rounded-full border bg-background/95 px-3 py-2 shadow-lg backdrop-blur"
+                :style="`left: ${left}px; width: ${width}px`">
+            <svg class="h-4 w-4 shrink-0 text-muted-foreground" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
+            </svg>
+            <input type="range" min="0" :max="max" step="1" :value="value" @input="scrollTo($event.target.value)"
+                    aria-label="Geser tabel ke kiri/kanan" class="h-2 w-full cursor-pointer accent-primary">
+        </div>
+
         <x-ui.toaster />
         <x-ui.alert-dialog />
     </body>

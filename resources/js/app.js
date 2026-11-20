@@ -61,6 +61,92 @@ window.Viewer = Viewer;
     }, true);
 })();
 
+// Floating horizontal slider for wide tables. The sidebar toggle flips the
+// store (remembered per browser); the floating bar in the app layout tracks
+// whichever horizontally scrollable box under <main> is most visible on
+// screen and drives its scrollLeft. A range input is used instead of a
+// mirrored scrollbar because touch browsers hide overflow scrollbars.
+const SLIDER_KEY = 'tableSlider:on';
+Alpine.store('tableSlider', {
+    on: (() => { try { return localStorage.getItem(SLIDER_KEY) === '1'; } catch { return false; } })(),
+    toggle() {
+        this.on = !this.on;
+        try { localStorage.setItem(SLIDER_KEY, this.on ? '1' : '0'); } catch { /* storage unavailable */ }
+    },
+});
+
+Alpine.data('floatingTableSlider', () => ({
+    target: null,
+    max: 0,
+    value: 0,
+    left: 0,
+    width: 0,
+    queued: false,
+    stale: true,
+    candidates: [],
+
+    init() {
+        // Page scrolls only re-pick among known scroll boxes; DOM changes and
+        // resizes (pagination, filters, rotation) trigger a full rescan.
+        const schedule = () => this.schedule();
+        const rescan = () => { this.stale = true; this.schedule(); };
+        window.addEventListener('resize', rescan);
+        // Capture phase so scrolls of the table box itself are seen too.
+        document.addEventListener('scroll', schedule, { capture: true, passive: true });
+        const main = document.querySelector('main');
+        if (main) new MutationObserver(rescan).observe(main, { childList: true, subtree: true, attributes: true, attributeFilter: ['style', 'class'] });
+        this.$watch('$store.tableSlider.on', rescan);
+        this.update();
+    },
+
+    schedule() {
+        if (this.queued) return;
+        this.queued = true;
+        requestAnimationFrame(() => { this.queued = false; this.update(); });
+    },
+
+    scan() {
+        this.candidates = [...document.querySelectorAll('main *')].filter((el) => {
+            if (el.scrollWidth - el.clientWidth < 2) return false;
+            const ox = getComputedStyle(el).overflowX;
+            return ox === 'auto' || ox === 'scroll';
+        });
+        this.stale = false;
+    },
+
+    findTarget() {
+        if (this.stale) this.scan();
+        const viewH = window.innerHeight;
+        let best = null;
+        let bestVisible = 0;
+        this.candidates.forEach((el) => {
+            if (!el.isConnected) return;
+            const r = el.getBoundingClientRect();
+            const visible = Math.min(r.bottom, viewH) - Math.max(r.top, 0);
+            if (visible > bestVisible) { bestVisible = visible; best = el; }
+        });
+        return best;
+    },
+
+    update() {
+        if (!Alpine.store('tableSlider').on) { this.target = null; return; }
+        const el = this.findTarget();
+        this.target = el;
+        if (!el) return;
+        const r = el.getBoundingClientRect();
+        const margin = 16;
+        this.left = Math.max(r.left, 0) + margin;
+        this.width = Math.max(Math.min(r.right, window.innerWidth) - Math.max(r.left, 0) - margin * 2, 120);
+        this.max = el.scrollWidth - el.clientWidth;
+        this.value = el.scrollLeft;
+    },
+
+    scrollTo(v) {
+        if (!this.target) return;
+        this.target.scrollLeft = Number(v);
+    },
+}));
+
 Alpine.data('tableFilter', (perPage = 15, initialFilters = {}, sortModes = {}) => ({
     search: '',
     filters: { ...initialFilters },

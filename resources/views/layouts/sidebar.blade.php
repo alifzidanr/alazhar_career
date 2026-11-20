@@ -48,4 +48,17 @@
         </svg>
         {{ __('Manajemen Pengguna') }}
     </x-sidebar-link>
+    <button type="button" @click="$store.tableSlider.toggle()" :aria-pressed="$store.tableSlider.on.toString()"
+            :class="$store.tableSlider.on ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'"
+            class="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors">
+        <svg class="h-5 w-5 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
+        </svg>
+        <span class="flex-1 text-left">{{ __('Slider Tabel') }}</span>
+        <span class="relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors"
+              :class="$store.tableSlider.on ? 'bg-primary' : 'bg-input'">
+            <span class="inline-block h-4 w-4 rounded-full bg-background shadow transition-transform"
+                  :class="$store.tableSlider.on ? 'translate-x-[18px]' : 'translate-x-0.5'"></span>
+        </span>
+    </button>
 </nav>
