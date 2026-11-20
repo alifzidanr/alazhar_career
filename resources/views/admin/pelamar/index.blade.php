@@ -7,7 +7,7 @@
 
     <div class="py-8">
         {{-- Default sort: newest application first (by submission time). Tgl Apply toggles newest/oldest. --}}
-        <div class="w-full px-4 sm:px-6 lg:px-8 space-y-6" x-data="tableFilter(25, {}, {
+        <div class="w-full px-4 sm:px-6 lg:px-8 space-y-6" x-data="tableFilter(0, {}, {
                 apply_desc: { field: 'apply', dir: 'desc' },
                 apply_asc: { field: 'apply', dir: 'asc' },
                 '': null,
@@ -328,7 +328,7 @@
                 </table>
             </x-ui.card>
 
-            <x-ui.table-filter-footer />
+            <x-ui.table-filter-footer :paginated="false" />
         </div>
     </div>
 </x-app-layout>

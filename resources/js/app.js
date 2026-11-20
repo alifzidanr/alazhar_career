@@ -254,6 +254,8 @@ Alpine.data('tableFilter', (perPage = 15, initialFilters = {}, sortModes = {}) =
         const idx = this.matchingRows().indexOf(el);
         if (idx === -1) return false;
 
+        if (!this.perPage) return true; // perPage 0 = no paging, show every match
+
         const start = (this.page - 1) * this.perPage;
 
         return idx >= start && idx < start + this.perPage;
@@ -264,15 +266,16 @@ Alpine.data('tableFilter', (perPage = 15, initialFilters = {}, sortModes = {}) =
     },
 
     get totalPages() {
-        return Math.max(1, Math.ceil(this.total / this.perPage));
+        return this.perPage ? Math.max(1, Math.ceil(this.total / this.perPage)) : 1;
     },
 
     get rangeStart() {
-        return this.total === 0 ? 0 : (this.page - 1) * this.perPage + 1;
+        if (this.total === 0) return 0;
+        return this.perPage ? (this.page - 1) * this.perPage + 1 : 1;
     },
 
     get rangeEnd() {
-        return Math.min(this.page * this.perPage, this.total);
+        return this.perPage ? Math.min(this.page * this.perPage, this.total) : this.total;
     },
 
     prevPage() {
